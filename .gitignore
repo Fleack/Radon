@@ -1,0 +1,17 @@
+# CMake generated build files
+/cmake-build-*/
+
+# Ignore generated projects
+build/
+cmake-build/
+.vscode/
+
+# Android output directories
+gradle*
+.gradle
+.idea
+android/.cxx
+
+# Ignore log files
+Urho3D.log
+
