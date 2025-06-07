@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Urho3D/Graphics/Viewport.h"
 #include "Urho3D/Scene/Scene.h"
 
 #include <Urho3D/Engine/Application.h>
@@ -17,6 +18,10 @@ public:
     void Stop() override;
 
 private:
+    void Update(VariantMap& eventData);
+
+private:
     SharedPtr<Scene> m_scene;
-    SharedPtr<Node> m_cameraNode;
+    SharedPtr<Viewport> m_viewport;
+    WeakPtr<Node> m_geometryNode;
 };
