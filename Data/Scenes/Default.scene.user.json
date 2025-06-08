@@ -2,7 +2,7 @@
 	"Addons": {
 		"Camera": {
 			"Position": "-3.134278 1.915819 0.065564",
-			"Rotation": "0.837966 0.218664 0.483799 -0.126246"
+			"Rotation": "0.820102 0.215915 0.512456 -0.134918"
 		},
 		"CreatePrefabFrom": {},
 		"DebugInfo": {},
@@ -16,11 +16,11 @@
 	},
 	"Selection": {
 		"ActiveComponentId": 0,
-		"ActiveNodeId": 0,
-		"ActiveNodeOrSceneId": 0,
+		"ActiveNodeId": 7,
+		"ActiveNodeOrSceneId": 7,
 		"ComponentIds": [],
 		"NodeIds": [
-			1
+			7
 		]
 	}
 }

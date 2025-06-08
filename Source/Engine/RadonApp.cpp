@@ -36,43 +36,24 @@ void RadonApp::Setup()
 
 void RadonApp::Start()
 {
-    SampleComponent::RegisterObject(context_);
-
     auto cache = GetSubsystem<ResourceCache>();
     auto renderer = GetSubsystem<Renderer>();
 
-    // Create scene.
     m_scene = MakeShared<Scene>(context_);
-    m_scene->CreateComponent<Octree>();
-    cache->BackgroundLoadResource<Scene>("Scenes/MyScene.xml");
+    if (!m_scene->LoadFile("Scenes/Default.scene"))
+    {
+        URHO3D_LOGERROR("Failed to load scene file!");
+        return;
+    }
 
-    // Create camera.
-    Node* cameraNode = m_scene->CreateChild("Camera");
-    Camera* camera = cameraNode->CreateComponent<Camera>();
+    Node* cameraNode = m_scene->GetChild("Camera", true);
+    if (!cameraNode)
+    {
+        cameraNode = m_scene->CreateChild("Camera");
+        cameraNode->CreateComponent<Camera>();
+    }
 
-    // Create zone.
-    Zone* zone = m_scene->CreateComponent<Zone>();
-    zone->SetFogColor(0xC9C0BB_rgb);
-    zone->SetAmbientColor(0x706B64_rgb);
-
-    // Create box geometry.
-    m_geometryNode = m_scene->CreateChild("Box");
-    m_geometryNode->SetPosition(Vector3{0.0f, 0.0f, 5.0f});
-    m_geometryNode->SetRotation(Quaternion{-30.0f, 60.0f, 50.0f});
-    auto* geometry = m_geometryNode->CreateComponent<StaticModel>();
-    geometry->SetModel(cache->GetResource<Model>("Models/Box.mdl"));
-    geometry->SetMaterial(cache->GetResource<Material>("Materials/DefaultGrey.xml"));
-    auto* sampleComponent = m_geometryNode->CreateComponent<SampleComponent>();
-    sampleComponent->SetAxis(Vector3::UP);
-    sampleComponent->SetRotationSpeed(10.0f);
-
-    // Create light.
-    Node* lightNode = m_scene->CreateChild("Light");
-    lightNode->SetDirection(Vector3(0.6f, -1.0f, 0.8f));
-    Light* light = lightNode->CreateComponent<Light>();
-    light->SetLightType(LIGHT_DIRECTIONAL);
-
-    // Create viewport.
+    Camera* camera = cameraNode->GetComponent<Camera>();
     auto const viewport = MakeShared<Viewport>(context_, m_scene, camera);
     renderer->SetViewport(0, viewport);
 

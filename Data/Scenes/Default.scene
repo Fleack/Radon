@@ -157,6 +157,7 @@
 		<node _id="7">
 			<attributes>
 				<attribute name="Position" type="Vector3" value="-0.608435 0.428337 1.65706" />
+				<attribute name="Rotation" type="Quaternion" value="0.882063 -0.47113 0 0" />
 			</attributes>
 			<components>
 				<component _id="12" _typeName="StaticModel">
