@@ -15,3 +15,5 @@ set_target_properties(RadonGame PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
         WIN32_EXECUTABLE TRUE
 )
+
+include(CopyData)
