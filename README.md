@@ -1,148 +1,146 @@
-# Game Design Document: Проект "Radon"
+# Game Design Document: Project “Radon”
 
-## Общая информация
+## General Information
 
-* **Название проекта:** Radon (рабочее)
-* **Жанр:** FPS / Immersive Sim / Survival Exploration
-* **Целевая платформа:** Windows
-* **Движок:** rbfx (C++)
-* **Язык разработки:** C++23
-* **Сборка:** CMake
-* **IDE:** CLion
-* **Сетевой режим:** Одиночный, с возможностью расширения до P2P-кооператива
-* **Атмосфера:** Постсоветский постапокалипсис в духе S.T.A.L.K.E.R., Metro, Tarkov
+- **Project name:** Radon (working title)
+- **Genre:** FPS / Immersive Sim / Survival Exploration
+- **Target platform:** Windows
+- **Engine:** rbfx (C++)
+- **Language:** C++23
+- **Build system:** CMake
+- **IDE:** CLion
+- **Network mode:** Single-player, with ability to expand to P2P co-op
+- **Atmosphere:** Post-Soviet post-apocalypse in the style of S.T.A.L.K.E.R., Metro, Tarkov
 
-## Концепция
+## Concept
 
-Исследовательский, атмосферный одиночный шутер с элементами выживания, ручной картой, нелинейной прогрессией, системой снаряжения и инвентаря, в будущем — с кооперативом и моддингом.
+An exploration-driven, atmospheric single-player shooter with survival elements, a hand-drawn map, nonlinear progression, and a gear/inventory system—eventually expandable with co-op and mod support.
 
-## Цели
+## Goals
 
-### MVP (Минимально жизнеспособный продукт)
+### MVP (Minimum Viable Product)
 
-**Главная цель:** Реализовать базовую версию одиночной игры с двумя локациями, боевой системой, торговлей и инвентарём.
+**Primary goal:** Deliver a basic single-player build including two locations, a combat system, a trader, and inventory.
 
-### Расширение (Post-MVP)
+### Post-MVP Expansion
 
-**Цель:** Постепенно наращивать масштаб, вводить сюжет, фракции, A-Life, кооператив и расширенный моддинг.
+**Goal:** Gradually scale up by adding story, factions, A-Life, co-op, and richer mod support.
 
 ---
 
-# 1. Содержимое MVP
+# 1. MVP Contents
 
-## 1.1 Мир
+## 1.1 World
 
-* **Формат:** Локационный, 2 карты (3–4 POI каждая)
-* **Тип переходов:** Через порталы/зоны
-* **WorldGraph:** Карта мира в виде графа с сохранением состояния локаций
+- **Structure:** Zone-based, 2 maps (3–4 POIs each)
+- **Transition type:** Portals/zones
+- **WorldGraph:** A graph-based world map with persistent location states
 
-## 1.2 Игрок
+## 1.2 Player
 
-* **Вид:** От первого лица, тело не отображается (заложено на будущее)
-* **Передвижение:** Ходьба, бег, выносливость
-* **Стрельба:** От бедра, без прицелов
-* **Смерть:** Возврат на последний сейв
+- **View:** First-person (body not rendered yet, placeholder for future)
+- **Movement:** Walk, run, stamina
+- **Shooting:** Hip-fire only, no ADS
+- **Death:** Reload at last save point
 
-## 1.3 Бой и оружие
+## 1.3 Combat & Weapons
 
-* **Оружие:** 8 единиц (3 пистолета, 1 дробовик, 3 автомата, 1 снайперка)
-* **Патроны:** Типизированные, хранятся как число
-* **Боёвка:** Простая, но с реалистичной физикой и звуком
-* **Заложено:** Система модификаций оружия (прицелы, модули)
+- **Weapons:** 8 total (3 pistols, 1 shotgun, 3 rifles, 1 sniper)
+- **Ammo:** Typed, stored as counts
+- **Combat feel:** Simple but with realistic physics and sound
+- **Planned:** Weapon mod system (scopes, attachments)
 
-## 1.4 Инвентарь
+## 1.4 Inventory
 
-* **Тип:** Сетка без ограничения по слотам, есть лимит по весу
-* **Функциональность:** Перемещение, использование, отображение веса
+- **Type:** Grid without slot limit, weight cap applies
+- **Functions:** Move, use, display weight
 
-## 1.5 Враги
+## 1.5 Enemies
 
-* **Тип:** Бандиты
-* **ИИ:** Статичный или патрулирующий, агрессия при обнаружении
+- **Type:** Bandits
+- **AI:** Idle or patrolling, aggressive on player detection
 
 ## 1.6 UI
 
-* **Главное меню:** Да (загрузка, выход)
-* **HUD:** Здоровье, выносливость, патроны, мини-карта
-* **Инвентарь:** Drag & drop
+- **Main menu:** Yes (load, exit)
+- **HUD:** Health, stamina, ammo, minimap
+- **Inventory:** Drag & drop
 
-## 1.7 Предметы
+## 1.7 Items
 
-* **Типы:** Оружие, броня (5 видов), аптечки, энергетики, патроны
-* **Заложено:** Категории, моддинг, расширение типов
+- **Categories:** Weapons, armor (5 types), medkits, energy drinks, ammo
+- **Planned:** Item categories, mod expansions
 
-## 1.8 Торговля
+## 1.8 Trading
 
-* **Один торговец** с фиксированным ассортиментом
-* **Покупка/продажа** без динамики цен
+- **Trader:** Single NPC with fixed stock
+- **Buy/sell:** No dynamic pricing
 
-## 1.9 Карта
+## 1.9 Map
 
-* **Показывает всё** с самого начала
-* **Формат:** Data-driven (текстура + POI)
-* **Будущее:** Отметки игрока, скрытие до изучения
+- **Revealed:** Fully visible from the start
+- **Format:** Data-driven (texture + POIs)
+- **Future:** Player-placed markers, fog of war until explored
 
-## 1.10 Сохранение
+## 1.10 Saving
 
-* **Формат:** JSON в виде папки на сейв
-* **Частота:** Ручное + автосейв каждые N минут
-* **Версионирование:** Да
+- **Format:** JSON folder per save
+- **Frequency:** Manual + auto-save every N minutes
+- **Versioning:** Yes
 
-## 1.11 Моддинг
+## 1.11 Modding
 
-* **Заложено:** Все игровые данные в JSON, поддержка подгрузки из `Mods/`
-* **Система загрузки:** Реестр предметов, сцен, врагов и т.д.
-
----
-
-# 2. Расширение после MVP
-
-## 2.1 Сюжет и квесты
-
-* Основная сюжетная линия
-* Побочные задания с вариативностью (в духе ATOM RPG)
-
-## 2.2 A-Life система
-
-* Случайные события, перемещения NPC, симуляция жизни мира
-
-## 2.3 Фракции
-
-* Отношения, репутация, взаимодействия NPC
-
-## 2.4 Новые типы врагов
-
-* Мутанты, сущности, враждебные зоны
-
-## 2.5 Погодная система
-
-* Дождь, туман, свет, динамическое небо
-
-## 2.6 Освещение и графика
-
-* Поддержка пост-обработки, кастомные луты, soft shadows
-
-## 2.7 Кооператив (P2P)
-
-* Возможность подключения 1–3 игроков через P2P
-* Общий прогресс, синхронизация действий и предметов
-
-## 2.8 RPG-прокачка
-
-* Навыки повышаются при действии (как в Tarkov)
-* Влияние на боевые и небоевые параметры
-
-## 2.9 Расширение мира
-
-* Новые локации подключаются через WorldGraph
-* Поддержка модульной загрузки контента
-
-## 2.10 UI-расширение
-
-* Прицел, фонарик, индикаторы состояний, квест-трекер
-
-## 2.11 Скриптинг
-
-* Возможность скриптовать поведение NPC, квесты, события (Lua/YAML)
+- **Built-in:** All game data in JSON, loadable from `Mods/`
+- **Loader:** Registries for items, scenes, enemies, etc.
 
 ---
+
+# 2. Post-MVP Expansion
+
+## 2.1 Story & Quests
+
+- Main storyline
+- Branching side-quests (inspired by ATOM RPG)
+
+## 2.2 A-Life System
+
+- Random events, NPC movements, world simulation
+
+## 2.3 Factions
+
+- Relationships, reputation, NPC interactions
+
+## 2.4 New Enemy Types
+
+- Mutants, anomalies, hostile zones
+
+## 2.5 Weather System
+
+- Rain, fog, lighting, dynamic skies
+
+## 2.6 Lighting & Graphics
+
+- Post-processing support, custom loot shaders, soft shadows
+
+## 2.7 Co-op (P2P)
+
+- 1–3 player connections via P2P
+- Shared progress, item and action sync
+
+## 2.8 RPG-style Progression
+
+- Skills improve through use (à la Tarkov)
+- Impact on combat and non-combat stats
+
+## 2.9 World Expansion
+
+- New zones added via WorldGraph
+- Modular content loading
+
+## 2.10 UI Enhancements
+
+- Sights, flashlight, status indicators, quest tracker
+
+## 2.11 Scripting
+
+- NPC behaviors, quests, events scriptable (Lua/YAML)
