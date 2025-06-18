@@ -4,6 +4,8 @@
 #include <Urho3D/Resource/JSONFile.h>
 #include <Urho3D/Resource/ResourceCache.h>
 
+namespace Radon
+{
 using namespace Urho3D;
 
 template <typename T>
@@ -15,9 +17,7 @@ public:
         auto* cache = context->GetSubsystem<ResourceCache>();
         auto const* fs = context->GetSubsystem<FileSystem>();
 
-        // Build the full directory path
         ea::string fullDirPath = "Data/" + directory;
-        
         ea::vector<ea::string> files;
         fs->ScanDir(files, fullDirPath, "*.json", SCAN_FILES);
 
@@ -26,8 +26,6 @@ public:
 
         for (ea::string const& relPath : files)
         {
-            // Use the directory parameter (not fullDirPath) for ResourceCache
-            // because ResourceCache uses the resource paths set in Setup()
             auto const file = cache->GetResource<JSONFile>(directory + "/" + relPath);
             if (!file)
             {
@@ -54,3 +52,4 @@ public:
 private:
     ea::hash_map<ea::string, T> items_;
 };
+} // namespace Radon

@@ -7,6 +7,8 @@
 
 using namespace Urho3D;
 
+namespace Radon
+{
 class GameApplication final : public Application
 {
     URHO3D_OBJECT(GameApplication, Application);
@@ -21,3 +23,4 @@ public:
 private:
     Registry<ItemData> itemRegistry_;
 };
+} // namespace Radon

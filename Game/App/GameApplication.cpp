@@ -8,6 +8,8 @@
 #include <Urho3D/IO/Log.h>
 #include <Urho3D/Scene/Scene.h>
 
+using namespace Radon;
+
 void GameApplication::Setup()
 {
     // Window settings

@@ -3,6 +3,8 @@
 #include <Urho3D/IO/Log.h>
 #include <Urho3D/Resource/JSONValue.h>
 
+namespace Radon
+{
 using namespace Urho3D;
 
 struct ItemData
@@ -22,3 +24,4 @@ struct ItemData
         URHO3D_LOGDEBUG("Parsed ItemData: {} (weight={})", id_, weight_);
     }
 };
+} // namespace Radon
