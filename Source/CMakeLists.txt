@@ -1,5 +1,0 @@
-add_subdirectory(Client)
-add_subdirectory(Engine)
-add_subdirectory(Game)
-add_subdirectory(Server)
-add_subdirectory(Shared)
