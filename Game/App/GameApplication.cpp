@@ -1,5 +1,8 @@
 #include "GameApplication.hpp"
 
+#include "States/MenuState.hpp"
+#include "Urho3D/Core/CoreEvents.h"
+
 #include <Urho3D/Engine/EngineDefs.h>
 #include <Urho3D/Graphics/Camera.h>
 #include <Urho3D/Graphics/Light.h>
@@ -28,23 +31,19 @@ void GameApplication::Setup()
 
 void GameApplication::Start()
 {
-    auto scene = MakeShared<Scene>(context_);
-
-    Node* cameraNode = scene->CreateChild("Camera");
-    auto* camera = cameraNode->CreateComponent<Camera>();
-
-    auto* renderer = GetSubsystem<Renderer>();
-    SharedPtr<Viewport> viewport = MakeShared<Viewport>(context_, scene, camera);
-    renderer->SetViewport(0, viewport);
-
-    Node* lightNode = scene->CreateChild("DirectionalLight");
-    lightNode->SetDirection(Vector3(0.6f, -1.0f, 0.8f));
-    auto* light = lightNode->CreateComponent<Light>();
-    light->SetLightType(LIGHT_DIRECTIONAL);
-
     itemRegistry_.LoadAll(context_, "Items");
-    if (auto* item = itemRegistry_.Get("medkit"))
-        URHO3D_LOGINFO("Got item 'medkit', name = {}", item->name_);
+
+    stateManager_ = MakeShared<GameStateManager>(context_);
+    stateManager_->PushState<MenuState>();
+    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(GameApplication, HandleUpdate));
+}
+
+void GameApplication::HandleUpdate(StringHash eventType, VariantMap& eventData) const
+{
+    float timeStep = eventData[Update::P_TIMESTEP].GetFloat();
+
+    if (stateManager_)
+        stateManager_->Update(timeStep);
 }
 
 void GameApplication::Stop()

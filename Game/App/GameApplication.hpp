@@ -2,6 +2,7 @@
 
 #include "Data/ItemData.hpp"
 #include "Data/Registry.hpp"
+#include "GameStateManager.hpp"
 
 #include <Urho3D/Engine/Application.h>
 
@@ -20,7 +21,13 @@ public:
     void Start() override;
     void Stop() override;
 
+    GameStateManager* GetStateManager() const { return stateManager_.Get(); }
+
+private:
+    void HandleUpdate(StringHash eventType, VariantMap& eventData) const;
+
 private:
     Registry<ItemData> itemRegistry_;
+    SharedPtr<GameStateManager> stateManager_;
 };
 } // namespace Radon
