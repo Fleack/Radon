@@ -1,0 +1,17 @@
+{
+  "id": "kevlar_vest",
+  "name": "Kevlar Vest",
+  "type": "armor",
+  "armorType": "body",
+  "weight": 8.0,
+  "description": "Standard bulletproof vest offering medium protection",
+  "defense": {
+    "ballistic": 45,
+    "melee": 15,
+    "explosion": 25
+  },
+  "durability": 100,
+  "movementPenalty": 5,
+  "iconPath": "Assets/Icons/kevlar_vest.png",
+  "modelPath": "Assets/Models/Items/kevlar_vest.mdl"
+}

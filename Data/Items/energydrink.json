@@ -1,0 +1,19 @@
+{
+  "id": "energydrink",
+  "name": "Energy Drink",
+  "type": "food",
+  "weight": 0.5,
+  "description": "Restores stamina and provides temporary endurance boost",
+  "useEffect": {
+    "stamina": 75,
+    "staminaRegenBoost": {
+      "amount": 25,
+      "duration": 60
+    }
+  },
+  "maxUses": 1,
+  "useTime": 1.0,
+  "iconPath": "Assets/Icons/energydrink.png",
+  "modelPath": "Assets/Models/Items/energydrink.mdl",
+  "sound": "Assets/Sounds/drink.wav"
+}

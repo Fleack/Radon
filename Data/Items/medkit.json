@@ -1,5 +1,15 @@
 {
   "id": "medkit",
   "name": "Medkit",
-  "weight": 1.5
+  "type": "medical",
+  "weight": 1.5,
+  "description": "Standard medical kit for treating wounds and injuries. Restores 50 HP",
+  "useEffect": {
+    "health": 50
+  },
+  "maxUses": 1,
+  "useTime": 2.0,
+  "iconPath": "Assets/Icons/medkit.png",
+  "modelPath": "Assets/Models/Items/medkit.mdl",
+  "sound": "Assets/Sounds/medkit_use.wav"
 }

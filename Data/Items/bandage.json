@@ -1,0 +1,16 @@
+{
+  "id": "bandage",
+  "name": "Bandage",
+  "type": "medical",
+  "weight": 0.2,
+  "description": "Basic bandage for stopping bleeding",
+  "useEffect": {
+    "health": 15,
+    "stopBleeding": true
+  },
+  "maxUses": 1,
+  "useTime": 1.0,
+  "iconPath": "Assets/Icons/bandage.png",
+  "modelPath": "Assets/Models/Items/bandage.mdl",
+  "sound": "Assets/Sounds/bandage_use.wav"
+}
