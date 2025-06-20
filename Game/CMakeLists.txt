@@ -24,3 +24,4 @@ set_target_properties(
 )
 
 include(CopyData)
+include(RemoveLog)
