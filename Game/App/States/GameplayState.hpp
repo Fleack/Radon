@@ -2,6 +2,11 @@
 
 #include "GameState.hpp"
 
+#include "App/Camera/CameraController.hpp"
+#include "App/Scene/SceneBuilder.hpp"
+#include "App/UI/HUDBuilder.hpp"
+#include "App/Graphics/ViewportManager.hpp"
+
 namespace Radon
 {
 
@@ -18,19 +23,14 @@ public:
     void Update(float timeStep) override;
 
 private:
-    void SetupScene();
-    void SetupViewport();
-    void CreateHUD();
-
-private:
     void HandleKeyDown(StringHash eventType, VariantMap& eventData);
-    void HandleUpdate(StringHash eventType, VariantMap& eventData);
 
 private:
+    SharedPtr<SceneBuilder> sceneBuilder_;
+    SharedPtr<CameraController> cameraController_;
+    SharedPtr<HUDBuilder> hudBuilder_;
+    SharedPtr<ViewportManager> viewportManager_;
     Node* cameraNode_{};
-    float yaw_{0.0f}, pitch_{0.0f};
-    float const moveSpeed_{10.0f};
-    float const lookSensitivity_{0.1f};
 };
 
 } // namespace Radon

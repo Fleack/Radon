@@ -20,7 +20,7 @@ public:
     virtual void Exit() {}
     virtual void Update(float timeStep) {}
 
-    SharedPtr<Scene> GetScene() const { return scene_; }
+    [[nodiscard]] SharedPtr<Scene> GetScene() const { return scene_; }
 
 protected:
     SharedPtr<Scene> scene_;
