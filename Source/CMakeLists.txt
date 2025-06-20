@@ -7,7 +7,7 @@ add_executable(RadonGame ${GAME_SOURCES})
 target_include_directories(
         RadonGame
         PRIVATE
-        ${CMAKE_SOURCE_DIR}/Game
+        ${CMAKE_SOURCE_DIR}/Source
 )
 
 target_link_libraries(

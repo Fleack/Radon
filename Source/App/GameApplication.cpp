@@ -4,12 +4,8 @@
 #include "Urho3D/Core/CoreEvents.h"
 
 #include <Urho3D/Engine/EngineDefs.h>
-#include <Urho3D/Graphics/Camera.h>
-#include <Urho3D/Graphics/Light.h>
 #include <Urho3D/Graphics/Renderer.h>
-#include <Urho3D/Graphics/Viewport.h>
 #include <Urho3D/IO/Log.h>
-#include <Urho3D/Scene/Scene.h>
 
 using namespace Radon;
 

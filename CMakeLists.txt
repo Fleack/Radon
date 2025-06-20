@@ -15,7 +15,7 @@ set(URHO3D_HOME "../rbfx")
 set(URHO3D_BUILD "${CMAKE_BINARY_DIR}/rbfx-build")
 add_subdirectory(${URHO3D_HOME} ${URHO3D_BUILD})
 
-add_subdirectory(Game)
+add_subdirectory(Source)
 
 include_directories(${CMAKE_SOURCE_DIR}/Plugins)
 add_subdirectory(${CMAKE_SOURCE_DIR}/Plugins/Core.SamplePlugin)
