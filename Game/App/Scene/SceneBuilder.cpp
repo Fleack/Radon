@@ -27,6 +27,18 @@ void SceneBuilder::SetupGameplayScene(Scene* scene)
     CreateObjects(scene);
 }
 
+void SceneBuilder::SetupMenuScene(Scene* scene)
+{
+    // For menu scene, we just need basic components and a light
+    scene->CreateComponent<Octree>();
+
+    // Create a simple ambient light for the menu scene
+    Node* lightNode = scene->CreateChild("MenuLight");
+    auto* light = lightNode->CreateComponent<Light>();
+    light->SetLightType(LIGHT_DIRECTIONAL);
+    light->SetColor(Color(0.5f, 0.5f, 0.5f));
+}
+
 Node* SceneBuilder::CreateCamera(Scene* scene)
 {
     Node* cameraNode = scene->CreateChild("Camera");

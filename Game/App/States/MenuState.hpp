@@ -1,6 +1,9 @@
 #pragma once
 
 #include "App/States/GameState.hpp"
+#include "App/Scene/SceneBuilder.hpp"
+#include "App/UI/MenuBuilder.hpp"
+#include "App/Graphics/ViewportManager.hpp"
 
 namespace Radon
 {
@@ -18,9 +21,14 @@ public:
     void Update(float timeStep) override;
 
 private:
-    void CreateUI();
     void HandlePlayPressed(StringHash, VariantMap&);
     void HandleExitPressed(StringHash, VariantMap&);
+
+private:
+    SharedPtr<SceneBuilder> sceneBuilder_;
+    SharedPtr<MenuBuilder> menuBuilder_;
+    SharedPtr<ViewportManager> viewportManager_;
+    Node* cameraNode_{};
 };
 
 } // namespace Radon

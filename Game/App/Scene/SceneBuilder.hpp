@@ -17,6 +17,7 @@ public:
     ~SceneBuilder() override = default;
 
     void SetupGameplayScene(Scene* scene);
+    void SetupMenuScene(Scene* scene);
     Node* CreateCamera(Scene* scene);
 
 private:
