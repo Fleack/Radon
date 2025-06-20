@@ -15,6 +15,7 @@ MenuState::MenuState(Context* context)
     , sceneBuilder_(MakeShared<SceneBuilder>(context))
     , menuBuilder_(MakeShared<MenuBuilder>(context))
     , viewportManager_(MakeShared<ViewportManager>(context))
+    , sceneAnimator_(MakeShared<MenuSceneAnimator>(context))
 {
     scene_->SetName("MenuScene");
 }
@@ -23,14 +24,17 @@ void MenuState::Enter()
 {
     URHO3D_LOGINFO("Entering menu state");
 
-    // Setup basic menu scene
+    // Setup dynamic menu scene with game objects
     sceneBuilder_->SetupMenuScene(scene_);
 
-    // Setup camera and viewport
-    cameraNode_ = sceneBuilder_->CreateCamera(scene_);
+    // Setup camera at a good position to view the scene
+    cameraNode_ = sceneBuilder_->CreateMenuCamera(scene_, Vector3(12.0f, 4.0f, 0.0f));
     viewportManager_->SetupViewport(scene_, cameraNode_);
 
-    // Create the menu UI
+    // Setup scene animator to create dynamic background
+    sceneAnimator_->Setup(scene_, cameraNode_);
+
+    // Create the menu UI (transparent to see the scene)
     menuBuilder_->CreateMainMenu();
 
     // Connect menu button handlers
@@ -48,7 +52,7 @@ void MenuState::Exit()
 
 void MenuState::Update(float timeStep)
 {
-    // Update menu-specific logic here (if needed)
+    // No need for explicit updates as our MenuSceneAnimator handles them through events
 }
 
 void MenuState::HandlePlayPressed(StringHash, VariantMap&)

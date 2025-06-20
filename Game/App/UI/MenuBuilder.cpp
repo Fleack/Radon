@@ -16,8 +16,9 @@ MenuBuilder::MenuBuilder(Context* context)
 
 void MenuBuilder::CreateMainMenu()
 {
-    // Create the main menu window
+    // Create the main menu window with a transparent background
     menuWindow_ = CreateMenuWindow("RADON");
+    StyleWindowForTransparency(*menuWindow_);
 
     // Create buttons
     CreateButton(menuWindow_, "PlayButton", "Play Game", IntVector2(0, -40));
@@ -43,7 +44,9 @@ SharedPtr<Window> MenuBuilder::CreateMenuWindow(const ea::string& title)
     window->SetName("MainMenu");
 
     // Create the title text
-    CreateText(window, title, 25, IntVector2(0, 20));
+    auto titleText = CreateText(window, title, 30, IntVector2(0, 20));
+    titleText->SetColor(Color(1.0f, 0.8f, 0.0f)); // Golden title for contrast against the background
+    titleText->SetEffectShadowOffset(IntVector2(2, 2)); // Add a shadow for better readability
 
     return window;
 }
@@ -61,6 +64,9 @@ SharedPtr<Button> MenuBuilder::CreateButton(UIElement* parent, const ea::string&
     button->SetAlignment(HA_CENTER, VA_CENTER);
     button->SetPosition(position);
 
+    // Make button opaque for better readability
+    button->SetOpacity(0.9f);
+
     // Add text to the button
     SharedPtr<Text> buttonText = MakeShared<Text>(context_);
     button->AddChild(buttonText);
@@ -68,6 +74,7 @@ SharedPtr<Button> MenuBuilder::CreateButton(UIElement* parent, const ea::string&
     buttonText->SetFont(cache->GetResource<Font>("Fonts/Dead Kansas.ttf"), 17);
     buttonText->SetText(text);
     buttonText->SetAlignment(HA_CENTER, VA_CENTER);
+    buttonText->SetColor(Color(0.9f, 0.9f, 1.0f)); // Light blue text for contrast
 
     return button;
 }
@@ -85,6 +92,12 @@ SharedPtr<Text> MenuBuilder::CreateText(UIElement* parent, const ea::string& tex
     textElement->SetPosition(position);
 
     return textElement;
+}
+
+void MenuBuilder::StyleWindowForTransparency(Window& window)
+{
+    window.SetOpacity(0.75f);
+    window.SetColor(Color(0.15f, 0.15f, 0.25f, 0.8f));
 }
 
 void MenuBuilder::SetPlayButtonHandler(Object* receiver, void (Object::*handler)(StringHash, VariantMap&))

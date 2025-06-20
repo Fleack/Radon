@@ -29,6 +29,7 @@ private:
     SharedPtr<Text> CreateText(UIElement* parent, const ea::string& text, int fontSize, const IntVector2& position);
 
     void SetupInputMode();
+    void StyleWindowForTransparency(Window& window);
 
 private:
     SharedPtr<Window> menuWindow_;

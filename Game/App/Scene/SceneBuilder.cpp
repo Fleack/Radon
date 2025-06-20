@@ -29,14 +29,16 @@ void SceneBuilder::SetupGameplayScene(Scene* scene)
 
 void SceneBuilder::SetupMenuScene(Scene* scene)
 {
-    // For menu scene, we just need basic components and a light
+    // Create basic components
     scene->CreateComponent<Octree>();
+    scene->CreateComponent<DebugRenderer>();
 
-    // Create a simple ambient light for the menu scene
-    Node* lightNode = scene->CreateChild("MenuLight");
-    auto* light = lightNode->CreateComponent<Light>();
-    light->SetLightType(LIGHT_DIRECTIONAL);
-    light->SetColor(Color(0.5f, 0.5f, 0.5f));
+    // Setup lighting
+    CreateLight(scene);
+
+    // Create floor and objects for an interactive menu background
+    CreateFloor(scene);
+    CreateMenuBackgroundObjects(scene);
 }
 
 Node* SceneBuilder::CreateCamera(Scene* scene)
@@ -51,6 +53,23 @@ Node* SceneBuilder::CreateCamera(Scene* scene)
     return cameraNode;
 }
 
+Node* SceneBuilder::CreateMenuCamera(Scene* scene, Vector3 const& position)
+{
+    // Create a camera with a position that shows off the scene nicely
+    Node* cameraNode = scene->CreateChild("MenuCamera");
+    cameraNode->SetPosition(position);
+
+    // Position the camera to look at the scene at a slight angle
+    Vector3 lookTarget(0.0f, 0.0f, 0.0f);
+    cameraNode->LookAt(lookTarget);
+
+    auto* camera = cameraNode->CreateComponent<Camera>();
+    camera->SetFarClip(300.0f);
+    camera->SetFov(45.0f); // Slightly wider FOV for menu
+
+    return cameraNode;
+}
+
 Node* SceneBuilder::CreateLight(Scene* scene)
 {
     Node* lightNode = scene->CreateChild("DirectionalLight");
@@ -61,6 +80,12 @@ Node* SceneBuilder::CreateLight(Scene* scene)
     light->SetShadowBias(BiasParameters(0.00025f, 0.5f));
     light->SetShadowCascade(CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f));
     light->SetSpecularIntensity(0.5f);
+
+    // Add a subtle blue ambient light for the menu scene
+    Node* ambientNode = scene->CreateChild("AmbientLight");
+    auto* ambientLight = ambientNode->CreateComponent<Light>();
+    ambientLight->SetLightType(LIGHT_SPOT);
+    ambientLight->SetColor(Color(0.1f, 0.1f, 0.15f));
 
     return lightNode;
 }
@@ -86,6 +111,44 @@ void SceneBuilder::CreateObjects(Scene* scene)
     auto* box = boxNode->CreateComponent<StaticModel>();
     box->SetModel(cache->GetResource<Model>("Models/Box.mdl"));
     box->SetMaterial(cache->GetResource<Material>("Materials/Stone.xml"));
+}
+
+void SceneBuilder::CreateMenuBackgroundObjects(Scene* scene)
+{
+    auto* cache = GetSubsystem<ResourceCache>();
+
+    // Create several objects for an interesting background
+    // Central feature - a stack of boxes
+    for (int i = 0; i < 3; ++i)
+    {
+        Node* boxNode = scene->CreateChild("MenuBox" + i);
+        boxNode->SetPosition({0.0f, 0.5f + i * 1.1f, 0.0f});
+        float scale = 1.0f - (i * 0.2f);
+        boxNode->SetScale(scale);
+        boxNode->SetRotation(Quaternion(0.0f, i * 15.0f, 0.0f));
+        auto* box = boxNode->CreateComponent<StaticModel>();
+        box->SetModel(cache->GetResource<Model>("Models/Box.mdl"));
+        box->SetMaterial(cache->GetResource<Material>("Materials/Stone.xml"));
+    }
+
+    // Add some scattered objects around the scene
+    Vector3 positions[] = {
+        {-4.0f, 0.5f, -3.0f},
+        {3.0f, 0.5f, -5.0f},
+        {5.0f, 0.5f, 2.0f},
+        {-6.0f, 0.5f, 4.0f},
+    };
+
+    for (int i = 0; i < 4; ++i)
+    {
+        Node* objNode = scene->CreateChild("SceneObject" + i);
+        objNode->SetPosition(positions[i]);
+        objNode->SetRotation(Quaternion(0.0f, Random(360.0f), 0.0f));
+
+        auto* model = objNode->CreateComponent<StaticModel>();
+        model->SetModel(cache->GetResource<Model>("Models/Box.mdl"));
+        model->SetMaterial(cache->GetResource<Material>("Materials/Stone.xml"));
+    }
 }
 
 } // namespace Radon

@@ -2,6 +2,7 @@
 
 #include "App/States/GameState.hpp"
 #include "App/Scene/SceneBuilder.hpp"
+#include "App/Scene/MenuSceneAnimator.hpp"
 #include "App/UI/MenuBuilder.hpp"
 #include "App/Graphics/ViewportManager.hpp"
 
@@ -28,6 +29,7 @@ private:
     SharedPtr<SceneBuilder> sceneBuilder_;
     SharedPtr<MenuBuilder> menuBuilder_;
     SharedPtr<ViewportManager> viewportManager_;
+    SharedPtr<MenuSceneAnimator> sceneAnimator_;
     Node* cameraNode_{};
 };
 

@@ -19,11 +19,13 @@ public:
     void SetupGameplayScene(Scene* scene);
     void SetupMenuScene(Scene* scene);
     Node* CreateCamera(Scene* scene);
+    Node* CreateMenuCamera(Scene* scene, const Vector3& position = Vector3(5.0f, 3.0f, 0.0f));
 
 private:
     Node* CreateLight(Scene* scene);
     void CreateFloor(Scene* scene);
     void CreateObjects(Scene* scene);
+    void CreateMenuBackgroundObjects(Scene* scene);
 };
 
 } // namespace Radon
