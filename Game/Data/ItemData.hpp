@@ -21,7 +21,7 @@ struct ItemData
         name_ = root["name"].GetString();
         weight_ = root["weight"].GetFloat();
 
-        URHO3D_LOGDEBUG("Parsed ItemData: {} (weight={})", id_, weight_);
+        URHO3D_LOGINFO("Parsed ItemData: {} (weight={})", id_, weight_);
     }
 };
 } // namespace Radon

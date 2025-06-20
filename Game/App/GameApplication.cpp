@@ -25,7 +25,7 @@ void GameApplication::Setup()
 
     // Logs settings
     engineParameters_[EP_LOG_QUIET] = false;
-    engineParameters_[EP_LOG_LEVEL] = LOG_INFO;
+    engineParameters_[EP_LOG_LEVEL] = LOG_DEBUG;
     engineParameters_[EP_LOG_NAME] = "Radon.log";
 }
 
@@ -38,7 +38,7 @@ void GameApplication::Start()
     SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(GameApplication, HandleUpdate));
 }
 
-void GameApplication::HandleUpdate(StringHash eventType, VariantMap& eventData) const
+void GameApplication::HandleUpdate(StringHash, VariantMap& eventData) const
 {
     float timeStep = eventData[Update::P_TIMESTEP].GetFloat();
 

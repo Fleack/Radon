@@ -1,8 +1,8 @@
 #pragma once
 
+#include "App/States/GameStateManager.hpp"
 #include "Data/ItemData.hpp"
 #include "Data/Registry.hpp"
-#include "GameStateManager.hpp"
 
 #include <Urho3D/Engine/Application.h>
 

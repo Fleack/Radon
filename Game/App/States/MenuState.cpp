@@ -1,11 +1,17 @@
 #include "MenuState.hpp"
 
+#include "App/States/GameStateManager.hpp"
+#include "App/States/GameplayState.hpp"
+
+#include <Urho3D/Engine/Engine.h>
 #include <Urho3D/IO/Log.h>
+#include <Urho3D/Input/Input.h>
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/UI/Button.h>
 #include <Urho3D/UI/Font.h>
 #include <Urho3D/UI/Text.h>
 #include <Urho3D/UI/UI.h>
+#include <Urho3D/UI/UIEvents.h>
 #include <Urho3D/UI/Window.h>
 
 namespace Radon
@@ -26,6 +32,7 @@ void MenuState::Enter()
 void MenuState::Exit()
 {
     URHO3D_LOGINFO("Exiting menu state");
+    UnsubscribeFromAllEvents();
     GetSubsystem<UI>()->GetRoot()->RemoveAllChildren();
 }
 
@@ -67,6 +74,7 @@ void MenuState::CreateUI()
     playButton->SetSize(200, 40);
     playButton->SetAlignment(HA_CENTER, VA_CENTER);
     playButton->SetPosition(0, -40);
+    SubscribeToEvent(playButton, E_RELEASED, URHO3D_HANDLER(MenuState, HandlePlayPressed));
 
     // Add text to the Play button
     SharedPtr<Text> playText = MakeShared<Text>(context_);
@@ -84,6 +92,7 @@ void MenuState::CreateUI()
     exitButton->SetSize(200, 40);
     exitButton->SetAlignment(HA_CENTER, VA_CENTER);
     exitButton->SetPosition(0, 20);
+    SubscribeToEvent(exitButton, E_RELEASED, URHO3D_HANDLER(MenuState, HandleExitPressed));
 
     // Add text to the Exit button
     SharedPtr<Text> exitText = MakeShared<Text>(context_);
@@ -92,6 +101,21 @@ void MenuState::CreateUI()
     exitText->SetFont(cache->GetResource<Font>("Fonts/Dead Kansas.ttf"), 17);
     exitText->SetText("Exit Game");
     exitText->SetAlignment(HA_CENTER, VA_CENTER);
+
+    // Let the OS cursor be visible and free to move
+    auto* input = GetSubsystem<Input>();
+    input->SetMouseMode(MM_FREE);
+    input->SetMouseVisible(true);
+}
+
+void MenuState::HandlePlayPressed(StringHash, VariantMap&)
+{
+    GetSubsystem<GameStateManager>()->PushState<GameplayState>();
+}
+
+void MenuState::HandleExitPressed(StringHash, VariantMap&)
+{
+    GetSubsystem<Engine>()->Exit();
 }
 
 } // namespace Radon

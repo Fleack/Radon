@@ -1,6 +1,6 @@
 #pragma once
 
-#include "App/GameState.hpp"
+#include "App/States/GameState.hpp"
 
 namespace Radon
 {
@@ -19,6 +19,8 @@ public:
 
 private:
     void CreateUI();
+    void HandlePlayPressed(StringHash, VariantMap&);
+    void HandleExitPressed(StringHash, VariantMap&);
 };
 
 } // namespace Radon
