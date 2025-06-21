@@ -24,10 +24,13 @@ public:
     GameStateManager* GetStateManager() const { return stateManager_.Get(); }
 
 private:
+    void InitGameModules();
+
+private:
     void HandleUpdate(StringHash eventType, VariantMap& eventData) const;
 
 private:
-    Registry<ItemData> itemRegistry_;
+    SharedPtr<Registry<ItemData>> itemRegistry_;
     SharedPtr<GameStateManager> stateManager_;
 };
 } // namespace Radon

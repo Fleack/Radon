@@ -9,13 +9,18 @@ namespace Radon
 using namespace Urho3D;
 
 template <typename T>
-class Registry
+class Registry final : public Object
 {
+    URHO3D_OBJECT(Registry, Object);
+
 public:
-    void LoadAll(Context const* context, ea::string const& directory)
+    explicit Registry(Context* context)
+        : Object{context}, context_{context} {}
+
+    void LoadAll(ea::string const& directory)
     {
-        auto* cache = context->GetSubsystem<ResourceCache>();
-        auto const* fs = context->GetSubsystem<FileSystem>();
+        auto* cache = context_->GetSubsystem<ResourceCache>();
+        auto const* fs = context_->GetSubsystem<FileSystem>();
 
         ea::string fullDirPath = "Data/" + directory;
         ea::vector<ea::string> files;
@@ -50,6 +55,7 @@ public:
     }
 
 private:
+    Context* context_;
     ea::hash_map<ea::string, T> items_;
 };
 } // namespace Radon

@@ -1,0 +1,61 @@
+{
+  "Default": [
+    {
+      "Flavor": [
+        {
+          "key": "*",
+          "value": [
+            "*"
+          ]
+        }
+      ],
+      "Variables": [
+        {
+          "key": "WindowTitle",
+          "type": "String",
+          "value": "Radon"
+        },
+        {
+          "key": "WindowWidth",
+          "type": "Int",
+          "value": 1280
+        },
+        {
+          "key": "WindowHeight",
+          "type": "Int",
+          "value": 720
+        },
+        {
+          "key": "FullScreen",
+          "type": "Bool",
+          "value": false
+        },
+        {
+          "key": "WindowResizable",
+          "type": "Bool",
+          "value": true
+        },
+        {
+          "key": "VSync",
+          "type": "Bool",
+          "value": true
+        },
+        {
+          "key": "LogQuiet",
+          "type": "Bool",
+          "value": false
+        },
+        {
+          "key": "LogLevel",
+          "type": "Int",
+          "value": 1
+        },
+        {
+          "key": "LogName",
+          "type": "String",
+          "value": "Radon.log"
+        }
+      ]
+    }
+  ]
+}
