@@ -5,25 +5,34 @@
 
 namespace Radon
 {
-using namespace Urho3D;
 
-class CameraController : public Object
+class CameraController : public Urho3D::Object
 {
     URHO3D_OBJECT(CameraController, Object);
 
 public:
-    explicit CameraController(Context* context);
-    ~CameraController() override = default;
+    explicit CameraController(Urho3D::Context* context);
+    ~CameraController() override;
 
-    void Setup(Node* cameraNode);
+    void Initialize(Urho3D::Node& cameraNode, float lookSensitivity = 0.1f, float moveSpeed = 5.0f);
 
-    void HandleUpdate(StringHash eventType, VariantMap& eventData);
+    void Shutdown();
+
+    void SetLookSensitivity(float sensitivity) { lookSensitivity_ = sensitivity; }
+    [[nodiscard]] float GetLookSensitivity() const { return lookSensitivity_; }
+
+    void SetMoveSpeed(float speed) { moveSpeed_ = speed; }
+    [[nodiscard]] float GetMoveSpeed() const { return moveSpeed_; }
 
 private:
-    Node* cameraNode_{nullptr};
-    float yaw_{0.0f}, pitch_{0.0f};
-    float moveSpeed_{10.0f};
-    float lookSensitivity_{0.1f};
-};
+    void OnUpdate(Urho3D::StringHash eventType, Urho3D::VariantMap& eventData);
 
+private:
+    Urho3D::WeakPtr<Urho3D::Node> cameraNode_;
+    float yaw_{0.0f}, pitch_{0.0f};
+    float lookSensitivity_{0.1f};
+    float moveSpeed_{5.0f};
+    float pitchMin_{-89.0f}, pitchMax_{89.0f};
+    bool initialized_{false};
+};
 } // namespace Radon

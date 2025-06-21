@@ -23,20 +23,12 @@ void GameplayState::Enter()
 {
     URHO3D_LOGINFO("Entering gameplay state");
 
-    // Setup scene and camera
     sceneBuilder_->SetupGameplayScene(scene_);
     cameraNode_ = sceneBuilder_->CreateCamera(scene_);
-
-    // Setup viewport with the camera
     viewportManager_->SetupViewport(scene_, cameraNode_);
-
-    // Setup camera controller
-    cameraController_->Setup(cameraNode_);
-
-    // Create HUD
+    cameraController_->Initialize(*cameraNode_);
     hudBuilder_->CreateGameplayHUD();
 
-    // Subscribe to key events for state management
     SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(GameplayState, HandleKeyDown));
 }
 
@@ -48,12 +40,9 @@ void GameplayState::Exit()
     scene_->RemoveAllChildren();
 }
 
-void GameplayState::Update(float timeStep)
-{
-    // Update gameplay-specific logic here
-}
+void GameplayState::Update(float timeStep) {}
 
-void GameplayState::HandleKeyDown(StringHash eventType, VariantMap& eventData)
+void GameplayState::HandleKeyDown(StringHash, VariantMap& eventData) const
 {
     int key = eventData[KeyDown::P_KEY].GetInt();
     if (key == KEY_ESCAPE)

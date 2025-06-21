@@ -1,11 +1,10 @@
 #pragma once
 
-#include "GameState.hpp"
-
 #include "App/Camera/CameraController.hpp"
-#include "App/Scene/SceneBuilder.hpp"
-#include "App/UI/HUDBuilder.hpp"
 #include "App/Graphics/ViewportManager.hpp"
+#include "App/Scene/SceneBuilder.hpp"
+#include "App/States/GameState.hpp"
+#include "App/UI/HUDBuilder.hpp"
 
 namespace Radon
 {
@@ -23,7 +22,7 @@ public:
     void Update(float timeStep) override;
 
 private:
-    void HandleKeyDown(StringHash eventType, VariantMap& eventData);
+    void HandleKeyDown(StringHash eventType, VariantMap& eventData) const;
 
 private:
     SharedPtr<SceneBuilder> sceneBuilder_;

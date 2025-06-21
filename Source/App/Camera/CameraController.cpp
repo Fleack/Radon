@@ -1,43 +1,65 @@
 #include "CameraController.hpp"
 
 #include <Urho3D/Core/CoreEvents.h>
-#include <Urho3D/Graphics/Camera.h>
-#include <Urho3D/Input/Input.h>
 #include <Urho3D/IO/Log.h>
+#include <Urho3D/Input/Input.h>
+#include <Urho3D/Math/MathDefs.h>
 
-namespace Radon
-{
+using namespace Urho3D;
+using namespace Radon;
 
 CameraController::CameraController(Context* context)
-    : Object(context)
+    : Object(context) {}
+
+CameraController::~CameraController()
 {
+    Shutdown();
 }
 
-void CameraController::Setup(Node* cameraNode)
+void CameraController::Initialize(Node& cameraNode, float lookSensitivity, float moveSpeed)
 {
-    cameraNode_ = cameraNode;
+    if (initialized_)
+    {
+        URHO3D_LOGWARNING("CameraController: already initialized");
+        return;
+    }
 
-    Quaternion initialRot = cameraNode_->GetRotation();
+    cameraNode_ = &cameraNode;
+    lookSensitivity_ = lookSensitivity;
+    moveSpeed_ = moveSpeed;
+
+    Quaternion const initialRot = cameraNode_->GetRotation();
     yaw_ = initialRot.YawAngle();
     pitch_ = initialRot.PitchAngle();
 
-    // Subscribe to update events
-    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(CameraController, HandleUpdate));
+    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(CameraController, OnUpdate));
 
-    // Configure input
     auto* input = GetSubsystem<Input>();
     input->SetMouseMode(MM_RELATIVE);
     input->SetMouseVisible(false);
+
+    initialized_ = true;
 }
 
-void CameraController::HandleUpdate(StringHash, VariantMap& eventData)
+void CameraController::Shutdown()
 {
-    float dt = eventData[Update::P_TIMESTEP].GetFloat();
-    auto* input = GetSubsystem<Input>();
+    if (!initialized_)
+        return;
 
-    yaw_ += static_cast<float>(input->GetMouseMoveX()) * lookSensitivity_;
-    pitch_ += static_cast<float>(input->GetMouseMoveY()) * lookSensitivity_;
-    pitch_ = Clamp(pitch_, -89.0f, 89.0f);
+    UnsubscribeFromAllEvents();
+    initialized_ = false;
+}
+
+void CameraController::OnUpdate(StringHash, VariantMap& eventData)
+{
+    if (cameraNode_.Expired())
+        return;
+
+    float const dt = eventData[Update::P_TIMESTEP].GetFloat();
+
+    auto* input = GetSubsystem<Input>();
+    yaw_ += input->GetMouseMoveX() * lookSensitivity_;
+    pitch_ = Clamp(pitch_ + static_cast<float>(input->GetMouseMoveY()) * lookSensitivity_, pitchMin_, pitchMax_);
 
     cameraNode_->SetRotation(Quaternion(pitch_, yaw_, 0.0f));
 
@@ -46,8 +68,9 @@ void CameraController::HandleUpdate(StringHash, VariantMap& eventData)
     if (input->GetKeyDown(KEY_S)) dir += Vector3::BACK;
     if (input->GetKeyDown(KEY_A)) dir += Vector3::LEFT;
     if (input->GetKeyDown(KEY_D)) dir += Vector3::RIGHT;
-    if (!dir.Equals(Vector3::ZERO))
-        cameraNode_->Translate(dir.Normalized() * moveSpeed_ * dt, TS_LOCAL);
-}
 
-} // namespace Radon
+    if (!dir.Equals(Vector3::ZERO))
+    {
+        cameraNode_->Translate(dir.Normalized() * moveSpeed_ * dt, TS_LOCAL);
+    }
+}
