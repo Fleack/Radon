@@ -24,20 +24,15 @@ void MenuState::Enter()
 {
     URHO3D_LOGINFO("Entering menu state");
 
-    // Setup dynamic menu scene with game objects
     sceneBuilder_->SetupMenuScene(scene_);
 
-    // Setup camera at a good position to view the scene
     cameraNode_ = sceneBuilder_->CreateMenuCamera(scene_, Vector3(12.0f, 4.0f, 0.0f));
-    viewportManager_->SetupViewport(scene_, cameraNode_);
+    viewportManager_->SetupViewport(*scene_, *cameraNode_, 1);
 
-    // Setup scene animator to create dynamic background
     sceneAnimator_->Setup(scene_, cameraNode_);
 
-    // Create the menu UI (transparent to see the scene)
     menuBuilder_->CreateMainMenu();
 
-    // Connect menu button handlers
     menuBuilder_->SetPlayButtonHandler(this, static_cast<void (Object::*)(StringHash, VariantMap&)>(&MenuState::HandlePlayPressed));
     menuBuilder_->SetExitButtonHandler(this, static_cast<void (Object::*)(StringHash, VariantMap&)>(&MenuState::HandleExitPressed));
 }

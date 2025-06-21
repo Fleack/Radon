@@ -25,7 +25,7 @@ void GameplayState::Enter()
 
     sceneBuilder_->SetupGameplayScene(scene_);
     cameraNode_ = sceneBuilder_->CreateCamera(scene_);
-    viewportManager_->SetupViewport(scene_, cameraNode_);
+    viewportManager_->SetupViewport(*scene_, *cameraNode_, 0);
     cameraController_->Initialize(*cameraNode_);
     hudBuilder_->CreateGameplayHUD();
 
