@@ -10,6 +10,7 @@ using namespace Radon;
 
 void GameApplication::Setup()
 {
+    URHO3D_LOGINFO("Radon running");
 }
 
 void GameApplication::Start()
