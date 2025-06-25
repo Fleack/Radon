@@ -1,54 +1,87 @@
 #include "GameplayState.hpp"
 
+#include "App/Graphics/ViewportManager.hpp"
+#include "App/Input/CameraController.hpp"
+#include "App/Logger/Logger.hpp"
+#include "App/Scene/SceneManager.hpp"
 #include "App/States/GameStateManager.hpp"
+#include "App/States/MenuState.hpp"
+#include "App/UI/UIManager.hpp"
 
-#include <Urho3D/IO/Log.h>
-#include <Urho3D/Input/InputEvents.h>
+#include <Urho3D/Graphics/Renderer.h>
+#include <Urho3D/Input/Input.h>
+#include <Urho3D/RmlUI/RmlUI.h>
 #include <Urho3D/UI/UI.h>
 
-namespace Radon
-{
+using namespace Radon::States;
+using namespace Urho3D;
 
 GameplayState::GameplayState(Context* context)
-    : GameState(context)
-    , sceneBuilder_(MakeShared<SceneBuilder>(context))
-    , cameraController_(MakeShared<CameraController>(context))
-    , hudBuilder_(MakeShared<HUDBuilder>(context))
-    , viewportManager_(MakeShared<ViewportManager>(context))
+    : IGameState(context)
 {
-    scene_->SetName("GameplayScene");
 }
 
 void GameplayState::Enter()
 {
-    URHO3D_LOGINFO("Entering gameplay state");
+    RADON_LOGINFO("GameplayState: entering");
 
-    sceneBuilder_->SetupGameplayScene(scene_);
-    cameraNode_ = sceneBuilder_->CreateCamera(scene_);
-    viewportManager_->SetupViewport(*scene_, *cameraNode_, 0);
-    cameraController_->Initialize(*cameraNode_);
-    hudBuilder_->CreateGameplayHUD();
+    WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene("Gameplay");
 
-    SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(GameplayState, HandleKeyDown));
+    if (!scene)
+    {
+        RADON_LOGERROR("GameplayState: Failed to load Gameplay scene");
+        return;
+    }
+
+    Node* cameraNode = scene->GetChild("Camera", true);
+    if (!cameraNode)
+    {
+        RADON_LOGERROR("GameplayState: Camera node not found in Gameplay scene");
+        return;
+    }
+
+    auto* vpManager = GetSubsystem<Graphics::ViewportManager>();
+    vpManager->SetupViewport(*scene, *cameraNode, 0);
+
+    if (!GetSubsystem<UI::UIManager>()->ShowDocument("GameplayHUD"))
+    {
+        RADON_LOGERROR("GameplayState: failed to load GameplayHUD document");
+        return;
+    }
+
+    auto* input = GetSubsystem<Urho3D::Input>();
+    input->SetMouseMode(MM_RELATIVE);
+    input->SetMouseVisible(false);
+
+    GetSubsystem<Input::CameraController>()->Initialize(*cameraNode, 0.1f, 5.0f);
+
+    SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(GameplayState, HandleKeydown));
+
+    RADON_LOGINFO("GameplayState: successfully entered");
 }
 
 void GameplayState::Exit()
 {
-    URHO3D_LOGINFO("Exiting gameplay state");
+    RADON_LOGINFO("GameplayState: exiting");
     UnsubscribeFromAllEvents();
-    GetSubsystem<UI>()->GetRoot()->RemoveAllChildren();
-    scene_->RemoveAllChildren();
+    GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
+    GetSubsystem<UI::UIManager>()->UnloadDocument("GameplayHUD");
+    GetSubsystem<Input::CameraController>()->Shutdown();
+    GetSubsystem<Scene::SceneManager>()->UnloadScene("Gameplay");
+    RADON_LOGINFO("GameplayState: exited and cleaned up");
 }
 
-void GameplayState::Update(float timeStep) {}
-
-void GameplayState::HandleKeyDown(StringHash, VariantMap& eventData) const
+void GameplayState::Update(float)
 {
-    int key = eventData[KeyDown::P_KEY].GetInt();
+}
+
+void GameplayState::HandleKeydown(StringHash, VariantMap& data)
+{
+    using namespace Urho3D;
+    int key = data[KeyDown::P_KEY].GetInt();
     if (key == KEY_ESCAPE)
     {
-        GetSubsystem<GameStateManager>()->PopState();
+        RADON_LOGINFO("GameplayState: ESC pressed, returning to menu");
+        GetSubsystem<GameStateManager>()->ReplaceState(MakeShared<MenuState>(context_));
     }
 }
-
-} // namespace Radon

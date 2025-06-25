@@ -1,35 +1,21 @@
 #pragma once
 
-#include "App/Camera/CameraController.hpp"
-#include "App/Graphics/ViewportManager.hpp"
-#include "App/Scene/SceneBuilder.hpp"
-#include "App/States/GameState.hpp"
-#include "App/UI/HUDBuilder.hpp"
+#include "App/States/IGameState.hpp"
 
-namespace Radon
+namespace Radon::States
 {
 
-class GameplayState final : public GameState
+class GameplayState : public IGameState
 {
-    URHO3D_OBJECT(GameplayState, GameState);
-
+    URHO3D_OBJECT(GameplayState, IGameState)
 public:
-    explicit GameplayState(Context* context);
-    ~GameplayState() override = default;
-
+    explicit GameplayState(Urho3D::Context* context);
     void Enter() override;
     void Exit() override;
     void Update(float timeStep) override;
 
 private:
-    void HandleKeyDown(StringHash eventType, VariantMap& eventData) const;
-
-private:
-    SharedPtr<SceneBuilder> sceneBuilder_;
-    SharedPtr<CameraController> cameraController_;
-    SharedPtr<HUDBuilder> hudBuilder_;
-    SharedPtr<ViewportManager> viewportManager_;
-    Node* cameraNode_{};
+    void HandleKeydown(Urho3D::StringHash, Urho3D::VariantMap&);
 };
 
-} // namespace Radon
+} // namespace Radon::States
