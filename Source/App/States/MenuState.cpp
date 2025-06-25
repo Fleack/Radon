@@ -43,19 +43,18 @@ void MenuState::Enter()
     subscriptions_.clear();
     subscriptions_.reserve(2);
 
-    WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene(mainMenuName_);
-    Node* cameraNode = scene->GetChild("MenuCamera", true);
+    WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene(mainMenuSceneName_);
+    Node* cameraNode = scene->GetChild("Camera", true);
     GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene, *cameraNode, 0);
+    currentDocument_ = GetSubsystem<UI::UIManager>()->ShowDocument(mainMenuSceneName_);
 
     auto* input = GetSubsystem<Input>();
     input->SetMouseMode(MM_FREE);
     input->SetMouseVisible(true);
 
-    auto* uiManager = GetSubsystem<UI::UIManager>();
-    currentDocument_ = uiManager->ShowDocument(mainMenuName_);
-
     RegisterButton<RmlClickListener, &MenuState::HandlePlay>("play-button", Rml::EventId::Click);
     RegisterButton<RmlClickListener, &MenuState::HandleExit>("exit-button", Rml::EventId::Click);
+    RADON_LOGINFO("MenuState: successfully entered");
 }
 
 void MenuState::Exit()
@@ -65,10 +64,10 @@ void MenuState::Exit()
     subscriptions_.clear();
 
     GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
-    GetSubsystem<Scene::SceneManager>()->UnloadScene(mainMenuName_);
+    GetSubsystem<Scene::SceneManager>()->UnloadScene(mainMenuSceneName_);
 
     auto* ui = GetSubsystem<UI::UIManager>();
-    ui->UnloadDocument(mainMenuName_);
+    ui->UnloadDocument(mainMenuSceneName_);
     currentDocument_ = nullptr;
 
     RADON_LOGDEBUG("MenuState: MainMenu document and listeners removed");

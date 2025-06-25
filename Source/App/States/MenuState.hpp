@@ -26,7 +26,7 @@ private:
     void RegisterButton(ea::string const& id, Rml::EventId eventId);
 
 private:
-    ea::string const mainMenuName_{"MainMenu"};
+    ea::string const mainMenuSceneName_{"MainMenu"};
 
     Rml::ElementDocument* currentDocument_;
     ea::vector<UI::ListenerGuard> subscriptions_;

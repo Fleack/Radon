@@ -89,7 +89,7 @@
             <nodes>
                 <node _id="9">
                     <attributes>
-                        <attribute name="Name" type="String" value="MenuCamera"/>
+                        <attribute name="Name" type="String" value="Camera"/>
                         <attribute name="Position" type="Vector3" value="0 0 0"/>
                     </attributes>
                     <components>
