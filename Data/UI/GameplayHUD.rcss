@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: "Dead Kansas";
+}
+
+#hud-container {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    font-size: 1.2em;
+    color: #ffffff;
+}
+
+#hud-container span {
+    display: inline-block;
+    margin-right: 1em;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.3em 0.6em;
+    border-radius: 0.2em;
+}

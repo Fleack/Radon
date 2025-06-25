@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<resource _id="1">
+    <attributes>
+        <attribute name="Next Node ID" type="Int" value="15"/>
+        <attribute name="Next Component ID" type="Int" value="20"/>
+    </attributes>
+    <components>
+        <component _id="1" _typeName="Octree"/>
+        <component _id="2" _typeName="DebugRenderer"/>
+        <component _id="3" _typeName="PhysicsWorld"/>
+        <component _id="4" _typeName="RenderPipeline">
+            <attributes>
+                <attribute name="Color Space" type="String" value="HDR Linear"/>
+                <attribute name="PCF Kernel Size" type="Int" value="5"/>
+                <attribute name="Post Process Antialiasing" type="String" value="FXAA3"/>
+                <attribute name="Bloom Intensity" type="Float" value="0.7"/>
+            </attributes>
+        </component>
+        <component _id="5" _typeName="ReflectionProbeManager"/>
+    </components>
+    <nodes>
+        <!-- Skybox -->
+        <node _id="2">
+            <attributes>
+                <attribute name="Name" type="String" value="Skybox"/>
+            </attributes>
+            <components>
+                <component _id="6" _typeName="Skybox">
+                    <attributes>
+                        <attribute name="Model" type="ResourceRef" value="Model;Models/Box.mdl"/>
+                        <attribute name="Material" type="ResourceRefList" value="Material;Materials/DefaultSkybox.xml"/>
+                    </attributes>
+                </component>
+            </components>
+        </node>
+
+        <!-- Global Zone -->
+        <node _id="3">
+            <attributes>
+                <attribute name="Name" type="String" value="Global Zone"/>
+            </attributes>
+            <components>
+                <component _id="7" _typeName="Zone">
+                    <attributes>
+                        <attribute name="Bounding Box Min" type="Vector3" value="-100 -100 -100"/>
+                        <attribute name="Bounding Box Max" type="Vector3" value="100 100 100"/>
+                        <attribute name="Ambient Color" type="Color" value="0.3 0.3 0.3 1"/>
+                        <attribute name="Background Brightness" type="Float" value="0.4"/>
+                        <attribute name="Zone Texture" type="ResourceRef"
+                                   value="TextureCube;Textures/DefaultSkybox.xml"/>
+                    </attributes>
+                </component>
+            </components>
+        </node>
+
+        <!-- Directional Sun Light -->
+        <node _id="4">
+            <attributes>
+                <attribute name="Name" type="String" value="SunLight"/>
+                <attribute name="Rotation" type="Quaternion" value="0.707 0 0.707 0"/>
+            </attributes>
+            <components>
+                <component _id="8" _typeName="Light">
+                    <attributes>
+                        <attribute name="Light Type" type="String" value="Directional"/>
+                        <attribute name="Brightness Multiplier" type="Float" value="0.8"/>
+                        <attribute name="Cast Shadows" type="Bool" value="true"/>
+                    </attributes>
+                </component>
+            </components>
+        </node>
+
+        <!-- Ground Plane -->
+        <node _id="5">
+            <attributes>
+                <attribute name="Name" type="String" value="Ground"/>
+                <attribute name="Scale" type="Vector3" value="10 10 10"/>
+            </attributes>
+            <components>
+                <component _id="9" _typeName="StaticModel">
+                    <attributes>
+                        <attribute name="Model" type="ResourceRef" value="Model;Models/Plane.mdl"/>
+                        <attribute name="Material" type="ResourceRefList" value="Material;Materials/DefaultGrey.xml"/>
+                    </attributes>
+                </component>
+            </components>
+        </node>
+
+        <!-- Decorative Sphere -->
+        <node _id="7">
+            <attributes>
+                <attribute name="Name" type="String" value="Sphere"/>
+                <attribute name="Position" type="Vector3" value="-2 1 1"/>
+            </attributes>
+            <components>
+                <component _id="13" _typeName="StaticModel">
+                    <attributes>
+                        <attribute name="Model" type="ResourceRef" value="Model;Models/Sphere.mdl"/>
+                        <attribute name="Material" type="ResourceRefList" value="Material;Materials/Stone.xml"/>
+                    </attributes>
+                </component>
+            </components>
+        </node>
+
+        <!-- Decorative Teapot -->
+        <node _id="8">
+            <attributes>
+                <attribute name="Name" type="String" value="Teapot"/>
+                <attribute name="Position" type="Vector3" value="0 1 3"/>
+            </attributes>
+            <components>
+                <component _id="14" _typeName="StaticModel">
+                    <attributes>
+                        <attribute name="Model" type="ResourceRef" value="Model;Models/Teapot.mdl"/>
+                        <attribute name="Material" type="ResourceRefList" value="Material;Materials/Stone.xml"/>
+                    </attributes>
+                </component>
+            </components>
+        </node>
+
+        <!-- Point Light -->
+        <node _id="9">
+            <attributes>
+                <attribute name="Name" type="String" value="PointLight"/>
+                <attribute name="Position" type="Vector3" value="2 3 2"/>
+            </attributes>
+            <components>
+                <component _id="15" _typeName="Light">
+                    <attributes>
+                        <attribute name="Light Type" type="String" value="Point"/>
+                        <attribute name="Range" type="Float" value="10"/>
+                        <attribute name="Brightness Multiplier" type="Float" value="1.5"/>
+                        <attribute name="Cast Shadows" type="Bool" value="false"/>
+                    </attributes>
+                </component>
+            </components>
+        </node>
+
+        <!-- Spot Light -->
+        <node _id="10">
+            <attributes>
+                <attribute name="Name" type="String" value="SpotLight"/>
+                <attribute name="Position" type="Vector3" value="-2 3 -2"/>
+                <attribute name="Rotation" type="Quaternion" value="0.5 0.5 0 0.5"/>
+            </attributes>
+            <components>
+                <component _id="16" _typeName="Light">
+                    <attributes>
+                        <attribute name="Light Type" type="String" value="Spot"/>
+                        <attribute name="Range" type="Float" value="15"/>
+                        <attribute name="Fov" type="Float" value="30"/>
+                        <attribute name="Brightness Multiplier" type="Float" value="1.0"/>
+                        <attribute name="Cast Shadows" type="Bool" value="true"/>
+                    </attributes>
+                </component>
+            </components>
+        </node>
+
+        <!-- Camera Setup -->
+        <node _id="13">
+            <attributes>
+                <attribute name="Name" type="String" value="CameraPivot"/>
+                <attribute name="Position" type="Vector3" value="0 2 -8"/>
+            </attributes>
+            <nodes>
+                <node _id="14">
+                    <attributes>
+                        <attribute name="Name" type="String" value="Camera"/>
+                        <attribute name="Position" type="Vector3" value="0 0 0"/>
+                    </attributes>
+                    <components>
+                        <component _id="19" _typeName="Camera"/>
+                    </components>
+                </node>
+            </nodes>
+        </node>
+    </nodes>
+</resource>

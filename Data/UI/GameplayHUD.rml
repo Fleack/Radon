@@ -1,0 +1,13 @@
+<rml>
+    <head>
+        <title>Radon HUD</title>
+        <link type="text/css" href="GameplayHUD.rcss"/>
+    </head>
+    <body>
+    <div id="hud-container">
+        <span id="health">Health: <span class="value">100</span></span>
+        <span id="stamina">Stamina: <span class="value">100</span></span>
+        <span id="ammo">Ammo: <span class="value">30</span></span>
+    </div>
+    </body>
+</rml>

@@ -1,0 +1,13 @@
+<rml>
+    <head>
+        <title>Radon Main Menu</title>
+        <link type="text/css" href="MainMenu.rcss"/>
+    </head>
+    <body>
+    <div id="menu-container">
+        <h1>RADON</h1>
+        <button id="play-button">Play Game</button>
+        <button id="exit-button">Exit Game</button>
+    </div>
+    </body>
+</rml>

@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: table;
+    background-color: #0a0a0a;
+    font-family: "Dead Kansas";
+}
+
+#menu-container {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+h1 {
+    font-size: 4em;
+    color: #ffd700;
+    margin-bottom: 0.5em;
+}
+
+button {
+    display: block;
+    width: 60%;
+    min-width: 200px;
+    max-width: 500px;
+    margin: 0.75em auto;
+    padding: 1em 0;
+    font-size: 2em;
+    color: #e0e0ff;
+    background-color: rgba(30, 30, 30, 0.85);
+    border-radius: 0.5em;
+    cursor: default;
+}
+
+button:hover {
+    background-color: rgba(50, 50, 50, 0.95);
+    color: #ffffff;
+    cursor: pointer;
+}
