@@ -1,36 +1,35 @@
 #pragma once
 
-#include "App/States/GameState.hpp"
-#include "App/Scene/SceneBuilder.hpp"
-#include "App/Scene/MenuSceneAnimator.hpp"
-#include "App/UI/MenuBuilder.hpp"
-#include "App/Graphics/ViewportManager.hpp"
+#include "App/States/IGameState.hpp"
+#include "App/UI/EventListenerGuard.hpp"
 
-namespace Radon
+#include <RmlUi/Core/ElementDocument.h>
+
+namespace Radon::States
 {
 
-class MenuState final : public GameState
+class MenuState : public IGameState
 {
-    URHO3D_OBJECT(MenuState, GameState);
-
+    URHO3D_OBJECT(MenuState, IGameState)
 public:
-    explicit MenuState(Context* context);
+    explicit MenuState(Urho3D::Context* context);
     ~MenuState() override = default;
-
     void Enter() override;
     void Exit() override;
     void Update(float timeStep) override;
 
 private:
-    void HandlePlayPressed(StringHash, VariantMap&);
-    void HandleExitPressed(StringHash, VariantMap&);
+    void HandlePlay();
+    void HandleExit();
+
+    template <typename RML_LISTENER, void (MenuState::*Fn)()>
+    void RegisterButton(ea::string const& id, Rml::EventId eventId);
 
 private:
-    SharedPtr<SceneBuilder> sceneBuilder_;
-    SharedPtr<MenuBuilder> menuBuilder_;
-    SharedPtr<ViewportManager> viewportManager_;
-    SharedPtr<MenuSceneAnimator> sceneAnimator_;
-    Node* cameraNode_{};
+    ea::string const mainMenuName_{"MainMenu"};
+
+    Rml::ElementDocument* currentDocument_;
+    ea::vector<UI::ListenerGuard> subscriptions_;
 };
 
-} // namespace Radon
+} // namespace Radon::States

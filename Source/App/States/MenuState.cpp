@@ -1,63 +1,106 @@
 #include "MenuState.hpp"
 
+#include "App/Graphics/ViewportManager.hpp"
+#include "App/Logger/Logger.hpp"
+#include "App/Scene/SceneManager.hpp"
 #include "App/States/GameStateManager.hpp"
 #include "App/States/GameplayState.hpp"
+#include "App/UI/UIManager.hpp"
+
+#include <functional>
 
 #include <Urho3D/Engine/Engine.h>
-#include <Urho3D/IO/Log.h>
+#include <Urho3D/Graphics/Renderer.h>
+#include <Urho3D/Input/Input.h>
+#include <Urho3D/RmlUI/RmlUI.h>
 #include <Urho3D/UI/UI.h>
 
-namespace Radon
+using namespace Radon::States;
+using namespace Urho3D;
+
+struct RmlClickListener : public Rml::EventListener
 {
+    using Callback = std::function<void()>;
+
+    explicit RmlClickListener(Callback cb)
+        : cb_(std::move(cb)) {}
+    void ProcessEvent(Rml::Event&) override
+    {
+        cb_();
+    }
+
+    Callback cb_;
+};
 
 MenuState::MenuState(Context* context)
-    : GameState(context)
-    , sceneBuilder_(MakeShared<SceneBuilder>(context))
-    , menuBuilder_(MakeShared<MenuBuilder>(context))
-    , viewportManager_(MakeShared<ViewportManager>(context))
-    , sceneAnimator_(MakeShared<MenuSceneAnimator>(context))
+    : IGameState(context)
 {
-    scene_->SetName("MenuScene");
 }
 
 void MenuState::Enter()
 {
-    URHO3D_LOGINFO("Entering menu state");
+    RADON_LOGINFO("MenuState: entering");
+    subscriptions_.clear();
+    subscriptions_.reserve(2);
 
-    sceneBuilder_->SetupMenuScene(scene_);
+    WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene(mainMenuName_);
+    Node* cameraNode = scene->GetChild("MenuCamera", true);
+    GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene, *cameraNode, 0);
 
-    cameraNode_ = sceneBuilder_->CreateMenuCamera(scene_, Vector3(12.0f, 4.0f, 0.0f));
-    viewportManager_->SetupViewport(*scene_, *cameraNode_, 1);
+    auto* input = GetSubsystem<Input>();
+    input->SetMouseMode(MM_FREE);
+    input->SetMouseVisible(true);
 
-    sceneAnimator_->Setup(scene_, cameraNode_);
+    auto* uiManager = GetSubsystem<UI::UIManager>();
+    currentDocument_ = uiManager->ShowDocument(mainMenuName_);
 
-    menuBuilder_->CreateMainMenu();
-
-    menuBuilder_->SetPlayButtonHandler(this, static_cast<void (Object::*)(StringHash, VariantMap&)>(&MenuState::HandlePlayPressed));
-    menuBuilder_->SetExitButtonHandler(this, static_cast<void (Object::*)(StringHash, VariantMap&)>(&MenuState::HandleExitPressed));
+    RegisterButton<RmlClickListener, &MenuState::HandlePlay>("play-button", Rml::EventId::Click);
+    RegisterButton<RmlClickListener, &MenuState::HandleExit>("exit-button", Rml::EventId::Click);
 }
 
 void MenuState::Exit()
 {
-    URHO3D_LOGINFO("Exiting menu state");
-    UnsubscribeFromAllEvents();
-    GetSubsystem<UI>()->GetRoot()->RemoveAllChildren();
-    scene_->RemoveAllChildren();
+    RADON_LOGINFO("MenuState: exiting");
+
+    subscriptions_.clear();
+
+    GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
+    GetSubsystem<Scene::SceneManager>()->UnloadScene(mainMenuName_);
+
+    auto* ui = GetSubsystem<UI::UIManager>();
+    ui->UnloadDocument(mainMenuName_);
+    currentDocument_ = nullptr;
+
+    RADON_LOGDEBUG("MenuState: MainMenu document and listeners removed");
 }
 
-void MenuState::Update(float timeStep)
+void MenuState::Update(float)
 {
-    // No need for explicit updates as our MenuSceneAnimator handles them through events
 }
 
-void MenuState::HandlePlayPressed(StringHash, VariantMap&)
+void MenuState::HandlePlay()
 {
-    GetSubsystem<GameStateManager>()->PushState<GameplayState>();
+    RADON_LOGINFO("MenuState: Play button pressed");
+    GetSubsystem<GameStateManager>()->ReplaceState(MakeShared<GameplayState>(context_));
 }
 
-void MenuState::HandleExitPressed(StringHash, VariantMap&)
+void MenuState::HandleExit()
 {
+    RADON_LOGINFO("MenuState: Exit button pressed");
+    Exit();
     GetSubsystem<Engine>()->Exit();
 }
 
-} // namespace Radon
+template <typename RML_LISTENER, void (MenuState::*Fn)()>
+void MenuState::RegisterButton(ea::string const& id, Rml::EventId eventId)
+{
+    auto* button = currentDocument_->GetElementById(id);
+    if (!button)
+    {
+        RADON_LOGWARN("MenuState: '{}' not found", id);
+        return;
+    }
+    auto listener = Rml::MakeShared<RML_LISTENER>([this] { (this->*Fn)(); });
+    subscriptions_.emplace_back(button, eventId, listener);
+    RADON_LOGDEBUG("MenuState: '{}' listener added", id);
+}
