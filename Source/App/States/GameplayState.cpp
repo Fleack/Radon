@@ -25,29 +25,10 @@ void GameplayState::Enter()
 {
     RADON_LOGINFO("GameplayState: entering");
 
-    WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene("Gameplay");
-
-    if (!scene)
-    {
-        RADON_LOGERROR("GameplayState: Failed to load Gameplay scene");
-        return;
-    }
-
+    WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene(gameplaySceneName_);
     Node* cameraNode = scene->GetChild("Camera", true);
-    if (!cameraNode)
-    {
-        RADON_LOGERROR("GameplayState: Camera node not found in Gameplay scene");
-        return;
-    }
-
-    auto* vpManager = GetSubsystem<Graphics::ViewportManager>();
-    vpManager->SetupViewport(*scene, *cameraNode, 0);
-
-    if (!GetSubsystem<UI::UIManager>()->ShowDocument("GameplayHUD"))
-    {
-        RADON_LOGERROR("GameplayState: failed to load GameplayHUD document");
-        return;
-    }
+    GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene, *cameraNode, 0);
+    GetSubsystem<UI::UIManager>()->ShowDocument("GameplayHUD");
 
     auto* input = GetSubsystem<Urho3D::Input>();
     input->SetMouseMode(MM_RELATIVE);
@@ -67,7 +48,7 @@ void GameplayState::Exit()
     GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
     GetSubsystem<UI::UIManager>()->UnloadDocument("GameplayHUD");
     GetSubsystem<Input::CameraController>()->Shutdown();
-    GetSubsystem<Scene::SceneManager>()->UnloadScene("Gameplay");
+    GetSubsystem<Scene::SceneManager>()->UnloadScene(gameplaySceneName_);
     RADON_LOGINFO("GameplayState: exited and cleaned up");
 }
 

@@ -16,6 +16,9 @@ public:
 
 private:
     void HandleKeydown(Urho3D::StringHash, Urho3D::VariantMap&);
+
+private:
+    ea::string const gameplaySceneName_{"Gameplay"};
 };
 
 } // namespace Radon::States
