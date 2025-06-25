@@ -1,42 +1,24 @@
 #pragma once
 
-#include "GameState.hpp"
+#include "App/States/IGameState.hpp"
 
 #include <stack>
 
-#include <Urho3D/Core/Object.h>
-
-namespace Radon
+namespace Radon::States
 {
-using namespace Urho3D;
 
-template <typename T>
-concept GameStateDerived = std::derived_from<T, GameState>;
-
-class GameStateManager final : public Object
+class GameStateManager : public Urho3D::Object
 {
-    URHO3D_OBJECT(GameStateManager, Object);
-
+    URHO3D_OBJECT(GameStateManager, Object)
 public:
-    explicit GameStateManager(Context* context);
-    ~GameStateManager() override = default;
-
+    explicit GameStateManager(Urho3D::Context* context);
     void Update(float timeStep);
-
-    template <typename GameStateDerived, typename... Args>
-    void PushState(Args&&... args);
-
-    template <typename GameStateDerived, typename... Args>
-    void ReplaceState(Args&&... args);
-
+    void PushState(Urho3D::SharedPtr<IGameState> state);
+    void ReplaceState(Urho3D::SharedPtr<IGameState> state);
     void PopState();
-    void ClearStates();
-
-    [[nodiscard]] bool HasStates() const { return !states_.empty(); }
-    [[nodiscard]] SharedPtr<GameState> CurrentState() const { return states_.empty() ? nullptr : states_.top(); }
 
 private:
-    std::stack<SharedPtr<GameState>> states_;
+    std::stack<Urho3D::SharedPtr<IGameState>> states_;
 };
 
-} // namespace Radon
+} // namespace Radon::States

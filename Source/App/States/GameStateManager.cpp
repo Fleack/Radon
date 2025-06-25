@@ -1,68 +1,67 @@
 #include "GameStateManager.hpp"
 
-#include "App/States/GameplayState.hpp"
-#include "App/States/MenuState.hpp"
+#include "App/Logger/Logger.hpp"
 
-#include <Urho3D/IO/Log.h>
+#include <Urho3D/Core/Context.h>
 
-namespace Radon
-{
+using namespace Radon::States;
 
-GameStateManager::GameStateManager(Context* context)
+GameStateManager::GameStateManager(Urho3D::Context* context)
     : Object(context)
 {
-    URHO3D_LOGINFO("Game State Manager initialized");
     context->RegisterSubsystem(this);
+    RADON_LOGDEBUG("GameStateManager: registered as subsystem");
 }
 
 void GameStateManager::Update(float timeStep)
 {
     if (!states_.empty())
+    {
         states_.top()->Update(timeStep);
+    }
 }
 
-void GameStateManager::ClearStates()
+void GameStateManager::PushState(Urho3D::SharedPtr<IGameState> state)
 {
+    RADON_LOGDEBUG("GameStateManager: PushState called");
+    if (!states_.empty())
+    {
+        RADON_LOGDEBUG("GameStateManager: Exiting current state before push");
+        states_.top()->Exit();
+    }
+    states_.push(state);
+    RADON_LOGINFO("GameStateManager: New state pushed and entered");
+    state->Enter();
+}
+
+void GameStateManager::ReplaceState(Urho3D::SharedPtr<IGameState> state)
+{
+    RADON_LOGDEBUG("GameStateManager: ReplaceState called");
     while (!states_.empty())
     {
+        RADON_LOGDEBUG("GameStateManager: Exiting and popping state");
         states_.top()->Exit();
         states_.pop();
     }
+    states_.push(state);
+    RADON_LOGINFO("GameStateManager: State replaced and entered");
+    state->Enter();
 }
 
 void GameStateManager::PopState()
 {
-    if (states_.empty()) return;
-
+    RADON_LOGDEBUG("GameStateManager: PopState called");
+    if (states_.empty())
+        return;
     states_.top()->Exit();
     states_.pop();
-
     if (!states_.empty())
+    {
+        RADON_LOGINFO("GameStateManager: Entering previous state after pop");
         states_.top()->Enter();
+    }
+    else
+    {
+        RADON_LOGINFO("GameStateManager: No more states after pop");
+    }
 }
-
-template <typename T, typename... Args>
-void GameStateManager::PushState(Args&&... args)
-{
-    if (!states_.empty())
-        states_.top()->Exit();
-    auto state = MakeShared<T>(context_, std::forward<Args>(args)...);
-    states_.push(state);
-    state->Enter();
-}
-
-template <typename T, typename... Args>
-void GameStateManager::ReplaceState(Args&&... args)
-{
-    ClearStates();
-    auto state = MakeShared<T>(context_, std::forward<Args>(args)...);
-    states_.push(state);
-    state->Enter();
-}
-
-template void GameStateManager::PushState<MenuState>();
-template void GameStateManager::PushState<GameplayState>();
-template void GameStateManager::ReplaceState<MenuState>();
-template void GameStateManager::ReplaceState<GameplayState>();
-
-} // namespace Radon
