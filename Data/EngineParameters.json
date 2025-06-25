@@ -1,4 +1,6 @@
 {
+  "ApplicationName": "Radon",
+  "ResourcePrefixPaths": "Data;CoreData;Autoload;EditorData",
   "WindowTitle":     "Radon",
   "WindowWidth":     1280,
   "WindowHeight":    720,
@@ -7,5 +9,5 @@
   "VSync":           true,
   "LogQuiet":        false,
   "LogLevel":        1,
-  "LogName":         "Radon.log"
+  "LogName":         "Radon.log",
 }
