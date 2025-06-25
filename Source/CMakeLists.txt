@@ -1,28 +1,41 @@
-file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS
+file(GLOB_RECURSE ALL_SOURCES
+        CONFIGURE_DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
-add_executable(RadonGame ${GAME_SOURCES})
-
-target_include_directories(
-        RadonGame
-        PRIVATE
-        ${CMAKE_SOURCE_DIR}/Source
+list(REMOVE_ITEM LIB_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/Main.cpp"
 )
 
-target_link_libraries(
-        RadonGame
-        PRIVATE
+add_library(RadonGameLib STATIC
+        ${ALL_SOURCES}
+)
+
+target_include_directories(RadonGameLib
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(RadonGameLib
+        PUBLIC
         Urho3D
 )
 
-set_target_properties(
-        RadonGame
-        PROPERTIES
+add_executable(RadonGame
+        "${CMAKE_CURRENT_SOURCE_DIR}/Main.cpp"
+)
+
+target_link_libraries(RadonGame
+        PRIVATE
+        RadonGameLib
+)
+
+set_target_properties(RadonGame PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
         WIN32_EXECUTABLE TRUE
 )
 
 include(CopyData)
 add_dependencies(RadonGame copy_data)
+
 include(RemoveLog)
