@@ -1,0 +1,8 @@
+#pragma once
+
+#include <Urho3D/IO/Log.h>
+
+#define RADON_LOGINFO(...) URHO3D_LOGINFO("[RADON] " __VA_ARGS__)
+#define RADON_LOGDEBUG(...) URHO3D_LOGDEBUG("[RADON] " __VA_ARGS__)
+#define RADON_LOGWARN(...) URHO3D_LOGWARNING("[RADON] " __VA_ARGS__)
+#define RADON_LOGERROR(...) URHO3D_LOGERROR("[RADON] " __VA_ARGS__)
