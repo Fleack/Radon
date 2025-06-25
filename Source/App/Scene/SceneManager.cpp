@@ -29,7 +29,7 @@ WeakPtr<Scene> SceneManager::LoadScene(ea::string const& sceneName)
     }
 
     auto* cache = GetSubsystem<ResourceCache>();
-    if (auto* xml = cache->GetResource<XMLFile>("Scenes/" + sceneName + ".xml"))
+    if (auto* xml = cache->GetResource<XMLFile>("Scenes/" + sceneName + ".scene"))
     {
         auto scene = MakeShared<Urho3D::Scene>(context_);
         if (!scene->LoadXML(xml->GetRoot()))
