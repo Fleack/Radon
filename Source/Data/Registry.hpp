@@ -1,5 +1,7 @@
 #pragma once
 
+#include "App/Logger/Logger.hpp"
+
 #include <Urho3D/IO/FileSystem.h>
 #include <Urho3D/Resource/JSONFile.h>
 #include <Urho3D/Resource/ResourceCache.h>
@@ -26,15 +28,14 @@ public:
         ea::vector<ea::string> files;
         fs->ScanDir(files, fullDirPath, "*.json", SCAN_FILES);
 
-        URHO3D_LOGINFO("Scanning directory: {}", fullDirPath);
-        URHO3D_LOGINFO("Found {} JSON files", files.size());
+        RADON_LOGINFO("Found {} JSON files in {}", files.size(), fullDirPath);
 
         for (ea::string const& relPath : files)
         {
             auto const file = cache->GetResource<JSONFile>(directory + "/" + relPath);
             if (!file)
             {
-                URHO3D_LOGERROR("Failed to load JSON: {}/{}", directory, relPath);
+                RADON_LOGERROR("Failed to load JSON: {}/{}", directory, relPath);
                 continue;
             }
 
@@ -42,10 +43,10 @@ public:
             item.FromJSON(file->GetRoot());
             items_[item.id_] = item;
 
-            URHO3D_LOGINFO("Loaded [{}] '{}' from {}", T::TypeName(), item.id_, relPath);
+            fullDirPath("Loaded [{}] '{}' from {}", T::TypeName(), item.id_, relPath);
         }
 
-        URHO3D_LOGINFO("Total {} {} loaded from {}", items_.size(), T::TypeName(), directory);
+        fullDirPath("Total {} {} loaded from {}", items_.size(), T::TypeName(), directory);
     }
 
     T* Get(ea::string const& id)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "App/Logger/Logger.hpp"
+
 #include <Urho3D/IO/Log.h>
 #include <Urho3D/Resource/JSONValue.h>
 
@@ -21,7 +23,7 @@ struct ItemData
         name_ = root["name"].GetString();
         weight_ = root["weight"].GetFloat();
 
-        URHO3D_LOGINFO("Parsed ItemData: {} (weight={})", id_, weight_);
+        RADON_LOGINFO("Parsed ItemData: {} (weight={})", id_, weight_);
     }
 };
 } // namespace Radon
