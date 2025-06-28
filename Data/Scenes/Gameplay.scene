@@ -2,8 +2,8 @@
 <resource _id="1">
 	<attributes>
 		<attribute name="Name" type="String" value="Gameplay" />
-		<attribute name="Next Node ID" type="Int" value="12" />
-		<attribute name="Next Component ID" type="Int" value="24" />
+		<attribute name="Next Node ID" type="Int" value="14" />
+		<attribute name="Next Component ID" type="Int" value="28" />
 	</attributes>
 	<components>
 		<component _id="1" _typeName="Octree" />
@@ -12,7 +12,11 @@
 				<attribute name="Line Antialias" type="Bool" value="true" />
 			</attributes>
 		</component>
-		<component _id="3" _typeName="PhysicsWorld" />
+		<component _id="3" _typeName="PhysicsWorld">
+			<attributes>
+				<attribute name="Split Impulse" type="Bool" value="true" />
+			</attributes>
+		</component>
 		<component _id="4" _typeName="RenderPipeline">
 			<attributes>
 				<attribute name="Render Passes" type="VariantVector">
@@ -102,6 +106,14 @@
 						<attribute name="Zone Texture" type="ResourceRef" value="TextureCube;Textures/DefaultSkybox.xml" />
 					</attributes>
 				</component>
+				<component _id="27" _typeName="SoundSource3D">
+					<attributes>
+						<attribute name="Sound" type="ResourceRef" value="Sound;Sounds/ambient.ogg" />
+						<attribute name="Type" type="String" value="Ambient" />
+						<attribute name="Gain" type="Float" value="0.500000" />
+						<attribute name="Ignore Scene Time Scale" type="Bool" value="true" />
+					</attributes>
+				</component>
 			</components>
 		</node>
 		<node _id="3">
@@ -123,13 +135,13 @@
 		<node _id="4">
 			<attributes>
 				<attribute name="Name" type="String" value="Ground" />
-				<attribute name="Rotation" type="Quaternion" value="0.999505 0 0 0.03145" />
+				<attribute name="Rotation" type="Quaternion" value="0.999934 -0.00457 4.8196e-05 0.010544" />
 				<attribute name="Scale" type="Vector3" value="134.582703 134.582703 134.583221" />
 			</attributes>
 			<components>
 				<component _id="10" _typeName="RigidBody">
 					<attributes>
-						<attribute name="Physics Rotation" type="Quaternion" value="0.999505 0 0 0.03145" />
+						<attribute name="Physics Rotation" type="Quaternion" value="0.999934 -0.00457 4.81961e-05 0.010544" />
 						<attribute name="Use Gravity" type="Bool" value="false" />
 					</attributes>
 				</component>
@@ -232,23 +244,40 @@
 		</node>
 		<node _id="9">
 			<attributes>
-				<attribute name="Name" type="String" value="CameraPivot" />
-				<attribute name="Position" type="Vector3" value="0 2 -8" />
+				<attribute name="Name" type="String" value="Player" />
+				<attribute name="Position" type="Vector3" value="-0.262531 2 -7.339593" />
 			</attributes>
 			<nodes>
-				<node _id="10">
+				<node _id="12">
 					<attributes>
 						<attribute name="Name" type="String" value="Camera" />
-						<attribute name="Position" type="Vector3" value="0 0.115938 0" />
-						<attribute name="Scale" type="Vector3" value="1 1 0.514343" />
 					</attributes>
 					<components>
-						<component _id="21" _typeName="Camera" />
-						<component _id="22" _typeName="KinematicCharacterController">
+						<component _id="21" _typeName="Camera">
 							<attributes>
-								<attribute name="Height" type="Float" value="3.000000" />
+								<attribute name="Far Clip" type="Float" value="500.000000" />
 							</attributes>
 						</component>
+					</components>
+				</node>
+				<node _id="13">
+					<attributes>
+						<attribute name="Name" type="String" value="Character" />
+					</attributes>
+					<components>
+						<component _id="22" _typeName="KinematicCharacterController">
+							<attributes>
+								<attribute name="Gravity" type="Vector3" value="0 -10 0" />
+								<attribute name="Linear Damping" type="Float" value="0.300000" />
+								<attribute name="Offset" type="Vector3" value="0 0 0" />
+								<attribute name="Step Height" type="Float" value="0.200000" />
+								<attribute name="Max Jump Height" type="Float" value="1.000000" />
+								<attribute name="Jump Speed" type="Float" value="7.000000" />
+								<attribute name="Is Trigger" type="Bool" value="false" />
+								<attribute name="Activate Triggers" type="Bool" value="false" />
+							</attributes>
+						</component>
+						<component _id="26" _typeName="SoundListener" />
 					</components>
 				</node>
 			</nodes>
