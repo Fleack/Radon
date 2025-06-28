@@ -36,6 +36,6 @@ set_target_properties(RadonGame PROPERTIES
 )
 
 include(CopyData)
-add_dependencies(RadonGame copy_data)
-
 include(RemoveLog)
+add_dependencies(RadonGame copy_data)
+add_dependencies(RadonGame remove_log)
