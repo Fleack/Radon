@@ -1,8 +1,8 @@
 {
 	"Addons": {
 		"Camera": {
-			"Position": "0 5 -10",
-			"Rotation": "0.973249 0.229753 0 0"
+			"Position": "5.454469 3.458197 -12.573065",
+			"Rotation": "0.982187 0.053623 -0.179822 0.009818"
 		},
 		"CreatePrefabFrom": {},
 		"DebugInfo": {},
@@ -15,10 +15,12 @@
 		"TransformGizmo": {}
 	},
 	"Selection": {
-		"ActiveComponentId": 0,
-		"ActiveNodeId": 0,
-		"ActiveNodeOrSceneId": 0,
-		"ComponentIds": [],
+		"ActiveComponentId": 22,
+		"ActiveNodeId": 10,
+		"ActiveNodeOrSceneId": 10,
+		"ComponentIds": [
+			22
+		],
 		"NodeIds": []
 	}
 }
