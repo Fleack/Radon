@@ -5,15 +5,15 @@
 #include <RmlUi/Core/ElementDocument.h>
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/RmlUI/RmlUI.h>
-#include <Urho3D/UI/Text.h>
 #include <Urho3D/UI/UI.h>
 
 using namespace Radon::UI;
 
 UIManager::UIManager(Urho3D::Context* context)
-    : Object(context)
+    : Object(context), fontLoader_{context}
 {
     RADON_LOGDEBUG("UIManager: constructor called");
+    fontLoader_.LoadFontsFromDirectory("UI/Fonts/");
 }
 
 UIManager::~UIManager()
@@ -63,7 +63,7 @@ Rml::ElementDocument* UIManager::LoadDocument(ea::string const& name)
     if (it != documents_.end())
         return it->second;
 
-    if (auto* doc  = rmlui->LoadDocument("UI/" + name + ".rml"))
+    if (auto* doc = rmlui->LoadDocument("UI/" + name + ".rml"))
     {
         documents_.emplace(name, doc);
         RADON_LOGINFO("UIManager: Document '{}' loaded", name);
