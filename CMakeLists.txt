@@ -15,6 +15,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(RADON_DEBUG)
 endif ()
 
+set(CMAKE_CXX_FLAGS_RELEASE
+        "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG"
+)
+
 set(URHO3D_HOME "../rbfx")
 set(URHO3D_BUILD "${CMAKE_BINARY_DIR}/rbfx-build")
 add_subdirectory(${URHO3D_HOME} ${URHO3D_BUILD})
