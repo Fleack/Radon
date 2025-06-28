@@ -1,0 +1,160 @@
+{
+	"AssetPipelineModificationTimes": [
+		{
+			"key": "Default.assetpipeline",
+			"value": 1750874689
+		}
+	],
+	"Assets": [
+		{
+			"key": "Sounds/Radio_AM.wav",
+			"value": {
+				"modificationTime": 1751046644
+			}
+		},
+		{
+			"key": "Items/energydrink.json",
+			"value": {
+				"modificationTime": 1750232187
+			}
+		},
+		{
+			"key": "UI/MainMenu.rcss",
+			"value": {
+				"modificationTime": 1750874433
+			}
+		},
+		{
+			"key": "Default.assetpipeline",
+			"value": {
+				"modificationTime": 1750874689
+			}
+		},
+		{
+			"key": "UI/Fonts/Dead Kansas.ttf",
+			"value": {
+				"modificationTime": 1750616953
+			}
+		},
+		{
+			"key": "EngineParameters.json",
+			"value": {
+				"modificationTime": 1750522280
+			}
+		},
+		{
+			"key": "Configs/DefaultSettings.json",
+			"value": {
+				"modificationTime": 1750159903
+			}
+		},
+		{
+			"key": "UI/GameplayHUD.rcss",
+			"value": {
+				"modificationTime": 1750622540
+			}
+		},
+		{
+			"key": "Materials/Metal.xml",
+			"value": {
+				"modificationTime": 1750498106
+			}
+		},
+		{
+			"key": "Scenes/Gameplay.scene",
+			"value": {
+				"modificationTime": 1751041155
+			}
+		},
+		{
+			"key": "Scenes/Default.scene",
+			"value": {
+				"modificationTime": 1751041155
+			}
+		},
+		{
+			"key": "Items/bandage.json",
+			"value": {
+				"modificationTime": 1750232152
+			}
+		},
+		{
+			"key": "Materials/Floor.xml",
+			"value": {
+				"modificationTime": 1750498106
+			}
+		},
+		{
+			"key": "WorldGraph.json",
+			"value": {
+				"modificationTime": 1750159805
+			}
+		},
+		{
+			"key": "UI/GameplayHUD.rml",
+			"value": {
+				"modificationTime": 1750618899
+			}
+		},
+		{
+			"key": "Scenes/MainMenu.scene",
+			"value": {
+				"modificationTime": 1751047038
+			}
+		},
+		{
+			"key": "Sounds/ocean.wav",
+			"value": {
+				"modificationTime": 1751046927
+			}
+		},
+		{
+			"key": "UI/Fonts/Anonymous Pro.ttf",
+			"value": {
+				"modificationTime": 1750616953
+			}
+		},
+		{
+			"key": "UI/Dead Kansas.ttf",
+			"value": {
+				"modificationTime": 1750622397
+			}
+		},
+		{
+			"key": "Materials/Wood.xml",
+			"value": {
+				"modificationTime": 1750498107
+			}
+		},
+		{
+			"key": "Configs/KeyBindings.json",
+			"value": {
+				"modificationTime": 1750159912
+			}
+		},
+		{
+			"key": "Items/medkit.json",
+			"value": {
+				"modificationTime": 1750232226
+			}
+		},
+		{
+			"key": "Items/kevlar_vest.json",
+			"value": {
+				"modificationTime": 1750232202
+			}
+		},
+		{
+			"key": "Sounds/3 Doors Down - Kryptonite.mp3",
+			"value": {
+				"modificationTime": 1751046575
+			}
+		},
+		{
+			"key": "UI/MainMenu.rml",
+			"value": {
+				"modificationTime": 1750620751
+			}
+		}
+	]
+}

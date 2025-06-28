@@ -1,107 +1,303 @@
 <?xml version="1.0"?>
 <resource _id="1">
-    <attributes>
-        <attribute name="Next Node ID" type="Int" value="10"/>
-        <attribute name="Next Component ID" type="Int" value="12"/>
-    </attributes>
-    <components>
-        <component _id="1" _typeName="Octree"/>
-        <component _id="2" _typeName="RenderPipeline">
-            <attributes>
-                <attribute name="Color Space" type="String" value="HDR Linear"/>
-                <attribute name="PCF Kernel Size" type="Int" value="5"/>
-                <attribute name="Post Process Antialiasing" type="String" value="FXAA3"/>
-                <attribute name="Bloom Intensity" type="Float" value="0.7"/>
-            </attributes>
-        </component>
-        <component _id="3" _typeName="ReflectionProbeManager"/>
-    </components>
-    <nodes>
-        <!-- Skybox -->
-        <node _id="2">
-            <attributes>
-                <attribute name="Name" type="String" value="Skybox"/>
-            </attributes>
-            <components>
-                <component _id="4" _typeName="Skybox">
-                    <attributes>
-                        <attribute name="Model" type="ResourceRef" value="Model;Models/Box.mdl"/>
-                        <attribute name="Material" type="ResourceRefList" value="Material;Materials/DefaultSkybox.xml"/>
-                    </attributes>
-                </component>
-            </components>
-        </node>
-        <!-- Global Zone -->
-        <node _id="3">
-            <attributes>
-                <attribute name="Name" type="String" value="Global Zone"/>
-            </attributes>
-            <components>
-                <component _id="5" _typeName="Zone">
-                    <attributes>
-                        <attribute name="Bounding Box Min" type="Vector3" value="-100 -100 -100"/>
-                        <attribute name="Bounding Box Max" type="Vector3" value="100 100 100"/>
-                        <attribute name="Ambient Color" type="Color" value="0.3 0.3 0.3 1"/>
-                        <attribute name="Background Brightness" type="Float" value="0.4"/>
-                        <attribute name="Zone Texture" type="ResourceRef"
-                                   value="TextureCube;Textures/DefaultSkybox.xml"/>
-                    </attributes>
-                </component>
-            </components>
-        </node>
-        <!-- Directional Sun Light -->
-        <node _id="4">
-            <attributes>
-                <attribute name="Name" type="String" value="SunLight"/>
-                <attribute name="Rotation" type="Quaternion" value="0.707 0.0 0.707 0.0"/>
-            </attributes>
-            <components>
-                <component _id="6" _typeName="Light">
-                    <attributes>
-                        <attribute name="Light Type" type="String" value="Directional"/>
-                        <attribute name="Brightness Multiplier" type="Float" value="0.8"/>
-                        <attribute name="Cast Shadows" type="Bool" value="true"/>
-                    </attributes>
-                </component>
-            </components>
-        </node>
-        <!-- Ground Plane -->
-        <node _id="5">
-            <attributes>
-                <attribute name="Name" type="String" value="Ground"/>
-                <attribute name="Scale" type="Vector3" value="10 10 10"/>
-            </attributes>
-            <components>
-                <component _id="7" _typeName="StaticModel">
-                    <attributes>
-                        <attribute name="Model" type="ResourceRef" value="Model;Models/Plane.mdl"/>
-                        <attribute name="Material" type="ResourceRefList" value="Material;Materials/DefaultGrey.xml"/>
-                    </attributes>
-                </component>
-            </components>
-        </node>
-        <!-- Camera for Menu -->
-        <node _id="8">
-            <attributes>
-                <attribute name="Name" type="String" value="MenuCameraPivot"/>
-                <attribute name="Position" type="Vector3" value="0 2 -8"/>
-            </attributes>
-            <nodes>
-                <node _id="9">
-                    <attributes>
-                        <attribute name="Name" type="String" value="Camera"/>
-                        <attribute name="Position" type="Vector3" value="0 0 0"/>
-                    </attributes>
-                    <components>
-                        <component _id="10" _typeName="Camera"/>
-                        <component _id="11" _typeName="ShakeComponent">
-                            <attributes>
-                                <attribute name="Rotation Range" type="Vector3" value="2 2 2"/>
-                            </attributes>
-                        </component>
-                    </components>
-                </node>
-            </nodes>
-        </node>
-    </nodes>
+	<attributes>
+		<attribute name="Name" type="String" value="MainMenu" />
+		<attribute name="Next Node ID" type="Int" value="9" />
+		<attribute name="Next Component ID" type="Int" value="27" />
+	</attributes>
+	<components>
+		<component _id="1" _typeName="Octree" />
+		<component _id="2" _typeName="RenderPipeline">
+			<attributes>
+				<attribute name="Render Passes" type="VariantVector">
+					<value>
+						<element type="String" value="Postprocess: Exposure" />
+						<element type="Bool" value="true" />
+						<element type="String" value="Postprocess: SSAO" />
+						<element type="Bool" value="true" />
+						<element type="String" value="Postprocess: Bloom" />
+						<element type="Bool" value="true" />
+						<element type="String" value="Postprocess: Draw Outlines" />
+						<element type="Bool" value="false" />
+						<element type="String" value="Postprocess: Tone Mapping" />
+						<element type="Bool" value="true" />
+						<element type="String" value="Postprocess: Adjust Color" />
+						<element type="Bool" value="true" />
+						<element type="String" value="Postprocess: FXAA v2" />
+						<element type="Bool" value="false" />
+						<element type="String" value="Postprocess: FXAA v3" />
+						<element type="Bool" value="true" />
+						<element type="String" value="Postprocess: Chromatic Aberration" />
+						<element type="Bool" value="true" />
+						<element type="String" value="Postprocess: Vignette" />
+						<element type="Bool" value="false" />
+					</value>
+				</attribute>
+				<attribute name="Render Path Parameters" type="StringVariantMap">
+					<value>
+						<element key="Vignette: Radius" type="Float" value="0.500000" />
+						<element key="Adjust Color: ColorOffset" type="Vector4" value="0 0 0 0" />
+						<element key="Exposure: Max" type="Float" value="3.000000" />
+						<element key="Vignette: Intensity" type="Float" value="0.400000" />
+						<element key="SSAO: Far Distance" type="Float" value="100.000000" />
+						<element key="SSAO: Near Distance" type="Float" value="1.000000" />
+						<element key="Bloom: Base Intensity" type="Float" value="1.000000" />
+						<element key="SSAO: Begin Fade Distance" type="Float" value="100.000000" />
+						<element key="Adjust Color: HSVParams" type="Vector4" value="1 1 1 1" />
+						<element key="Bloom: Num Iterations" type="Int" value="5" />
+						<element key="Bloom: Min Brightness" type="Float" value="0.800000" />
+						<element key="SSAO: Strength" type="Float" value="0.700000" />
+						<element key="SSAO: Exponent" type="Float" value="1.500000" />
+						<element key="Chromatic Aberration: Amount" type="Float" value="0.400000" />
+						<element key="SSAO: Downscale" type="Int" value="0" />
+						<element key="Bloom: Max Brightness" type="Float" value="1.000000" />
+						<element key="Tone Mapping: Mode" type="Int" value="0" />
+						<element key="Exposure: Automatic" type="Bool" value="false" />
+						<element key="Tone Mapping: Mode@" type="StringVector">
+							<value>
+								<element value="None" />
+								<element value="Reinhard" />
+								<element value="ReinhardWhite" />
+								<element value="Uncharted2" />
+							</value>
+						</element>
+						<element key="Exposure: Adapt Rate" type="Float" value="0.600000" />
+						<element key="SSAO: Normal Threshold" type="Float" value="0.200000" />
+						<element key="Exposure: Min" type="Float" value="1.000000" />
+						<element key="SSAO: Depth Threshold" type="Float" value="0.100000" />
+						<element key="SSAO: Far Radius" type="Float" value="1.000000" />
+						<element key="Bloom: Iteration Intensity Factor" type="Float" value="1.000000" />
+						<element key="FXAA: FXAAParams" type="Vector3" value="0.4 0.5 0.75" />
+						<element key="SSAO: End Fade Distance" type="Float" value="200.000000" />
+						<element key="Adjust Color: ColorFilter" type="Vector4" value="1 1 1 1" />
+						<element key="SSAO: Near Radius" type="Float" value="0.050000" />
+						<element key="Vignette: Color" type="Color" value="0 0 0 0.4" />
+					</value>
+				</attribute>
+				<attribute name="Color Space" type="String" value="HDR Linear" />
+				<attribute name="Specular Quality" type="String" value="Antialiased" />
+				<attribute name="Linear Space Reflection Maps" type="Bool" value="true" />
+				<attribute name="Readable Depth" type="Bool" value="true" />
+				<attribute name="Depth Pre-Pass" type="Bool" value="true" />
+				<attribute name="Cubemap Box Projection" type="Bool" value="true" />
+				<attribute name="PCF Kernel Size" type="Int" value="5" />
+				<attribute name="VSM Shadow Settings" type="Vector2" value="0.01 0.9" />
+				<attribute name="VSM Multi Sample" type="Int" value="8" />
+				<attribute name="Depth Bias Scale" type="Float" value="0.840000" />
+			</attributes>
+		</component>
+		<component _id="3" _typeName="ReflectionProbeManager" />
+		<component _id="4" _typeName="PhysicsWorld">
+			<attributes>
+				<attribute name="Split Impulse" type="Bool" value="true" />
+			</attributes>
+		</component>
+	</components>
+	<nodes>
+		<node _id="2">
+			<attributes>
+				<attribute name="Name" type="String" value="Skybox" />
+			</attributes>
+			<components>
+				<component _id="8" _typeName="Skybox">
+					<attributes>
+						<attribute name="Model" type="ResourceRef" value="Model;Models/Box.mdl" />
+						<attribute name="Material" type="ResourceRefList" value="Material;Materials/DefaultSkybox.xml" />
+					</attributes>
+				</component>
+			</components>
+		</node>
+		<node _id="3">
+			<attributes>
+				<attribute name="Name" type="String" value="Global Zone" />
+			</attributes>
+			<components>
+				<component _id="9" _typeName="Zone">
+					<attributes>
+						<attribute name="Bounding Box Min" type="Vector3" value="-1000 -1000 -1000" />
+						<attribute name="Bounding Box Max" type="Vector3" value="1000 1000 1000" />
+						<attribute name="Ambient Color" type="Color" value="0 0 0 1" />
+						<attribute name="Background Brightness" type="Float" value="0.500000" />
+						<attribute name="Zone Texture" type="ResourceRef" value="TextureCube;Textures/DefaultSkybox.xml" />
+					</attributes>
+				</component>
+			</components>
+		</node>
+		<node _id="4">
+			<attributes>
+				<attribute name="Name" type="String" value="Global Light" />
+				<attribute name="Position" type="Vector3" value="-0.793148 3.821647 -4.614831" />
+				<attribute name="Rotation" type="Quaternion" value="0.811677 0.125722 0.567039 0.061978" />
+			</attributes>
+			<components>
+				<component _id="10" _typeName="Light">
+					<attributes>
+						<attribute name="Light Type" type="String" value="Directional" />
+						<attribute name="Light Importance" type="String" value="Important" />
+						<attribute name="Color" type="Color" value="0.646429 0.586799 0.385548 1" />
+						<attribute name="Specular Intensity" type="Float" value="18.709999" />
+						<attribute name="Brightness Multiplier" type="Float" value="0.900000" />
+						<attribute name="Indirect Brightness" type="Float" value="11.000000" />
+						<attribute name="Temperature" type="Float" value="7000.000000" />
+						<attribute name="Radius" type="Float" value="119.500000" />
+						<attribute name="Length" type="Float" value="39.500000" />
+						<attribute name="Range" type="Float" value="50.000000" />
+						<attribute name="Spot FOV" type="Float" value="73.699997" />
+						<attribute name="Spot Aspect Ratio" type="Float" value="44.000000" />
+						<attribute name="Cast Shadows" type="Bool" value="true" />
+					</attributes>
+				</component>
+			</components>
+		</node>
+		<node _id="5">
+			<attributes>
+				<attribute name="Name" type="String" value="Sample Cube" />
+				<attribute name="Position" type="Vector3" value="-0.254312 10.518129 1.824302" />
+				<attribute name="Rotation" type="Quaternion" value="0.545459 0 -0.838138 0" />
+				<attribute name="Scale" type="Vector3" value="3 3 3" />
+			</attributes>
+			<components>
+				<component _id="11" _typeName="StaticModel">
+					<attributes>
+						<attribute name="Model" type="ResourceRef" value="Model;Models/TeaPot.mdl" />
+						<attribute name="Material" type="ResourceRefList" value="Material;Materials/Metal.xml;Materials/Wood.xml" />
+						<attribute name="Cast Shadows" type="Bool" value="true" />
+					</attributes>
+				</component>
+				<component _id="12" _typeName="CollisionShape">
+					<attributes>
+						<attribute name="Shape Type" type="String" value="ConvexHull" />
+						<attribute name="Model" type="ResourceRef" value="Model;Models/TeaPot.mdl" />
+					</attributes>
+				</component>
+				<component _id="13" _typeName="RigidBody">
+					<attributes>
+						<attribute name="Physics Rotation" type="Quaternion" value="0.547356 0 -0.8369 0" />
+						<attribute name="Physics Position" type="Vector3" value="-0.254312 10.518129 1.824302" />
+						<attribute name="Mass" type="Float" value="10.000000" />
+						<attribute name="Friction" type="Float" value="17.459999" />
+						<attribute name="Rolling Friction" type="Float" value="-1000.000000" />
+						<attribute name="Restitution" type="Float" value="14.660000" />
+						<attribute name="Angular Factor" type="Vector3" value="0 0 0" />
+					</attributes>
+				</component>
+			</components>
+		</node>
+		<node _id="6">
+			<attributes>
+				<attribute name="Name" type="String" value="Ground Plane" />
+				<attribute name="Position" type="Vector3" value="-0.009454 2.14577e-05 -0.008017" />
+				<attribute name="Scale" type="Vector3" value="318.074707 7 320.178802" />
+			</attributes>
+			<components>
+				<component _id="14" _typeName="StaticModel">
+					<attributes>
+						<attribute name="Model" type="ResourceRef" value="Model;Models/Plane.mdl" />
+						<attribute name="Material" type="ResourceRefList" value="Material;Materials/Floor.xml" />
+						<attribute name="Scale in Lightmap" type="Float" value="1.050000" />
+					</attributes>
+				</component>
+				<component _id="15" _typeName="CollisionShape">
+					<attributes>
+						<attribute name="Shape Type" type="String" value="TriangleMesh" />
+						<attribute name="Size" type="Vector3" value="3.03 0.43 1.16" />
+						<attribute name="Model" type="ResourceRef" value="Model;Models/Plane.mdl" />
+					</attributes>
+				</component>
+				<component _id="16" _typeName="RigidBody">
+					<attributes>
+						<attribute name="Physics Position" type="Vector3" value="-0.009454 2.14577e-05 -0.008017" />
+					</attributes>
+				</component>
+			</components>
+		</node>
+		<node _id="7">
+			<attributes>
+				<attribute name="Name" type="String" value="Sample Cube" />
+				<attribute name="Position" type="Vector3" value="3.952847 3.209955 -3.478421" />
+				<attribute name="Rotation" type="Quaternion" value="0.545459 0 -0.838137 0" />
+				<attribute name="Scale" type="Vector3" value="4.559996 4.560006 4.559996" />
+			</attributes>
+			<components>
+				<component _id="17" _typeName="StaticModel">
+					<attributes>
+						<attribute name="Model" type="ResourceRef" value="Model;Models/TeaPot.mdl" />
+						<attribute name="Material" type="ResourceRefList" value="Material;Materials/Metal.xml;Materials/Wood.xml" />
+						<attribute name="Cast Shadows" type="Bool" value="true" />
+					</attributes>
+				</component>
+				<component _id="18" _typeName="CollisionShape">
+					<attributes>
+						<attribute name="Shape Type" type="String" value="ConvexHull" />
+						<attribute name="Model" type="ResourceRef" value="Model;Models/TeaPot.mdl" />
+					</attributes>
+				</component>
+				<component _id="19" _typeName="RigidBody">
+					<attributes>
+						<attribute name="Physics Rotation" type="Quaternion" value="0.547356 0 -0.8369 0" />
+						<attribute name="Physics Position" type="Vector3" value="3.952846 3.209955 -3.478421" />
+						<attribute name="Mass" type="Float" value="10.000000" />
+						<attribute name="Friction" type="Float" value="17.459999" />
+						<attribute name="Rolling Friction" type="Float" value="-1000.000000" />
+						<attribute name="Restitution" type="Float" value="14.660000" />
+						<attribute name="Angular Factor" type="Vector3" value="0 0 0" />
+					</attributes>
+				</component>
+			</components>
+		</node>
+		<node _id="8">
+			<attributes>
+				<attribute name="Name" type="String" value="Camera" />
+				<attribute name="Position" type="Vector3" value="-15.150485 10.242597 -7.955299" />
+				<attribute name="Rotation" type="Quaternion" value="0.893063 0.126766 0.42771 -0.058597" />
+			</attributes>
+			<components>
+				<component _id="20" _typeName="Camera">
+					<attributes>
+						<attribute name="Aspect Ratio" type="Float" value="1.720000" />
+						<attribute name="Orthographic Size" type="Float" value="3.320000" />
+					</attributes>
+				</component>
+				<component _id="21" _typeName="CameraOperator" />
+				<component _id="22" _typeName="SoundListener" />
+				<component _id="23" _typeName="SoundSource">
+					<attributes>
+						<attribute name="Frequency" type="Float" value="1.440000" />
+					</attributes>
+				</component>
+				<component _id="24" _typeName="SoundSource3D">
+					<attributes>
+						<attribute name="Frequency" type="Float" value="0.200000" />
+						<attribute name="Low Frequency Effect" type="Bool" value="true" />
+						<attribute name="Ignore Scene Time Scale" type="Bool" value="true" />
+					</attributes>
+				</component>
+				<component _id="25" _typeName="ShakeComponent">
+					<attributes>
+						<attribute name="Trauma" type="Float" value="0.720000" />
+						<attribute name="Trauma Power" type="Float" value="4.760000" />
+						<attribute name="Trauma Falloff" type="Float" value="1.640000" />
+					</attributes>
+				</component>
+				<component _id="26" _typeName="Zone">
+					<attributes>
+						<attribute name="Bounding Box Min" type="Vector3" value="-65.980003 -61.400002 -63.900002" />
+						<attribute name="Bounding Box Max" type="Vector3" value="84.199997 133.100006 117.300003" />
+						<attribute name="Ambient Color" type="Color" value="0.890196 0.070588 0.070588 1" />
+						<attribute name="Ambient Brightness" type="Float" value="0.000000" />
+						<attribute name="Fog Color" type="Color" value="0.964706 1 1 1" />
+						<attribute name="Fog Start" type="Float" value="0.000000" />
+						<attribute name="Fog End" type="Float" value="5000.000000" />
+						<attribute name="Fog Height" type="Float" value="66.699997" />
+						<attribute name="Fog Height Scale" type="Float" value="-7.300000" />
+						<attribute name="Height Fog Mode" type="Bool" value="true" />
+						<attribute name="Override Mode" type="Bool" value="true" />
+						<attribute name="Ambient Gradient" type="Bool" value="true" />
+						<attribute name="Priority" type="Int" value="1" />
+					</attributes>
+				</component>
+			</components>
+		</node>
+	</nodes>
+	<auxiliary />
 </resource>
