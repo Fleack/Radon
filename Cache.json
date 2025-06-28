@@ -7,12 +7,6 @@
 	],
 	"Assets": [
 		{
-			"key": "Sounds/Radio_AM.wav",
-			"value": {
-				"modificationTime": 1751046644
-			}
-		},
-		{
 			"key": "Items/energydrink.json",
 			"value": {
 				"modificationTime": 1750232187
@@ -21,7 +15,7 @@
 		{
 			"key": "UI/MainMenu.rcss",
 			"value": {
-				"modificationTime": 1750874433
+				"modificationTime": 1751115241
 			}
 		},
 		{
@@ -39,7 +33,7 @@
 		{
 			"key": "EngineParameters.json",
 			"value": {
-				"modificationTime": 1750522280
+				"modificationTime": 1751112250
 			}
 		},
 		{
@@ -51,7 +45,19 @@
 		{
 			"key": "UI/GameplayHUD.rcss",
 			"value": {
-				"modificationTime": 1750622540
+				"modificationTime": 1751117540
+			}
+		},
+		{
+			"key": "VectorBuffer.d/Textures/ReflectionProbe-38.xml",
+			"value": {
+				"modificationTime": 1751096202
+			}
+		},
+		{
+			"key": "Items/MedKit.json",
+			"value": {
+				"modificationTime": 1750232226
 			}
 		},
 		{
@@ -63,13 +69,7 @@
 		{
 			"key": "Scenes/Gameplay.scene",
 			"value": {
-				"modificationTime": 1751041155
-			}
-		},
-		{
-			"key": "Scenes/Default.scene",
-			"value": {
-				"modificationTime": 1751041155
+				"modificationTime": 1751111730
 			}
 		},
 		{
@@ -91,6 +91,18 @@
 			}
 		},
 		{
+			"key": "Items/KevlarVest.json",
+			"value": {
+				"modificationTime": 1750232202
+			}
+		},
+		{
+			"key": "Items/EnergyDrink.json",
+			"value": {
+				"modificationTime": 1750232187
+			}
+		},
+		{
 			"key": "UI/GameplayHUD.rml",
 			"value": {
 				"modificationTime": 1750618899
@@ -99,25 +111,13 @@
 		{
 			"key": "Scenes/MainMenu.scene",
 			"value": {
-				"modificationTime": 1751047038
-			}
-		},
-		{
-			"key": "Sounds/ocean.wav",
-			"value": {
-				"modificationTime": 1751046927
+				"modificationTime": 1751098784
 			}
 		},
 		{
 			"key": "UI/Fonts/Anonymous Pro.ttf",
 			"value": {
 				"modificationTime": 1750616953
-			}
-		},
-		{
-			"key": "UI/Dead Kansas.ttf",
-			"value": {
-				"modificationTime": 1750622397
 			}
 		},
 		{
@@ -133,21 +133,15 @@
 			}
 		},
 		{
+			"key": "Items/Bandage.json",
+			"value": {
+				"modificationTime": 1750232152
+			}
+		},
+		{
 			"key": "Items/medkit.json",
 			"value": {
 				"modificationTime": 1750232226
-			}
-		},
-		{
-			"key": "Items/kevlar_vest.json",
-			"value": {
-				"modificationTime": 1750232202
-			}
-		},
-		{
-			"key": "Sounds/3 Doors Down - Kryptonite.mp3",
-			"value": {
-				"modificationTime": 1751046575
 			}
 		},
 		{
