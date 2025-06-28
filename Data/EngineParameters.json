@@ -6,8 +6,5 @@
   "WindowHeight":    720,
   "FullScreen":      false,
   "WindowResizable": true,
-  "VSync":           true,
-  "LogQuiet":        false,
-  "LogLevel":        1,
-  "LogName":         "Radon.log",
+  "VSync":           true
 }
