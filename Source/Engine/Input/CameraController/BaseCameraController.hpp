@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Input/CameraMode/ICamera.hpp"
+#include "Engine/Input/CameraController/ICameraController.hpp"
 
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/Scene/Node.h>
@@ -8,9 +8,9 @@
 namespace Radon::Engine::Input
 {
 
-class BaseCameraController : public ICamera
+class BaseCameraController : public ICameraController
 {
-    URHO3D_OBJECT(BaseCameraController, ICamera);
+    URHO3D_OBJECT(BaseCameraController, ICameraController);
 
 public:
     explicit BaseCameraController(Urho3D::Context* context);

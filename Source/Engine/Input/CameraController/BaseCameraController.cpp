@@ -8,7 +8,7 @@ using namespace Urho3D;
 using namespace Radon::Engine::Input;
 
 BaseCameraController::BaseCameraController(Context* context)
-    : ICamera(context)
+    : ICameraController(context)
 {
     RADON_LOGDEBUG("BaseCameraController: constructor called");
 }

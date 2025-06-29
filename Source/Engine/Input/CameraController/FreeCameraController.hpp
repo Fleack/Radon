@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Input/CameraMode/BaseCameraController.hpp"
+#include "Engine/Input/CameraController/BaseCameraController.hpp"
 
 namespace Radon::Engine::Input
 {
