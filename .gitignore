@@ -12,7 +12,8 @@ gradle*
 .idea
 android/.cxx
 
-# Ignore log files
+# Radon files
+/Out/
 Urho3D.log
 project_structure.txt
 GetProjectStructure.bat
