@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Graphics/ViewportManager.hpp"
-#include "Engine/Input/CameraController.hpp"
+#include "Engine/Input/CameraManager.hpp"
 #include "Engine/Scene/SceneManager.hpp"
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/StateMachine/IGameState.hpp"
@@ -34,7 +34,7 @@ void GameplayState::Enter()
     input->SetMouseMode(Urho3D::MM_RELATIVE);
     input->SetMouseVisible(false);
 
-    GetSubsystem<Input::CameraController>()->Initialize(*cameraNode, 0.1f, 5.0f);
+    GetSubsystem<Input::CameraManager>()->Initialize(*cameraNode, 0.1f, 5.0f);
 
     SubscribeToEvent(Urho3D::E_KEYDOWN, URHO3D_HANDLER(GameplayState, HandleKeydown));
 
@@ -47,7 +47,7 @@ void GameplayState::Exit()
     UnsubscribeFromAllEvents();
     GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
     GetSubsystem<UI::UIManager>()->UnloadDocument("GameplayHUD");
-    GetSubsystem<Input::CameraController>()->Shutdown();
+    GetSubsystem<Input::CameraManager>()->Shutdown();
     GetSubsystem<Scene::SceneManager>()->UnloadScene(gameplaySceneName_);
     RADON_LOGINFO("GameplayState: exited and cleaned up");
 }

@@ -3,7 +3,7 @@
 #include "Engine/Config/ConfigManager.hpp"
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Graphics/ViewportManager.hpp"
-#include "Engine/Input/CameraController.hpp"
+#include "Engine/Input/CameraManager.hpp"
 #include "Engine/Scene/SceneManager.hpp"
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/UI/UIManager.hpp"
@@ -47,7 +47,7 @@ void RadonApplication::RegisterSubsystems()
     context_->RegisterSubsystem(MakeShared<Scene::SceneManager>(context_));
     context_->RegisterSubsystem(MakeShared<StateMachine::GameStateManager>(context_));
     context_->RegisterSubsystem(MakeShared<UI::UIManager>(context_));
-    context_->RegisterSubsystem(MakeShared<Input::CameraController>(context_));
+    context_->RegisterSubsystem(MakeShared<Input::CameraManager>(context_));
     context_->RegisterSubsystem(MakeShared<Graphics::ViewportManager>(context_));
     RADON_LOGINFO("RadonApplication: All subsystems registered");
 }
