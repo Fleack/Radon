@@ -1,6 +1,6 @@
 #pragma once
 
-#include "App/Logger/Logger.hpp"
+#include "Engine/Core/Logger.hpp"
 
 #include <Urho3D/IO/Log.h>
 #include <Urho3D/Resource/JSONValue.h>

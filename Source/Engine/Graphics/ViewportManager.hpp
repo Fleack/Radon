@@ -4,7 +4,7 @@
 #include <Urho3D/Graphics/Viewport.h>
 #include <Urho3D/Scene/Scene.h>
 
-namespace Radon::Graphics
+namespace Radon::Engine::Graphics
 {
 using namespace Urho3D;
 
@@ -33,4 +33,4 @@ private:
     ea::hash_set<uint8_t> enabledViewports_{};
 };
 
-} // namespace Radon::Graphics
+} // namespace Radon::Engine::Graphics

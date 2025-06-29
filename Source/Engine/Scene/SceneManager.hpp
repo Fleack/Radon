@@ -4,7 +4,7 @@
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/Scene/Scene.h>
 
-namespace Radon::Scene
+namespace Radon::Engine::Scene
 {
 
 class SceneManager : public Urho3D::Object

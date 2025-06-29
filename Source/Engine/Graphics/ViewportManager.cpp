@@ -1,11 +1,11 @@
 #include "ViewportManager.hpp"
 
-#include "App/Logger/Logger.hpp"
+#include "Engine/Core/Logger.hpp"
 
 #include <Urho3D/Graphics/Camera.h>
 #include <Urho3D/Graphics/Renderer.h>
 
-namespace Radon::Graphics
+namespace Radon::Engine::Graphics
 {
 
 ViewportManager::ViewportManager(Context* context)

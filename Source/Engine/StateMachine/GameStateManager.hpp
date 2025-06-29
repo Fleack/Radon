@@ -1,10 +1,10 @@
 #pragma once
 
-#include "App/States/IGameState.hpp"
+#include "Engine/StateMachine/IGameState.hpp"
 
 #include <stack>
 
-namespace Radon::States
+namespace Radon::Engine::StateMachine
 {
 
 class GameStateManager : public Urho3D::Object
@@ -21,4 +21,4 @@ private:
     std::stack<Urho3D::SharedPtr<IGameState>> states_;
 };
 
-} // namespace Radon::States
+} // namespace Radon::Engine::States

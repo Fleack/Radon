@@ -2,7 +2,7 @@
 
 #include <Urho3D/Engine/Application.h>
 
-namespace Radon
+namespace Radon::App
 {
 
 class RadonApplication : public Urho3D::Application
@@ -18,4 +18,6 @@ private:
     void RegisterSubsystems();
 };
 
-} // namespace Radon
+} // namespace Radon::App
+
+URHO3D_DEFINE_APPLICATION_MAIN(Radon::App::RadonApplication);

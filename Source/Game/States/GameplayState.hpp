@@ -1,11 +1,11 @@
 #pragma once
 
-#include "App/States/IGameState.hpp"
+#include "Engine/StateMachine/IGameState.hpp"
 
-namespace Radon::States
+namespace Radon::Game::States
 {
 
-class GameplayState : public IGameState
+class GameplayState : public Engine::StateMachine::IGameState
 {
     URHO3D_OBJECT(GameplayState, IGameState)
 public:
@@ -21,4 +21,4 @@ private:
     ea::string const gameplaySceneName_{"Gameplay"};
 };
 
-} // namespace Radon::States
+} // namespace Radon::Game::States

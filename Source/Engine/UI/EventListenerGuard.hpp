@@ -3,7 +3,7 @@
 #include <RmlUi/Core/Element.h>
 #include <RmlUi/Core/EventListener.h>
 
-namespace Radon::UI
+namespace Radon::Engine::UI
 {
 
 struct ListenerGuard
@@ -49,4 +49,4 @@ private:
     Rml::SharedPtr<Rml::EventListener> listener_;
 };
 
-} // namespace Radon::UI
+} // namespace Radon::Engine::UI

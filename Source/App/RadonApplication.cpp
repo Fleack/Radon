@@ -1,17 +1,17 @@
 #include "RadonApplication.hpp"
 
-#include "App/Config/ConfigManager.hpp"
-#include "App/Graphics/ViewportManager.hpp"
-#include "App/Input/CameraController.hpp"
-#include "App/Logger/Logger.hpp"
-#include "App/Scene/SceneManager.hpp"
-#include "App/States/GameStateManager.hpp"
-#include "App/States/MenuState.hpp"
-#include "App/UI/UIManager.hpp"
+#include "Engine/Config/ConfigManager.hpp"
+#include "Engine/Core/Logger.hpp"
+#include "Engine/Graphics/ViewportManager.hpp"
+#include "Engine/Input/CameraController.hpp"
+#include "Engine/Scene/SceneManager.hpp"
+#include "Engine/StateMachine/GameStateManager.hpp"
+#include "Engine/UI/UIManager.hpp"
+#include "Game/States/MenuState.hpp"
 
 #include <Urho3D/Engine/EngineDefs.h>
 
-using namespace Radon;
+using namespace Radon::App;
 
 RadonApplication::RadonApplication(Urho3D::Context* context)
     : Application(context)
@@ -31,7 +31,7 @@ void RadonApplication::Start()
 {
     RADON_LOGINFO("RadonApplication: Start called");
     RegisterSubsystems();
-    GetSubsystem<States::GameStateManager>()->PushState(MakeShared<States::MenuState>(context_));
+    GetSubsystem<Engine::StateMachine::GameStateManager>()->PushState(MakeShared<Game::States::MenuState>(context_));
 }
 
 void RadonApplication::Stop()
@@ -41,9 +41,11 @@ void RadonApplication::Stop()
 
 void RadonApplication::RegisterSubsystems()
 {
+    using namespace Engine;
+
     RADON_LOGDEBUG("RadonApplication: RegisterSubsystems called");
     context_->RegisterSubsystem(MakeShared<Scene::SceneManager>(context_));
-    context_->RegisterSubsystem(MakeShared<States::GameStateManager>(context_));
+    context_->RegisterSubsystem(MakeShared<StateMachine::GameStateManager>(context_));
     context_->RegisterSubsystem(MakeShared<UI::UIManager>(context_));
     context_->RegisterSubsystem(MakeShared<Input::CameraController>(context_));
     context_->RegisterSubsystem(MakeShared<Graphics::ViewportManager>(context_));

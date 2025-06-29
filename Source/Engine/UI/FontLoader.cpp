@@ -9,7 +9,7 @@
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/RmlUI/RmlUI.h>
 
-using namespace Radon::UI;
+using namespace Radon::Engine::UI;
 
 FontLoader::FontLoader(Urho3D::Context* context)
     : Object(context)

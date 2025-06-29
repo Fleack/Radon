@@ -2,7 +2,7 @@
 
 #include <Urho3D/Core/Object.h>
 
-namespace Radon::States
+namespace Radon::Engine::StateMachine
 {
 
 class IGameState : public Urho3D::Object
@@ -16,4 +16,4 @@ public:
     virtual void Update(float timeStep) = 0;
 };
 
-} // namespace Radon::States
+} // namespace Radon::Engine::States

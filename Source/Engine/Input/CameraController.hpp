@@ -3,7 +3,7 @@
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/Scene/Node.h>
 
-namespace Radon::Input
+namespace Radon::Engine::Input
 {
 
 class CameraController : public Urho3D::Object
@@ -35,4 +35,4 @@ private:
     float pitchMin_{-89.0f}, pitchMax_{89.0f};
     bool initialized_{false};
 };
-} // namespace Radon::Input
+} // namespace Radon::Engine::Input

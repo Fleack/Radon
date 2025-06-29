@@ -10,7 +10,7 @@ class FileSystem;
 class ResourceCache;
 } // namespace Urho3D
 
-namespace Radon::UI
+namespace Radon::Engine::UI
 {
 class FontLoader : public Urho3D::Object
 {
@@ -27,4 +27,4 @@ private:
     Urho3D::ResourceCache* resourceCache_{};
 };
 
-} // namespace Radon::UI
+} // namespace Radon::Engine::UI

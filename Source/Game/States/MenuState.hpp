@@ -1,14 +1,14 @@
 #pragma once
 
-#include "App/States/IGameState.hpp"
-#include "App/UI/EventListenerGuard.hpp"
+#include "Engine/StateMachine/IGameState.hpp"
+#include "Engine/UI/EventListenerGuard.hpp"
 
 #include <RmlUi/Core/ElementDocument.h>
 
-namespace Radon::States
+namespace Radon::Game::States
 {
 
-class MenuState : public IGameState
+class MenuState : public Engine::StateMachine::IGameState
 {
     URHO3D_OBJECT(MenuState, IGameState)
 public:
@@ -29,7 +29,7 @@ private:
     ea::string const mainMenuSceneName_{"MainMenu"};
 
     Rml::ElementDocument* currentDocument_;
-    ea::vector<UI::ListenerGuard> subscriptions_;
+    ea::vector<Engine::UI::ListenerGuard> subscriptions_;
 };
 
-} // namespace Radon::States
+} // namespace Radon::Game::States

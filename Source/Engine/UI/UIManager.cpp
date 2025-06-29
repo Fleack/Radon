@@ -1,13 +1,13 @@
 #include "UIManager.hpp"
 
-#include "App/Logger/Logger.hpp"
+#include "Engine/Core/Logger.hpp"
 
 #include <RmlUi/Core/ElementDocument.h>
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/RmlUI/RmlUI.h>
 #include <Urho3D/UI/UI.h>
 
-using namespace Radon::UI;
+using namespace Radon::Engine::UI;
 
 UIManager::UIManager(Urho3D::Context* context)
     : Object(context), fontLoader_{context}

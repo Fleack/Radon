@@ -1,6 +1,6 @@
-#include "App/Scene/SceneManager.hpp"
+#include "SceneManager.hpp"
 
-#include "App/Logger/Logger.hpp"
+#include "Engine/Core/Logger.hpp"
 
 #include <Urho3D/Graphics/Material.h>
 #include <Urho3D/Graphics/Model.h>
@@ -11,7 +11,7 @@
 #include <Urho3D/Resource/XMLFile.h>
 
 using namespace Urho3D;
-using namespace Radon::Scene;
+using namespace Radon::Engine::Scene;
 
 SceneManager::SceneManager(Context* context)
     : Object(context)

@@ -1,11 +1,11 @@
 #include "MenuState.hpp"
 
-#include "App/Graphics/ViewportManager.hpp"
-#include "App/Logger/Logger.hpp"
-#include "App/Scene/SceneManager.hpp"
-#include "App/States/GameStateManager.hpp"
-#include "App/States/GameplayState.hpp"
-#include "App/UI/UIManager.hpp"
+#include "Engine/Core/Logger.hpp"
+#include "Engine/Graphics/ViewportManager.hpp"
+#include "Engine/Scene/SceneManager.hpp"
+#include "Engine/StateMachine/GameStateManager.hpp"
+#include "Engine/UI/UIManager.hpp"
+#include "Game/States/GameplayState.hpp"
 
 #include <functional>
 
@@ -15,8 +15,8 @@
 #include <Urho3D/RmlUI/RmlUI.h>
 #include <Urho3D/UI/UI.h>
 
-using namespace Radon::States;
-using namespace Urho3D;
+using namespace Radon::Game::States;
+using namespace Radon::Engine;
 
 struct RmlClickListener : public Rml::EventListener
 {
@@ -32,7 +32,7 @@ struct RmlClickListener : public Rml::EventListener
     Callback cb_;
 };
 
-MenuState::MenuState(Context* context)
+MenuState::MenuState(Urho3D::Context* context)
     : IGameState(context)
 {
 }
@@ -43,13 +43,13 @@ void MenuState::Enter()
     subscriptions_.clear();
     subscriptions_.reserve(2);
 
-    WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene(mainMenuSceneName_);
-    Node* cameraNode = scene->GetChild("Camera", true);
+    Urho3D::WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene(mainMenuSceneName_);
+    Urho3D::Node* cameraNode = scene->GetChild("Camera", true);
     GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene, *cameraNode, 0);
     currentDocument_ = GetSubsystem<UI::UIManager>()->ShowDocument(mainMenuSceneName_);
 
-    auto* input = GetSubsystem<Input>();
-    input->SetMouseMode(MM_FREE);
+    auto* input = GetSubsystem<Urho3D::Input>();
+    input->SetMouseMode(Urho3D::MM_FREE);
     input->SetMouseVisible(true);
 
     RegisterButton<RmlClickListener, &MenuState::HandlePlay>("play-button", Rml::EventId::Click);
@@ -80,14 +80,14 @@ void MenuState::Update(float)
 void MenuState::HandlePlay()
 {
     RADON_LOGINFO("MenuState: Play button pressed");
-    GetSubsystem<GameStateManager>()->ReplaceState(MakeShared<GameplayState>(context_));
+    GetSubsystem<StateMachine::GameStateManager>()->ReplaceState(MakeShared<GameplayState>(context_));
 }
 
 void MenuState::HandleExit()
 {
     RADON_LOGINFO("MenuState: Exit button pressed");
     Exit();
-    GetSubsystem<Engine>()->Exit();
+    GetSubsystem<Urho3D::Engine>()->Exit();
 }
 
 template <typename RML_LISTENER, void (MenuState::*Fn)()>

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "App/UI/FontLoader.hpp"
+#include "Engine/UI/FontLoader.hpp"
 
 #include <RmlUi/Core/ElementDocument.h>
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/UI/Button.h>
 
-namespace Radon::UI
+namespace Radon::Engine::UI
 {
 
 class UIManager : public Urho3D::Object
@@ -32,4 +32,4 @@ private:
     ea::hash_map<ea::string, Rml::ElementDocument*> documents_;
 };
 
-} // namespace Radon::UI
+} // namespace Radon::Engine::UI

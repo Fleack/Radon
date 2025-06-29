@@ -1,6 +1,6 @@
 #include "CameraController.hpp"
 
-#include "App/Logger/Logger.hpp"
+#include "Engine/Core/Logger.hpp"
 
 #include <Urho3D/Core/CoreEvents.h>
 #include <Urho3D/IO/Log.h>
@@ -8,7 +8,7 @@
 #include <Urho3D/Math/MathDefs.h>
 
 using namespace Urho3D;
-using namespace Radon::Input;
+using namespace Radon::Engine::Input;
 
 CameraController::CameraController(Context* context)
     : Object(context)

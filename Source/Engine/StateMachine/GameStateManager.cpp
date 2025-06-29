@@ -1,10 +1,10 @@
 #include "GameStateManager.hpp"
 
-#include "App/Logger/Logger.hpp"
+#include "Engine/Core/Logger.hpp"
 
 #include <Urho3D/Core/Context.h>
 
-using namespace Radon::States;
+using namespace Radon::Engine::StateMachine;
 
 GameStateManager::GameStateManager(Urho3D::Context* context)
     : Object(context)
