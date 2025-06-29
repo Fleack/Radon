@@ -245,12 +245,12 @@
 		<node _id="9">
 			<attributes>
 				<attribute name="Name" type="String" value="Player" />
-				<attribute name="Position" type="Vector3" value="-0.262531 2 -7.339593" />
 			</attributes>
 			<nodes>
 				<node _id="12">
 					<attributes>
 						<attribute name="Name" type="String" value="Camera" />
+						<attribute name="Position" type="Vector3" value="0 1.8 0" />
 					</attributes>
 					<components>
 						<component _id="21" _typeName="Camera">
