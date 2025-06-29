@@ -1,7 +1,8 @@
 #include "CameraManager.hpp"
 
 #include "Engine/Core/Logger.hpp"
-#include "Engine/Input/CameraMode/FPSCameraController.hpp"
+#include "Engine/Input/CameraController/FPSCameraController.hpp"
+#include "Engine/Input/CameraController/FreeCameraController.hpp"
 
 using namespace Urho3D;
 using namespace Radon::Engine::Input;
@@ -21,7 +22,7 @@ CameraManager::~CameraManager()
 void CameraManager::Initialize(Node& cameraNode, float lookSensitivity, float moveSpeed)
 {
     RADON_LOGDEBUG("CameraManager: Initialize called");
-    if (initialized_)
+    if (controllers_[0])
     {
         RADON_LOGWARN("CameraManager: already initialized");
         return;
@@ -29,40 +30,32 @@ void CameraManager::Initialize(Node& cameraNode, float lookSensitivity, float mo
 
     cameraNode_ = &cameraNode;
 
-    freeCamera_ = MakeShared<FreeCameraController>(context_);
-    freeCamera_->SetLookSensitivity(lookSensitivity);
-    freeCamera_->SetMoveSpeed(moveSpeed);
+    controllers_[std::to_underlying(CameraMode::FREE_CAMERA)] =
+        MakeShared<FreeCameraController>(context_);
+    controllers_[std::to_underlying(CameraMode::FPS_CAMERA)] =
+        MakeShared<FPSCameraController>(context_);
 
-    fpsCamera_ = MakeShared<FPSCameraController>(context_);
-    fpsCamera_->SetLookSensitivity(lookSensitivity);
-    fpsCamera_->SetMoveSpeed(moveSpeed);
+    ApplyToAll([lookSensitivity, moveSpeed](auto& camera) {
+        camera.SetLookSensitivity(lookSensitivity);
+        camera.SetMoveSpeed(moveSpeed);
+    });
 
     SetCameraMode(CameraMode::FREE_CAMERA);
 
-    initialized_ = true;
     RADON_LOGINFO("CameraManager: Initialized with sensitivity={:.2f}, speed={:.2f}", lookSensitivity, moveSpeed);
 }
 
 void CameraManager::Shutdown()
 {
     RADON_LOGDEBUG("CameraManager: Shutdown called");
-    if (!initialized_)
+    if (!controllers_[0])
         return;
 
-    if (freeCamera_)
-    {
-        freeCamera_->Shutdown();
-        freeCamera_ = nullptr;
-    }
-
-    if (fpsCamera_)
-    {
-        fpsCamera_->Shutdown();
-        fpsCamera_ = nullptr;
-    }
+    ApplyToAll([](auto& camera) {
+        camera.Shutdown();
+    });
 
     currentCamera_ = nullptr;
-    initialized_ = false;
     RADON_LOGINFO("CameraManager: Shutdown complete");
 }
 
@@ -72,65 +65,34 @@ void CameraManager::SetCameraMode(CameraMode mode)
         return;
 
     if (currentCamera_)
-    {
         currentCamera_->Shutdown();
-    }
 
     currentMode_ = mode;
-
-    switch (mode)
-    {
-    case CameraMode::FREE_CAMERA:
-        currentCamera_ = freeCamera_;
-        RADON_LOGINFO("CameraManager: Switched to FREE_CAMERA mode");
-        break;
-
-    case CameraMode::FPS_CAMERA:
-        currentCamera_ = fpsCamera_;
-        RADON_LOGINFO("CameraManager: Switched to FPS_CAMERA mode");
-        break;
-    }
+    currentCamera_ = GetCameraByMode(mode);
 
     if (!cameraNode_.Expired() && currentCamera_)
     {
         currentCamera_->Initialize(*cameraNode_);
     }
+    RADON_LOGINFO("CameraManager: Switched to {} mode", mode == CameraMode::FREE_CAMERA ? "FREE_CAMERA" : "FPS_CAMERA");
 }
 
 void CameraManager::SetLookSensitivity(float sensitivity) const
 {
-    if (currentCamera_)
-    {
-        currentCamera_->SetLookSensitivity(sensitivity);
-    }
-
-    if (freeCamera_) freeCamera_->SetLookSensitivity(sensitivity);
-    if (fpsCamera_) fpsCamera_->SetLookSensitivity(sensitivity);
+    ApplyToAll([&](auto& camera) { camera.SetLookSensitivity(sensitivity); });
 }
 
 float CameraManager::GetLookSensitivity() const
 {
-    if (currentCamera_)
-        return currentCamera_->GetLookSensitivity();
-
-    return 0.1f;
+    return currentCamera_ ? currentCamera_->GetLookSensitivity() : 0.1f;
 }
 
 void CameraManager::SetMoveSpeed(float speed) const
 {
-    if (currentCamera_)
-    {
-        currentCamera_->SetMoveSpeed(speed);
-    }
-
-    if (freeCamera_) freeCamera_->SetMoveSpeed(speed);
-    if (fpsCamera_) fpsCamera_->SetMoveSpeed(speed);
+    ApplyToAll([&](auto& camera) { camera.SetMoveSpeed(speed); });
 }
 
 float CameraManager::GetMoveSpeed() const
 {
-    if (currentCamera_)
-        return currentCamera_->GetMoveSpeed();
-
-    return 5.0f;
+    return currentCamera_ ? currentCamera_->GetMoveSpeed() : 5.0f;
 }
