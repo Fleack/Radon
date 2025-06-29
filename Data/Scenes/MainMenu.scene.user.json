@@ -15,10 +15,12 @@
 		"TransformGizmo": {}
 	},
 	"Selection": {
-		"ActiveComponentId": 0,
-		"ActiveNodeId": 0,
-		"ActiveNodeOrSceneId": 0,
-		"ComponentIds": [],
+		"ActiveComponentId": 20,
+		"ActiveNodeId": 8,
+		"ActiveNodeOrSceneId": 8,
+		"ComponentIds": [
+			20
+		],
 		"NodeIds": []
 	}
 }
