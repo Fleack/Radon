@@ -1,9 +1,10 @@
 #include "FontLoader.hpp"
 
+#include "Engine/Core/Logger.hpp"
+
 #include <ranges>
 
 #include <Urho3D/Core/Context.h>
-#include <Urho3D/Core/StringUtils.h>
 #include <Urho3D/IO/FileSystem.h>
 #include <Urho3D/IO/Log.h>
 #include <Urho3D/Resource/ResourceCache.h>
@@ -20,7 +21,7 @@ FontLoader::FontLoader(Urho3D::Context* context)
 
 void FontLoader::LoadFontsFromDirectory(ea::string const& directory) const
 {
-    URHO3D_LOGDEBUG("FontLoader: Loading fonts from dir: {}", directory);
+    RADON_LOGDEBUG("FontLoader: Loading fonts from dir: {}", directory);
     using namespace Urho3D;
 
     ea::vector<ea::string> fonts;
@@ -29,8 +30,8 @@ void FontLoader::LoadFontsFromDirectory(ea::string const& directory) const
     for (auto const& fontFile : fonts)
     {
         if (rmlUI_->LoadFont(directory + fontFile))
-            URHO3D_LOGDEBUG("FontLoader: Loaded font: {}", fontFile);
+            RADON_LOGDEBUG("FontLoader: Loaded font: {}", fontFile);
         else
-            URHO3D_LOGWARNING("FontLoader: Failed to load font: {}", fontFile);
+            RADON_LOGWARN("FontLoader: Failed to load font: {}", fontFile);
     }
 }
