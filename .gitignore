@@ -16,4 +16,4 @@ android/.cxx
 /Out/
 Urho3D.log
 project_structure.txt
-GetProjectStructure.bat
+GetProjectStructure.ps1
