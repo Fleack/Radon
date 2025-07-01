@@ -53,6 +53,8 @@ void PlayerMovement::Start()
         return;
     }
 
+    SetJumpHeight(jumpHeight_);
+
     initialized_ = true;
 }
 
@@ -107,7 +109,7 @@ void PlayerMovement::FixedUpdate(float timeStep)
     bool jumpPressed = inputHandler_->GetJump();
     if (jumpPressed && !jumpPressedLastFrame_ && IsGrounded())
     {
-        characterController_->Jump();
+        characterController_->Jump({0.0f, jumpHeight_, 0.0f});
         SendEvent(EVENT_JUMPED);
     }
     jumpPressedLastFrame_ = jumpPressed;
@@ -115,15 +117,12 @@ void PlayerMovement::FixedUpdate(float timeStep)
 
 void PlayerMovement::SetJumpHeight(float height)
 {
-    if (!characterController_)
-        return;
-
-    characterController_->SetMaxJumpHeight(height);
+    jumpHeight_ = height;
 }
 
 float PlayerMovement::GetJumpHeight() const
 {
-    return characterController_ ? characterController_->GetMaxJumpHeight() : 0.0f;
+    return jumpHeight_;
 }
 
 bool PlayerMovement::IsGrounded() const

@@ -57,6 +57,7 @@ private:
     float walkSpeed_{3.0f};
     float runSpeed_{6.0f};
     float currentSpeed_{0.0f};
+    float jumpHeight_{6.0f};
 
     Urho3D::Vector3 moveDirection_{Urho3D::Vector3::ZERO};
 
