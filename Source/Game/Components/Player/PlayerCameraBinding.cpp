@@ -17,7 +17,7 @@ Urho3D::StringHash const PlayerCameraBinding::EVENT_HEADBOB("PlayerHeadbob");
 PlayerCameraBinding::PlayerCameraBinding(Urho3D::Context* context)
     : LogicComponent(context)
 {
-    SetUpdateEventMask(Urho3D::USE_UPDATE);
+    SetUpdateEventMask(Urho3D::USE_POSTUPDATE);
 }
 
 PlayerCameraBinding::~PlayerCameraBinding() = default;

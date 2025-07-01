@@ -19,7 +19,7 @@ Urho3D::StringHash const PlayerMovement::EVENT_RUN_STATE_CHANGED("PlayerRunState
 PlayerMovement::PlayerMovement(Urho3D::Context* context)
     : LogicComponent(context)
 {
-    SetUpdateEventMask(Urho3D::USE_UPDATE);
+    SetUpdateEventMask(Urho3D::USE_FIXEDUPDATE);
 }
 
 PlayerMovement::~PlayerMovement() = default;
@@ -61,7 +61,7 @@ void PlayerMovement::DelayedStart()
     Start();
 }
 
-void PlayerMovement::Update(float timeStep)
+void PlayerMovement::FixedUpdate(float timeStep)
 {
     if (!initialized_ || !inputHandler_ || !characterController_)
         return;

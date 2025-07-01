@@ -23,7 +23,7 @@ public:
 
     void Start() override;
     void DelayedStart() override;
-    void Update(float timeStep) override;
+    void FixedUpdate(float timeStep) override;
 
     void SetWalkSpeed(float speed) { walkSpeed_ = speed; }
     [[nodiscard]] float GetWalkSpeed() const { return walkSpeed_; }
