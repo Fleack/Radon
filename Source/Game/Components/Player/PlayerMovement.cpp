@@ -57,6 +57,8 @@ void PlayerMovement::FixedUpdate(float timeStep)
     if (!initialized_ || !characterController_)
         return;
 
+    bool const grounded = IsGrounded();
+
     bool moveForward = GetGlobalVar(GlobalVars::PLAYER_MOVE_FORWARD).GetBool();
     bool moveBack = GetGlobalVar(GlobalVars::PLAYER_MOVE_BACK).GetBool();
     bool moveLeft = GetGlobalVar(GlobalVars::PLAYER_MOVE_LEFT).GetBool();
@@ -67,14 +69,17 @@ void PlayerMovement::FixedUpdate(float timeStep)
     bool wasRunning = isRunning_;
 
     Urho3D::Vector3 direction = Urho3D::Vector3::ZERO;
-    if (moveForward)
-        direction += camForward_;
-    if (moveBack)
-        direction -= camForward_;
-    if (moveRight)
-        direction += camRight_;
-    if (moveLeft)
-        direction -= camRight_;
+    if (grounded) [[likely]]
+    {
+        if (moveForward)
+            direction += camForward_;
+        if (moveBack)
+            direction -= camForward_;
+        if (moveRight)
+            direction += camRight_;
+        if (moveLeft)
+            direction -= camRight_;
+    }
 
     if (!direction.Equals(Urho3D::Vector3::ZERO))
     {
@@ -89,35 +94,44 @@ void PlayerMovement::FixedUpdate(float timeStep)
     isRunning_ = run && isMoving_;
     currentSpeed_ = isRunning_ ? runSpeed_ : walkSpeed_;
 
-    targetMoveDirection_ = direction * currentSpeed_;
-    float smoothing = Urho3D::Min(1.0f, timeStep * movementSmoothingFactor_);
-    moveDirection_ = moveDirection_.Lerp(targetMoveDirection_, smoothing);
+    if (grounded) [[likely]]
+    {
+        targetMoveDirection_ = direction * currentSpeed_;
+        lastGroundedDirection_ = targetMoveDirection_;
+        float smoothing = Urho3D::Min(1.0f, timeStep * movementSmoothingFactor_);
+        moveDirection_ = moveDirection_.Lerp(targetMoveDirection_, smoothing);
 
-    if (!isMoving_ && moveDirection_.Length() < 0.1f)
-        moveDirection_ = Urho3D::Vector3::ZERO;
+        if (!isMoving_ && moveDirection_.Length() < 0.1f)
+            moveDirection_ = Urho3D::Vector3::ZERO;
+    }
+    else
+    {
+        if (moveDirection_ == Urho3D::Vector3::ZERO && lastGroundedDirection_ != Urho3D::Vector3::ZERO)
+            moveDirection_ = lastGroundedDirection_;
+    }
 
     characterController_->SetWalkIncrement(moveDirection_ * timeStep);
 
-    if (isMoving_ && !wasMoving)
+    if (isMoving_ && !wasMoving && grounded)
     {
         Urho3D::VariantMap eventData;
         eventData[Events::P::SPEED] = currentSpeed_;
         SendEvent(Events::E_PLAYER_STARTED_MOVING, eventData);
     }
 
-    if (!isMoving_ && wasMoving)
+    if (!isMoving_ && wasMoving && grounded)
     {
         SendEvent(Events::E_PLAYER_STOPPED_MOVING);
     }
 
-    if (isRunning_ != wasRunning)
+    if (isRunning_ != wasRunning && grounded)
     {
         Urho3D::VariantMap eventData;
         eventData[Events::P::IS_RUNNING] = isRunning_;
         SendEvent(Events::E_PLAYER_RUN_STATE_CHANGED, eventData);
     }
 
-    if (jump && !jumpPressedLastFrame_ && IsGrounded())
+    if (jump && !jumpPressedLastFrame_ && grounded)
     {
         characterController_->Jump({0.0f, jumpHeight_, 0.0f});
 
@@ -125,6 +139,14 @@ void PlayerMovement::FixedUpdate(float timeStep)
         eventData[Events::P::JUMP_HEIGHT] = jumpHeight_;
         SendEvent(Events::E_PLAYER_JUMPED);
     }
+
+    if (!groundedLastFrame_ && grounded)
+    {
+        Urho3D::VariantMap eventData;
+        SendEvent(Events::E_PLAYER_GROUNDED, eventData);
+    }
+
+    groundedLastFrame_ = grounded;
     jumpPressedLastFrame_ = jump;
 }
 

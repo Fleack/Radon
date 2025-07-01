@@ -12,5 +12,4 @@ inline auto PLAYER_MOVE_RIGHT = "PlayerMoveRight";
 inline auto PLAYER_JUMP = "PlayerJump";
 inline auto PLAYER_RUN = "PlayerRun";
 
-
 } // namespace Radon::Game::Events

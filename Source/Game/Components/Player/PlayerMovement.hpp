@@ -51,12 +51,14 @@ private:
 
     Urho3D::Vector3 moveDirection_{Urho3D::Vector3::ZERO};
     Urho3D::Vector3 targetMoveDirection_{Urho3D::Vector3::ZERO};
+    Urho3D::Vector3 lastGroundedDirection_{Urho3D::Vector3::ZERO};
     Urho3D::Vector3 camForward_{Urho3D::Vector3::FORWARD};
     Urho3D::Vector3 camRight_{Urho3D::Vector3::RIGHT};
 
     bool isMoving_{false};
     bool isRunning_{false};
     bool jumpPressedLastFrame_{false};
+    bool groundedLastFrame_{false};
 
     bool initialized_{false};
 };

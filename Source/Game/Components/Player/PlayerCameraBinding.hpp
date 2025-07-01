@@ -57,11 +57,13 @@ private:
 
     bool playerMoving_{false};
     bool playerRunning_{false};
+    bool playerJumped_{false};
+    bool playerGrounded_{false};
 
     float cameraHeight_{1.8f};
     float cameraSmoothing_{20.0f};
 
-    float headBobStrength_{0.035f};
+    float headBobStrength_{0.04f};
     float headBobSpeed_{1.5f};
     float headBobTime_{0.0f};
     float headBobHorizontalFactor_{1.0f};

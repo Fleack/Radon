@@ -5,6 +5,7 @@ namespace Radon::Game::Events
 
 // Movement events
 Urho3D::StringHash const E_PLAYER_JUMPED("PlayerJumped");
+Urho3D::StringHash const E_PLAYER_GROUNDED("PlayerGrounded");
 Urho3D::StringHash const E_PLAYER_STARTED_MOVING("PlayerStartedMoving");
 Urho3D::StringHash const E_PLAYER_STOPPED_MOVING("PlayerStoppedMoving");
 Urho3D::StringHash const E_PLAYER_RUN_STATE_CHANGED("PlayerRunStateChanged");

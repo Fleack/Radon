@@ -51,6 +51,17 @@ void PlayerCameraBinding::Start()
 
 void PlayerCameraBinding::SubscribeToEvents()
 {
+    // TODO: Jump with ceiling above player?
+    SubscribeToEvent(Events::E_PLAYER_JUMPED, [this](Urho3D::StringHash, Urho3D::VariantMap&) {
+        playerJumped_ = true;
+        playerGrounded_ = false;
+    });
+
+    SubscribeToEvent(Events::E_PLAYER_GROUNDED, [this](Urho3D::StringHash, Urho3D::VariantMap&) {
+        playerJumped_ = false;
+        playerGrounded_ = true;
+    });
+
     SubscribeToEvent(Events::E_PLAYER_STARTED_MOVING, [this](Urho3D::StringHash, Urho3D::VariantMap&) {
         playerMoving_ = true;
     });
@@ -102,6 +113,9 @@ void PlayerCameraBinding::Update(float timeStep)
 
 void PlayerCameraBinding::ApplyHeadBob(float timeStep)
 {
+    if (!playerGrounded_)
+        return;
+
     static float bobLerp = 0.0f;
     if (playerMoving_)
     {
