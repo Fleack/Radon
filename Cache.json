@@ -69,13 +69,7 @@
 		{
 			"key": "Scenes/Gameplay.scene",
 			"value": {
-				"modificationTime": 1751137251
-			}
-		},
-		{
-			"key": "Materials/Floor.xml",
-			"value": {
-				"modificationTime": 1751136037
+				"modificationTime": 1751216100
 			}
 		},
 		{
@@ -85,21 +79,27 @@
 			}
 		},
 		{
+			"key": "Materials/Floor.xml",
+			"value": {
+				"modificationTime": 1751136037
+			}
+		},
+		{
 			"key": "WorldGraph.json",
 			"value": {
 				"modificationTime": 1750159805
 			}
 		},
 		{
-			"key": "Sounds/ambient.ogg",
-			"value": {
-				"modificationTime": 1751134853
-			}
-		},
-		{
 			"key": "Items/KevlarVest.json",
 			"value": {
 				"modificationTime": 1750232202
+			}
+		},
+		{
+			"key": "Sounds/ambient.ogg",
+			"value": {
+				"modificationTime": 1751134853
 			}
 		},
 		{
@@ -133,21 +133,33 @@
 			}
 		},
 		{
+			"key": "HeightMaps/Heightmap.png",
+			"value": {
+				"modificationTime": 1751214561
+			}
+		},
+		{
 			"key": "Configs/KeyBindings.json",
 			"value": {
 				"modificationTime": 1750159912
 			}
 		},
 		{
-			"key": "Items/Bandage.json",
+			"key": "HeightMaps/heightmap_30.290653002668705_59.904122084753_17.28.raw",
 			"value": {
-				"modificationTime": 1750232152
+				"modificationTime": 1751214679
 			}
 		},
 		{
 			"key": "Items/medkit.json",
 			"value": {
 				"modificationTime": 1750232226
+			}
+		},
+		{
+			"key": "Items/Bandage.json",
+			"value": {
+				"modificationTime": 1750232152
 			}
 		},
 		{

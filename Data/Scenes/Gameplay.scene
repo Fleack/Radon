@@ -2,8 +2,8 @@
 <resource _id="1">
 	<attributes>
 		<attribute name="Name" type="String" value="Gameplay" />
-		<attribute name="Next Node ID" type="Int" value="14" />
-		<attribute name="Next Component ID" type="Int" value="28" />
+		<attribute name="Next Node ID" type="Int" value="15" />
+		<attribute name="Next Component ID" type="Int" value="31" />
 	</attributes>
 	<components>
 		<component _id="1" _typeName="Octree" />
@@ -135,6 +135,7 @@
 		<node _id="4">
 			<attributes>
 				<attribute name="Name" type="String" value="Ground" />
+				<attribute name="Position" type="Vector3" value="0 -2.768181 0" />
 				<attribute name="Rotation" type="Quaternion" value="0.999934 -0.00457 4.8196e-05 0.010544" />
 				<attribute name="Scale" type="Vector3" value="134.582703 134.582703 134.583221" />
 			</attributes>
@@ -142,6 +143,7 @@
 				<component _id="10" _typeName="RigidBody">
 					<attributes>
 						<attribute name="Physics Rotation" type="Quaternion" value="0.999934 -0.00457 4.81961e-05 0.010544" />
+						<attribute name="Physics Position" type="Vector3" value="0 -2.76818 0" />
 						<attribute name="Use Gravity" type="Bool" value="false" />
 					</attributes>
 				</component>
@@ -246,41 +248,6 @@
 			<attributes>
 				<attribute name="Name" type="String" value="Player" />
 			</attributes>
-			<nodes>
-				<node _id="12">
-					<attributes>
-						<attribute name="Name" type="String" value="Camera" />
-						<attribute name="Position" type="Vector3" value="0 1.8 0" />
-					</attributes>
-					<components>
-						<component _id="21" _typeName="Camera">
-							<attributes>
-								<attribute name="Far Clip" type="Float" value="500.000000" />
-							</attributes>
-						</component>
-					</components>
-				</node>
-				<node _id="13">
-					<attributes>
-						<attribute name="Name" type="String" value="Character" />
-					</attributes>
-					<components>
-						<component _id="22" _typeName="KinematicCharacterController">
-							<attributes>
-								<attribute name="Gravity" type="Vector3" value="0 -10 0" />
-								<attribute name="Linear Damping" type="Float" value="0.300000" />
-								<attribute name="Offset" type="Vector3" value="0 0 0" />
-								<attribute name="Step Height" type="Float" value="0.200000" />
-								<attribute name="Max Jump Height" type="Float" value="1.000000" />
-								<attribute name="Jump Speed" type="Float" value="7.000000" />
-								<attribute name="Is Trigger" type="Bool" value="false" />
-								<attribute name="Activate Triggers" type="Bool" value="false" />
-							</attributes>
-						</component>
-						<component _id="26" _typeName="SoundListener" />
-					</components>
-				</node>
-			</nodes>
 		</node>
 		<node _id="11">
 			<attributes>
@@ -291,6 +258,19 @@
 					<attributes>
 						<attribute name="Model" type="ResourceRef" value="Model;Models/Box.mdl" />
 						<attribute name="Material" type="ResourceRefList" value="Material;Materials/DefaultSkybox.xml" />
+					</attributes>
+				</component>
+			</components>
+		</node>
+		<node _id="14">
+			<attributes>
+				<attribute name="Is Enabled" type="Bool" value="false" />
+				<attribute name="Name" type="String" value="Terrain" />
+			</attributes>
+			<components>
+				<component _id="30" _typeName="Terrain">
+					<attributes>
+						<attribute name="Material" type="ResourceRef" value="Material;Materials/Floor.xml" />
 					</attributes>
 				</component>
 			</components>
