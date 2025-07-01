@@ -33,8 +33,12 @@ public:
     [[nodiscard]] float GetMouseYaw() const { return mouseYaw_; }
     [[nodiscard]] float GetMousePitch() const { return mousePitch_; }
 
+    void SetInputHandler(Engine::Input::InputHandler* handler);
+
+    static Urho3D::StringHash const EVENT_INTERACTED;
+
 private:
-    Radon::Engine::Input::InputHandler* inputHandler_{nullptr};
+    Engine::Input::InputHandler* inputHandler_{nullptr};
 
     bool moveForward_{false};
     bool moveBack_{false};

@@ -10,10 +10,15 @@
 namespace Radon::Game::Components
 {
 
+Urho3D::StringHash const PlayerMovement::EVENT_JUMPED("PlayerJumped");
+Urho3D::StringHash const PlayerMovement::EVENT_STARTED_MOVING("PlayerStartedMoving");
+Urho3D::StringHash const PlayerMovement::EVENT_STOPPED_MOVING("PlayerStoppedMoving");
+Urho3D::StringHash const PlayerMovement::EVENT_RUN_STATE_CHANGED("PlayerRunStateChanged");
+
 PlayerMovement::PlayerMovement(Urho3D::Context* context)
     : LogicComponent(context)
 {
-    SetUpdateEventMask(Urho3D::USE_FIXEDUPDATE);
+    SetUpdateEventMask(Urho3D::USE_UPDATE);
 }
 
 PlayerMovement::~PlayerMovement() = default;
@@ -28,24 +33,14 @@ void PlayerMovement::Start()
     if (initialized_)
         return;
 
-    inputHandler_ = node_->GetComponent<PlayerInputHandler>();
+    if (!inputHandler_)
+        inputHandler_ = node_->GetComponent<PlayerInputHandler>();
+    if (!characterController_)
+        characterController_ = node_->GetOrCreateComponent<Urho3D::KinematicCharacterController>();
+
     if (!inputHandler_)
     {
         RADON_LOGERROR("PlayerMovement: Failed to get PlayerInputHandler component");
-        return;
-    }
-
-    auto* characterNode = node_->GetChild("Character");
-    if (!characterNode)
-    {
-        RADON_LOGERROR("PlayerMovement: Failed to find 'Character' child node");
-        return;
-    }
-
-    characterController_ = characterNode->GetComponent<Urho3D::KinematicCharacterController>();
-    if (!characterController_)
-    {
-        RADON_LOGERROR("PlayerMovement: Failed to get KinematicCharacterController component");
         return;
     }
 
@@ -68,6 +63,9 @@ void PlayerMovement::Update(float timeStep)
     if (inputHandler_->GetMoveLeft())
         direction -= node_->GetWorldRight();
 
+    bool wasMoving = isMoving_;
+    bool wasRunning = isRunning_;
+
     if (!direction.Equals(Urho3D::Vector3::ZERO))
     {
         direction.Normalize();
@@ -83,9 +81,19 @@ void PlayerMovement::Update(float timeStep)
     moveDirection_ = direction * currentSpeed_;
     characterController_->SetWalkIncrement(moveDirection_ * timeStep);
 
+    if (isMoving_ && !wasMoving)
+        SendEvent(EVENT_STARTED_MOVING);
+    if (!isMoving_ && wasMoving)
+        SendEvent(EVENT_STOPPED_MOVING);
+    if (isRunning_ != wasRunning)
+        SendEvent(EVENT_RUN_STATE_CHANGED);
+
     bool jumpPressed = inputHandler_->GetJump();
     if (jumpPressed && !jumpPressedLastFrame_ && IsGrounded())
+    {
         characterController_->Jump();
+        SendEvent(EVENT_JUMPED);
+    }
     jumpPressedLastFrame_ = jumpPressed;
 
     node_->SetWorldRotation(Urho3D::Quaternion(inputHandler_->GetMouseYaw(), Urho3D::Vector3::UP)); // TODO Maybe laggy
@@ -107,6 +115,16 @@ float PlayerMovement::GetJumpHeight() const
 bool PlayerMovement::IsGrounded() const
 {
     return characterController_ ? characterController_->OnGround() : false;
+}
+
+void PlayerMovement::SetInputHandler(PlayerInputHandler* handler)
+{
+    inputHandler_ = handler;
+}
+
+void PlayerMovement::SetCharacterController(Urho3D::KinematicCharacterController* controller)
+{
+    characterController_ = controller;
 }
 
 } // namespace Radon::Game::Components

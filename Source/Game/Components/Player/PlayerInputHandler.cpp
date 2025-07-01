@@ -9,6 +9,8 @@
 namespace Radon::Game::Components
 {
 
+Urho3D::StringHash const PlayerInputHandler::EVENT_INTERACTED("PlayerInteracted");
+
 PlayerInputHandler::PlayerInputHandler(Urho3D::Context* context)
     : LogicComponent(context)
 {
@@ -20,6 +22,8 @@ PlayerInputHandler::~PlayerInputHandler() = default;
 void PlayerInputHandler::RegisterObject(Urho3D::Context* context)
 {
     context->AddFactoryReflection<PlayerInputHandler>("Player");
+
+    URHO3D_ATTRIBUTE("MouseSensitivity", float, mouseSensitivity_, 0.1f, Urho3D::AM_DEFAULT);
 }
 
 void PlayerInputHandler::Start()
@@ -37,6 +41,11 @@ void PlayerInputHandler::Start()
     initialized_ = true;
 }
 
+void PlayerInputHandler::SetInputHandler(Radon::Engine::Input::InputHandler* handler)
+{
+    inputHandler_ = handler;
+}
+
 void PlayerInputHandler::Update(float timeStep)
 {
     if (!initialized_ || !inputHandler_)
@@ -48,10 +57,12 @@ void PlayerInputHandler::Update(float timeStep)
     moveRight_ = inputHandler_->GetRightMove();
 
     jump_ = inputHandler_->GetUpMove();
-
     run_ = inputHandler_->GetDownMove();
 
-    interact_ = false; // TODO: реализовать взаимодействие
+    bool prevInteract = interact_;
+    interact_ = inputHandler_->GetInteract();
+    if (interact_ && !prevInteract)
+        SendEvent(EVENT_INTERACTED);
 
     mouseYaw_ += inputHandler_->GetMouseDeltaX() * mouseSensitivity_;
     mousePitch_ += inputHandler_->GetMouseDeltaY() * mouseSensitivity_;

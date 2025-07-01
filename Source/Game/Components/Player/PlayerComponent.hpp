@@ -28,8 +28,21 @@ public:
     [[nodiscard]] PlayerHealth* GetHealth() const { return health_; }
     [[nodiscard]] PlayerCameraBinding* GetCameraBinding() const { return cameraBinding_; }
 
+    void SetInputHandler(PlayerInputHandler* handler);
+    void SetMovement(PlayerMovement* movement);
+    void SetHealth(PlayerHealth* health);
+    void SetCameraBinding(PlayerCameraBinding* cameraBinding);
+
+    static Urho3D::StringHash const EVENT_PLAYER_DAMAGED;
+    static Urho3D::StringHash const EVENT_PLAYER_HEALED;
+    static Urho3D::StringHash const EVENT_PLAYER_DIED;
+    static Urho3D::StringHash const EVENT_PLAYER_JUMPED;
+    static Urho3D::StringHash const EVENT_PLAYER_STARTED_MOVING;
+    static Urho3D::StringHash const EVENT_PLAYER_STOPPED_MOVING;
+    static Urho3D::StringHash const EVENT_PLAYER_INTERACTED;
+
 private:
-    void CreateComponents();
+    void SubscribeToComponentEvents();
 
 private:
     PlayerInputHandler* inputHandler_{nullptr};

@@ -38,9 +38,16 @@ public:
     [[nodiscard]] bool IsRunning() const { return isRunning_; }
     [[nodiscard]] bool IsGrounded() const;
 
+    void SetInputHandler(PlayerInputHandler* handler);
+    void SetCharacterController(Urho3D::KinematicCharacterController* controller);
+
+    static Urho3D::StringHash const EVENT_JUMPED;
+    static Urho3D::StringHash const EVENT_STARTED_MOVING;
+    static Urho3D::StringHash const EVENT_STOPPED_MOVING;
+    static Urho3D::StringHash const EVENT_RUN_STATE_CHANGED;
+
 private:
     PlayerInputHandler* inputHandler_{nullptr};
-
     Urho3D::KinematicCharacterController* characterController_{nullptr};
 
     float walkSpeed_{3.0f};

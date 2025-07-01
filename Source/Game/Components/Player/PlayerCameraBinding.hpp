@@ -36,11 +36,18 @@ public:
     void SetHeadBobSpeed(float speed) { headBobSpeed_ = speed; }
     [[nodiscard]] float GetHeadBobSpeed() const { return headBobSpeed_; }
 
+    void SetInputHandler(PlayerInputHandler* handler);
+    void SetMovement(PlayerMovement* movement);
+    void SetCameraNode(Urho3D::Node* node);
+    void SetCamera(Urho3D::Camera* camera);
+
+    static Urho3D::StringHash const EVENT_CAMERA_MOVED;
+    static Urho3D::StringHash const EVENT_HEADBOB;
+
 private:
     void ApplyHeadBob(float timeStep);
 
 private:
-
     PlayerInputHandler* inputHandler_{nullptr};
     PlayerMovement* movement_{nullptr};
 

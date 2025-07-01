@@ -1,8 +1,8 @@
 #include "PlayerCameraBinding.hpp"
 
 #include "Engine/Core/Logger.hpp"
-#include "PlayerInputHandler.hpp"
-#include "PlayerMovement.hpp"
+#include "Game/Components/Player/PlayerInputHandler.hpp"
+#include "Game/Components/Player/PlayerMovement.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Graphics/Camera.h>
@@ -10,6 +10,9 @@
 
 namespace Radon::Game::Components
 {
+
+Urho3D::StringHash const PlayerCameraBinding::EVENT_CAMERA_MOVED("PlayerCameraMoved");
+Urho3D::StringHash const PlayerCameraBinding::EVENT_HEADBOB("PlayerHeadbob");
 
 PlayerCameraBinding::PlayerCameraBinding(Urho3D::Context* context)
     : LogicComponent(context)
@@ -22,6 +25,10 @@ PlayerCameraBinding::~PlayerCameraBinding() = default;
 void PlayerCameraBinding::RegisterObject(Urho3D::Context* context)
 {
     context->AddFactoryReflection<PlayerCameraBinding>();
+
+    URHO3D_ATTRIBUTE("CameraHeight", float, cameraHeight_, 1.8f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("Head Bob Strength", float, headBobStrength_, 0.05f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("Head Bob Speed", float, headBobSpeed_, 10.0f, Urho3D::AM_DEFAULT);
 }
 
 void PlayerCameraBinding::Start()
@@ -29,8 +36,10 @@ void PlayerCameraBinding::Start()
     if (initialized_)
         return;
 
-    inputHandler_ = node_->GetComponent<PlayerInputHandler>();
-    movement_ = node_->GetComponent<PlayerMovement>();
+    if (!inputHandler_)
+        inputHandler_ = node_->GetComponent<PlayerInputHandler>();
+    if (!movement_)
+        movement_ = node_->GetComponent<PlayerMovement>();
 
     if (!inputHandler_ || !movement_)
     {
@@ -38,20 +47,15 @@ void PlayerCameraBinding::Start()
         return;
     }
 
-    cameraNode_ = node_->GetChild("Camera");
     if (!cameraNode_)
-    {
-        RADON_LOGERROR("PlayerCameraBinding: Failed to find 'Camera' child node");
-        return;
-    }
+        cameraNode_ = node_->GetChild("Camera");
+    if (!cameraNode_)
+        cameraNode_ = node_->CreateChild("Camera");
 
-    camera_ = cameraNode_->GetComponent<Urho3D::Camera>();
     if (!camera_)
-    {
-        RADON_LOGERROR("PlayerCameraBinding: Failed to get Camera component");
-        return;
-    }
+        camera_ = cameraNode_->GetOrCreateComponent<Urho3D::Camera>();
 
+    cameraNode_->SetPosition(Urho3D::Vector3(0.0f, cameraHeight_, 0.0f));
     originalCameraPosition_ = cameraNode_->GetPosition();
 
     initialized_ = true;
@@ -62,29 +66,62 @@ void PlayerCameraBinding::Update(float timeStep)
     if (!initialized_ || !inputHandler_ || !movement_ || !cameraNode_ || !camera_)
         return;
 
+    auto prevRot = cameraNode_->GetRotation();
     cameraNode_->SetRotation(Urho3D::Quaternion(inputHandler_->GetMousePitch(), Urho3D::Vector3::RIGHT));
+    if (cameraNode_->GetRotation() != prevRot)
+        SendEvent(EVENT_CAMERA_MOVED);
 
     ApplyHeadBob(timeStep);
 }
 
 void PlayerCameraBinding::ApplyHeadBob(float timeStep)
 {
+    static float bobLerp = 0.0f;
     if (movement_->IsMoving())
     {
         float speed = movement_->IsRunning() ? headBobSpeed_ * 1.5f : headBobSpeed_;
         headBobTime_ += timeStep * speed;
+        bobLerp = 1.0f;
+    }
+    else
+    {
+        bobLerp -= timeStep * 3.0f;
+        if (bobLerp < 0.0f) bobLerp = 0.0f;
     }
 
     Urho3D::Vector3 bobOffset = Urho3D::Vector3::ZERO;
 
-    if (movement_->IsMoving())
+    if (bobLerp > 0.0f)
     {
         float intensity = movement_->IsRunning() ? headBobStrength_ * 1.5f : headBobStrength_;
-        bobOffset.y_ = Urho3D::Sin(headBobTime_ * 360.0f) * intensity;
-        bobOffset.x_ = Urho3D::Cos(headBobTime_ * 180.0f) * intensity * 0.5f;
+        bobOffset.y_ = Urho3D::Sin(headBobTime_ * 360.0f) * intensity * bobLerp;
+        bobOffset.x_ = Urho3D::Cos(headBobTime_ * 180.0f) * intensity * 0.5f * bobLerp;
     }
 
+    auto prevPos = cameraNode_->GetPosition();
     cameraNode_->SetPosition(originalCameraPosition_ + bobOffset);
+    if (cameraNode_->GetPosition() != prevPos)
+        SendEvent(EVENT_HEADBOB);
+}
+
+void PlayerCameraBinding::SetInputHandler(PlayerInputHandler* handler)
+{
+    inputHandler_ = handler;
+}
+
+void PlayerCameraBinding::SetMovement(PlayerMovement* movement)
+{
+    movement_ = movement;
+}
+
+void PlayerCameraBinding::SetCameraNode(Urho3D::Node* node)
+{
+    cameraNode_ = node;
+}
+
+void PlayerCameraBinding::SetCamera(Urho3D::Camera* camera)
+{
+    camera_ = camera;
 }
 
 } // namespace Radon::Game::Components

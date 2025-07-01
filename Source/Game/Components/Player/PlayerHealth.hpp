@@ -23,9 +23,18 @@ public:
     [[nodiscard]] bool IsAlive() const { return health_ > 0.0f; }
 
     void SetMaxHealth(float maxHealth);
+    void SetHealth(float health);
+    void SetInvulnerable(bool invuln);
+    [[nodiscard]] bool IsInvulnerable() const { return invulnerable_; }
+
     void TakeDamage(float amount, Urho3D::Node* source = nullptr);
     void Heal(float amount);
     void Respawn();
+
+    static Urho3D::StringHash const EVENT_DAMAGED;
+    static Urho3D::StringHash const EVENT_HEALED;
+    static Urho3D::StringHash const EVENT_DIED;
+    static Urho3D::StringHash const EVENT_RESPAWNED;
 
 private:
     float health_{100.0f};
