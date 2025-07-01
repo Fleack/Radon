@@ -22,11 +22,6 @@ CameraManager::~CameraManager()
 void CameraManager::Initialize(Node& cameraNode, float lookSensitivity, float moveSpeed)
 {
     RADON_LOGDEBUG("CameraManager: Initialize called");
-    if (controllers_[0])
-    {
-        RADON_LOGWARN("CameraManager: already initialized");
-        return;
-    }
 
     cameraNode_ = &cameraNode;
 
@@ -40,7 +35,7 @@ void CameraManager::Initialize(Node& cameraNode, float lookSensitivity, float mo
         camera.SetMoveSpeed(moveSpeed);
     });
 
-    SetCameraMode(CameraMode::FREE_CAMERA);
+    SetCameraMode(CameraMode::FPS_CAMERA);
 
     RADON_LOGINFO("CameraManager: Initialized with sensitivity={:.2f}, speed={:.2f}", lookSensitivity, moveSpeed);
 }

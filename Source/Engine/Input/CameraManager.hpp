@@ -42,7 +42,7 @@ public:
     [[nodiscard]] float GetMoveSpeed() const;
 
 private:
-    Urho3D::SharedPtr<ICameraController> GetCameraByMode(CameraMode mode) const { return controllers_[std::to_underlying(mode)]; }
+    Urho3D::WeakPtr<ICameraController> GetCameraByMode(CameraMode mode) const { return controllers_[std::to_underlying(mode)]; }
 
     template <class Fn>
     void ApplyToAll(Fn fn) const
@@ -54,9 +54,9 @@ private:
 private:
     static constexpr std::size_t CameraModeCount = std::to_underlying(CameraMode::COUNT);
 
-    std::array<Urho3D::SharedPtr<ICameraController>, CameraModeCount> controllers_{};
     CameraMode currentMode_{CameraMode::FREE_CAMERA};
     Urho3D::WeakPtr<ICameraController> currentCamera_{nullptr};
+    std::array<Urho3D::SharedPtr<ICameraController>, CameraModeCount> controllers_{};
 
     Urho3D::WeakPtr<Urho3D::Node> cameraNode_;
 };
