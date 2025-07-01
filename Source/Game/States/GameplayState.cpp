@@ -27,15 +27,16 @@ void GameplayState::Enter()
     RADON_LOGINFO("GameplayState: entering");
 
     Urho3D::WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene(gameplaySceneName_);
+
     Urho3D::Node* playerNode = scene->GetChild("Player", true);
     if (!playerNode)
         playerNode = scene->CreateChild("Player");
 
     playerNode->CreateComponent<Components::PlayerComponent>();
 
-    Urho3D::Node* cameraNode = scene->GetChild("Camera", true);
+    Urho3D::Node* cameraNode = playerNode->GetChild("Camera", true);
     if (!cameraNode)
-        cameraNode = scene->CreateChild("Camera");
+        cameraNode = playerNode->CreateChild("Camera");
 
     GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene, *cameraNode, 0);
     GetSubsystem<UI::UIManager>()->ShowDocument("GameplayHUD");
