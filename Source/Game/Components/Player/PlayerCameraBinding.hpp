@@ -11,9 +11,6 @@ class Camera;
 namespace Radon::Game::Components
 {
 
-class PlayerInputHandler;
-class PlayerMovement;
-
 class PlayerCameraBinding final : public Urho3D::LogicComponent
 {
     URHO3D_OBJECT(PlayerCameraBinding, LogicComponent);
@@ -37,24 +34,17 @@ public:
     void SetHeadBobSpeed(float speed) { headBobSpeed_ = speed; }
     [[nodiscard]] float GetHeadBobSpeed() const { return headBobSpeed_; }
 
-    void SetInputHandler(PlayerInputHandler* handler);
-    void SetMovement(PlayerMovement* movement);
     void SetCameraNode(Urho3D::Node* node);
     void SetCamera(Urho3D::Camera* camera);
 
     Urho3D::Vector3 GetCamForward() const;
     Urho3D::Vector3 GetCamRight() const;
 
-    static Urho3D::StringHash const EVENT_CAMERA_MOVED;
-    static Urho3D::StringHash const EVENT_HEADBOB;
-
 private:
     void ApplyHeadBob(float timeStep);
+    void HandlePlayerMovementState(bool isMoving, bool isRunning);
 
 private:
-    PlayerInputHandler* inputHandler_{nullptr};
-    PlayerMovement* movement_{nullptr};
-
     Urho3D::Node* cameraNode_{nullptr};
     Urho3D::Camera* camera_{nullptr};
 

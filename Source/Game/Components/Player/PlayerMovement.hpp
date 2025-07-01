@@ -8,9 +8,6 @@
 namespace Radon::Game::Components
 {
 
-class PlayerInputHandler;
-class PlayerCameraBinding;
-
 class PlayerMovement final : public Urho3D::LogicComponent
 {
     URHO3D_OBJECT(PlayerMovement, LogicComponent);
@@ -40,19 +37,10 @@ public:
     [[nodiscard]] bool IsRunning() const { return isRunning_; }
     [[nodiscard]] bool IsGrounded() const;
 
-    void SetInputHandler(PlayerInputHandler* handler);
     void SetCharacterController(Urho3D::KinematicCharacterController* controller);
-    void SetCameraBinding(PlayerCameraBinding* cameraBinding);
-
-    static Urho3D::StringHash const EVENT_JUMPED;
-    static Urho3D::StringHash const EVENT_STARTED_MOVING;
-    static Urho3D::StringHash const EVENT_STOPPED_MOVING;
-    static Urho3D::StringHash const EVENT_RUN_STATE_CHANGED;
 
 private:
-    PlayerInputHandler* inputHandler_{nullptr};
     Urho3D::KinematicCharacterController* characterController_{nullptr};
-    PlayerCameraBinding* cameraBinding_{nullptr};
 
     float walkSpeed_{3.0f};
     float runSpeed_{6.0f};
@@ -60,6 +48,8 @@ private:
     float jumpHeight_{6.0f};
 
     Urho3D::Vector3 moveDirection_{Urho3D::Vector3::ZERO};
+    Urho3D::Vector3 camForward_{Urho3D::Vector3::FORWARD};
+    Urho3D::Vector3 camRight_{Urho3D::Vector3::RIGHT};
 
     bool isMoving_{false};
     bool isRunning_{false};

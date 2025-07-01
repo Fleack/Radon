@@ -1,8 +1,7 @@
 #include "PlayerCameraBinding.hpp"
 
 #include "Engine/Core/Logger.hpp"
-#include "Game/Components/Player/PlayerInputHandler.hpp"
-#include "Game/Components/Player/PlayerMovement.hpp"
+#include "Game/Components/Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Graphics/Camera.h>
@@ -11,13 +10,10 @@
 namespace Radon::Game::Components
 {
 
-Urho3D::StringHash const PlayerCameraBinding::EVENT_CAMERA_MOVED("PlayerCameraMoved");
-Urho3D::StringHash const PlayerCameraBinding::EVENT_HEADBOB("PlayerHeadbob");
-
 PlayerCameraBinding::PlayerCameraBinding(Urho3D::Context* context)
     : LogicComponent(context)
 {
-    SetUpdateEventMask(Urho3D::USE_POSTUPDATE);
+    SetUpdateEventMask(Urho3D::USE_UPDATE);
 }
 
 PlayerCameraBinding::~PlayerCameraBinding() = default;
@@ -36,17 +32,6 @@ void PlayerCameraBinding::Start()
     if (initialized_)
         return;
 
-    if (!inputHandler_)
-        inputHandler_ = node_->GetComponent<PlayerInputHandler>();
-    if (!movement_)
-        movement_ = node_->GetComponent<PlayerMovement>();
-
-    if (!inputHandler_ || !movement_)
-    {
-        RADON_LOGERROR("PlayerCameraBinding: Failed to get player components");
-        return;
-    }
-
     if (!cameraNode_)
         cameraNode_ = node_->GetChild("Camera");
     if (!cameraNode_)
@@ -58,6 +43,21 @@ void PlayerCameraBinding::Start()
     cameraNode_->SetPosition(Urho3D::Vector3(0.0f, cameraHeight_, 0.0f));
     originalCameraPosition_ = cameraNode_->GetPosition();
 
+    SubscribeToEvent(Events::E_PLAYER_STARTED_MOVING, [this](Urho3D::StringHash, Urho3D::VariantMap&) {
+        bool isRunning = GetGlobalVar("PlayerRun").GetBool();
+        HandlePlayerMovementState(true, isRunning);
+    });
+
+    SubscribeToEvent(Events::E_PLAYER_STOPPED_MOVING, [this](Urho3D::StringHash, Urho3D::VariantMap&) {
+        HandlePlayerMovementState(false, false);
+    });
+
+    SubscribeToEvent(Events::E_PLAYER_RUN_STATE_CHANGED, [this](Urho3D::StringHash, Urho3D::VariantMap& eventData) {
+        bool isRunning = eventData[Events::P::IS_RUNNING].GetBool();
+        bool isMoving = GetGlobalVar("PlayerMoving").GetBool();
+        HandlePlayerMovementState(isMoving, isRunning);
+    });
+
     initialized_ = true;
 }
 
@@ -68,15 +68,29 @@ void PlayerCameraBinding::DelayedStart()
 
 void PlayerCameraBinding::Update(float timeStep)
 {
-    if (!initialized_ || !inputHandler_ || !movement_ || !cameraNode_ || !camera_)
+    if (!initialized_ || !cameraNode_ || !camera_)
         return;
 
-    auto prevRot = cameraNode_->GetRotation();
-    auto yawQuat = Urho3D::Quaternion(inputHandler_->GetMouseYaw(), Urho3D::Vector3::UP);
-    auto pitchQuat = Urho3D::Quaternion(inputHandler_->GetMousePitch(), Urho3D::Vector3::RIGHT);
-    cameraNode_->SetRotation(yawQuat * pitchQuat);
-    if (cameraNode_->GetRotation() != prevRot)
-        SendEvent(EVENT_CAMERA_MOVED);
+    Urho3D::Variant const& mouseYaw = GetGlobalVar("PlayerMouseYaw");
+    Urho3D::Variant const& mousePitch = GetGlobalVar("PlayerMousePitch");
+
+    if (!mouseYaw.IsEmpty() && !mousePitch.IsEmpty())
+    {
+        auto prevRot = cameraNode_->GetRotation();
+        auto yawQuat = Urho3D::Quaternion(mouseYaw.GetFloat(), Urho3D::Vector3::UP);
+        auto pitchQuat = Urho3D::Quaternion(mousePitch.GetFloat(), Urho3D::Vector3::RIGHT);
+        cameraNode_->SetRotation(yawQuat * pitchQuat);
+
+        if (cameraNode_->GetRotation() != prevRot)
+        {
+            Urho3D::VariantMap dirEventData;
+            dirEventData[Events::P::FORWARD] = GetCamForward();
+            dirEventData[Events::P::RIGHT] = GetCamRight();
+            dirEventData[Events::P::PITCH] = mousePitch.GetFloat();
+            dirEventData[Events::P::YAW] = mouseYaw.GetFloat();
+            SendEvent(Events::E_PLAYER_CAMERA_DIRECTION_CHANGED, dirEventData);
+        }
+    }
 
     ApplyHeadBob(timeStep);
 }
@@ -85,9 +99,12 @@ void PlayerCameraBinding::ApplyHeadBob(float timeStep)
 {
     return;
     static float bobLerp = 0.0f;
-    if (movement_->IsMoving())
+    bool isMoving = GetGlobalVar("PlayerMoving").GetBool();
+    bool isRunning = GetGlobalVar("PlayerRun").GetBool();
+
+    if (isMoving)
     {
-        float speed = movement_->IsRunning() ? headBobSpeed_ * 1.5f : headBobSpeed_;
+        float speed = isRunning ? headBobSpeed_ * 1.5f : headBobSpeed_;
         headBobTime_ += timeStep * speed;
         bobLerp = 1.0f;
     }
@@ -101,7 +118,7 @@ void PlayerCameraBinding::ApplyHeadBob(float timeStep)
 
     if (bobLerp > 0.0f)
     {
-        float intensity = movement_->IsRunning() ? headBobStrength_ * 1.5f : headBobStrength_;
+        float intensity = isRunning ? headBobStrength_ * 1.5f : headBobStrength_;
         bobOffset.y_ = Urho3D::Sin(headBobTime_ * 360.0f) * intensity * bobLerp;
         bobOffset.x_ = Urho3D::Cos(headBobTime_ * 180.0f) * intensity * 0.5f * bobLerp;
     }
@@ -109,17 +126,15 @@ void PlayerCameraBinding::ApplyHeadBob(float timeStep)
     auto prevPos = cameraNode_->GetPosition();
     cameraNode_->SetPosition(originalCameraPosition_ + bobOffset);
     if (cameraNode_->GetPosition() != prevPos)
-        SendEvent(EVENT_HEADBOB);
+    {
+        using namespace Radon::Game::Events;
+        SendEvent(E_PLAYER_HEADBOB);
+    }
 }
 
-void PlayerCameraBinding::SetInputHandler(PlayerInputHandler* handler)
+void PlayerCameraBinding::HandlePlayerMovementState(bool isMoving, bool isRunning)
 {
-    inputHandler_ = handler;
-}
-
-void PlayerCameraBinding::SetMovement(PlayerMovement* movement)
-{
-    movement_ = movement;
+    SetGlobalVar("PlayerMoving", isMoving);
 }
 
 void PlayerCameraBinding::SetCameraNode(Urho3D::Node* node)

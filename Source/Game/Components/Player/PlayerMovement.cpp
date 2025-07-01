@@ -1,8 +1,7 @@
 #include "PlayerMovement.hpp"
 
 #include "Engine/Core/Logger.hpp"
-#include "Game/Components/Player/PlayerCameraBinding.hpp"
-#include "Game/Components/Player/PlayerInputHandler.hpp"
+#include "Game/Components/Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Physics/PhysicsWorld.h>
@@ -10,11 +9,6 @@
 
 namespace Radon::Game::Components
 {
-
-Urho3D::StringHash const PlayerMovement::EVENT_JUMPED("PlayerJumped");
-Urho3D::StringHash const PlayerMovement::EVENT_STARTED_MOVING("PlayerStartedMoving");
-Urho3D::StringHash const PlayerMovement::EVENT_STOPPED_MOVING("PlayerStoppedMoving");
-Urho3D::StringHash const PlayerMovement::EVENT_RUN_STATE_CHANGED("PlayerRunStateChanged");
 
 PlayerMovement::PlayerMovement(Urho3D::Context* context)
     : LogicComponent(context)
@@ -34,24 +28,13 @@ void PlayerMovement::Start()
     if (initialized_)
         return;
 
-    if (!inputHandler_)
-        inputHandler_ = node_->GetComponent<PlayerInputHandler>();
     if (!characterController_)
         characterController_ = node_->GetOrCreateComponent<Urho3D::KinematicCharacterController>();
-    if (!cameraBinding_)
-        cameraBinding_ = node_->GetComponent<PlayerCameraBinding>();
 
-    if (!inputHandler_)
-    {
-        RADON_LOGERROR("PlayerMovement: Failed to get PlayerInputHandler component"); // TODO fix cyclic dependency
-        return;
-    }
-
-    if (!cameraBinding_)
-    {
-        RADON_LOGERROR("PlayerMovement: Failed to get PlayerCameraBinding component");
-        return;
-    }
+    SubscribeToEvent(Events::E_PLAYER_CAMERA_DIRECTION_CHANGED, [this](Urho3D::StringHash, Urho3D::VariantMap& eventData) {
+        camForward_ = eventData[Events::P::FORWARD].GetVector3();
+        camRight_ = eventData[Events::P::RIGHT].GetVector3();
+    });
 
     SetJumpHeight(jumpHeight_);
 
@@ -65,24 +48,27 @@ void PlayerMovement::DelayedStart()
 
 void PlayerMovement::FixedUpdate(float timeStep)
 {
-    if (!initialized_ || !inputHandler_ || !characterController_)
+    if (!initialized_ || !characterController_)
         return;
 
-    Urho3D::Vector3 direction = Urho3D::Vector3::ZERO;
-    Urho3D::Vector3 camForward = cameraBinding_->GetCamForward();
-    Urho3D::Vector3 camRight = cameraBinding_->GetCamRight();
-
-    if (inputHandler_->GetMoveForward())
-        direction += camForward;
-    if (inputHandler_->GetMoveBack())
-        direction -= camForward;
-    if (inputHandler_->GetMoveRight())
-        direction += camRight;
-    if (inputHandler_->GetMoveLeft())
-        direction -= camRight;
-
+    bool moveForward = GetGlobalVar("PlayerMoveForward").GetBool();
+    bool moveBack = GetGlobalVar("PlayerMoveBack").GetBool();
+    bool moveLeft = GetGlobalVar("PlayerMoveLeft").GetBool();
+    bool moveRight = GetGlobalVar("PlayerMoveRight").GetBool();
+    bool run = GetGlobalVar("PlayerRun").GetBool();
+    bool jump = GetGlobalVar("PlayerJump").GetBool();
     bool wasMoving = isMoving_;
     bool wasRunning = isRunning_;
+
+    Urho3D::Vector3 direction = Urho3D::Vector3::ZERO;
+    if (moveForward)
+        direction += camForward_;
+    if (moveBack)
+        direction -= camForward_;
+    if (moveRight)
+        direction += camRight_;
+    if (moveLeft)
+        direction -= camRight_;
 
     if (!direction.Equals(Urho3D::Vector3::ZERO))
     {
@@ -94,25 +80,39 @@ void PlayerMovement::FixedUpdate(float timeStep)
         isMoving_ = false;
     }
 
-    isRunning_ = inputHandler_->GetRun() && isMoving_;
+    isRunning_ = run && isMoving_;
     currentSpeed_ = isRunning_ ? runSpeed_ : walkSpeed_;
     moveDirection_ = direction * currentSpeed_;
     characterController_->SetWalkIncrement(moveDirection_ * timeStep);
 
     if (isMoving_ && !wasMoving)
-        SendEvent(EVENT_STARTED_MOVING);
-    if (!isMoving_ && wasMoving)
-        SendEvent(EVENT_STOPPED_MOVING);
-    if (isRunning_ != wasRunning)
-        SendEvent(EVENT_RUN_STATE_CHANGED);
+    {
+        Urho3D::VariantMap eventData;
+        eventData[Events::P::SPEED] = currentSpeed_;
+        SendEvent(Events::E_PLAYER_STARTED_MOVING, eventData);
+    }
 
-    bool jumpPressed = inputHandler_->GetJump();
-    if (jumpPressed && !jumpPressedLastFrame_ && IsGrounded())
+    if (!isMoving_ && wasMoving)
+    {
+        SendEvent(Events::E_PLAYER_STOPPED_MOVING);
+    }
+
+    if (isRunning_ != wasRunning)
+    {
+        Urho3D::VariantMap eventData;
+        eventData[Events::P::IS_RUNNING] = isRunning_;
+        SendEvent(Events::E_PLAYER_RUN_STATE_CHANGED, eventData);
+    }
+
+    if (jump && !jumpPressedLastFrame_ && IsGrounded())
     {
         characterController_->Jump({0.0f, jumpHeight_, 0.0f});
-        SendEvent(EVENT_JUMPED);
+
+        Urho3D::VariantMap eventData;
+        eventData[Events::P::JUMP_HEIGHT] = jumpHeight_;
+        SendEvent(Events::E_PLAYER_JUMPED);
     }
-    jumpPressedLastFrame_ = jumpPressed;
+    jumpPressedLastFrame_ = jump;
 }
 
 void PlayerMovement::SetJumpHeight(float height)
@@ -130,19 +130,9 @@ bool PlayerMovement::IsGrounded() const
     return characterController_ ? characterController_->OnGround() : false;
 }
 
-void PlayerMovement::SetInputHandler(PlayerInputHandler* handler)
-{
-    inputHandler_ = handler;
-}
-
 void PlayerMovement::SetCharacterController(Urho3D::KinematicCharacterController* controller)
 {
     characterController_ = controller;
-}
-
-void PlayerMovement::SetCameraBinding(PlayerCameraBinding* cameraBinding)
-{
-    cameraBinding_ = cameraBinding;
 }
 
 } // namespace Radon::Game::Components

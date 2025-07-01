@@ -2,14 +2,13 @@
 
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Input/InputHandler.hpp"
+#include "Game/Components/Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Input/Input.h>
 
 namespace Radon::Game::Components
 {
-
-Urho3D::StringHash const PlayerInputHandler::EVENT_INTERACTED("PlayerInteracted");
 
 PlayerInputHandler::PlayerInputHandler(Urho3D::Context* context)
     : LogicComponent(context)
@@ -64,15 +63,29 @@ void PlayerInputHandler::Update(float timeStep)
     jump_ = inputHandler_->GetUpMove();
     run_ = inputHandler_->GetDownMove();
 
+    SetGlobalVar("PlayerMoveForward", moveForward_);
+    SetGlobalVar("PlayerMoveBack", moveBack_);
+    SetGlobalVar("PlayerMoveLeft", moveLeft_);
+    SetGlobalVar("PlayerMoveRight", moveRight_);
+    SetGlobalVar("PlayerJump", jump_);
+    SetGlobalVar("PlayerRun", run_);
+
     bool prevInteract = interact_;
     interact_ = inputHandler_->GetInteract();
+    SetGlobalVar("PlayerInteract", interact_);
+
     if (interact_ && !prevInteract)
-        SendEvent(EVENT_INTERACTED);
+    {
+        SendEvent(Events::E_PLAYER_INTERACTED);
+    }
 
     mouseYaw_ += inputHandler_->GetMouseDeltaX() * mouseSensitivity_;
     mousePitch_ += inputHandler_->GetMouseDeltaY() * mouseSensitivity_;
 
     mousePitch_ = Urho3D::Clamp(mousePitch_, -80.0f, 80.0f);
+
+    SetGlobalVar("PlayerMouseYaw", mouseYaw_);
+    SetGlobalVar("PlayerMousePitch", mousePitch_);
 }
 
 } // namespace Radon::Game::Components

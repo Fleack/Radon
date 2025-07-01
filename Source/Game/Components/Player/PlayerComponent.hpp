@@ -22,7 +22,6 @@ public:
 
     void Start() override;
     void DelayedStart() override;
-    void Update(float timeStep) override;
 
     [[nodiscard]] PlayerInputHandler* GetInputHandler() const { return inputHandler_; }
     [[nodiscard]] PlayerMovement* GetMovement() const { return movement_; }
@@ -33,17 +32,6 @@ public:
     void SetMovement(PlayerMovement* movement);
     void SetHealth(PlayerHealth* health);
     void SetCameraBinding(PlayerCameraBinding* cameraBinding);
-
-    static Urho3D::StringHash const EVENT_PLAYER_DAMAGED;
-    static Urho3D::StringHash const EVENT_PLAYER_HEALED;
-    static Urho3D::StringHash const EVENT_PLAYER_DIED;
-    static Urho3D::StringHash const EVENT_PLAYER_JUMPED;
-    static Urho3D::StringHash const EVENT_PLAYER_STARTED_MOVING;
-    static Urho3D::StringHash const EVENT_PLAYER_STOPPED_MOVING;
-    static Urho3D::StringHash const EVENT_PLAYER_INTERACTED;
-
-private:
-    void SubscribeToComponentEvents();
 
 private:
     PlayerInputHandler* inputHandler_{nullptr};

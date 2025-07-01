@@ -36,8 +36,6 @@ public:
 
     void SetInputHandler(Engine::Input::InputHandler* handler);
 
-    static Urho3D::StringHash const EVENT_INTERACTED;
-
 private:
     Engine::Input::InputHandler* inputHandler_{nullptr};
 
@@ -48,9 +46,11 @@ private:
     bool jump_{false};
     bool run_{false};
     bool interact_{false};
+
     float mouseYaw_{0.0f};
     float mousePitch_{0.0f};
     float mouseSensitivity_{0.1f};
+
     bool initialized_{false};
 };
 

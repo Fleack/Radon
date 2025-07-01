@@ -1,16 +1,12 @@
 #include "PlayerHealth.hpp"
 
+#include "Game/Components/Events/PlayerEvents.hpp"
+
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Scene/Node.h>
 
 namespace Radon::Game::Components
 {
-
-Urho3D::StringHash EVENT_PLAYER_DEATH("PlayerDeath");
-Urho3D::StringHash const PlayerHealth::EVENT_DAMAGED("PlayerDamaged");
-Urho3D::StringHash const PlayerHealth::EVENT_HEALED("PlayerHealed");
-Urho3D::StringHash const PlayerHealth::EVENT_DIED("PlayerDied");
-Urho3D::StringHash const PlayerHealth::EVENT_RESPAWNED("PlayerRespawned");
 
 PlayerHealth::PlayerHealth(Urho3D::Context* context)
     : LogicComponent(context)
@@ -73,16 +69,16 @@ void PlayerHealth::TakeDamage(float amount, Urho3D::Node* source)
     health_ = Urho3D::Clamp(health_, 0.0f, maxHealth_);
 
     Urho3D::VariantMap eventData;
-    eventData["Source"] = source;
-    eventData["Amount"] = amount;
-    eventData["PrevHealth"] = prevHealth;
-    eventData["Health"] = health_;
-    SendEvent(EVENT_DAMAGED, eventData);
+    eventData[Events::P::SOURCE] = source;
+    eventData[Events::P::AMOUNT] = amount;
+    eventData[Events::P::PREVIOUS_HEALTH] = prevHealth;
+    eventData[Events::P::HEALTH] = health_;
+    SendEvent(Events::E_PLAYER_DAMAGED, eventData);
 
     if (health_ <= 0.0f)
     {
         health_ = 0.0f;
-        SendEvent(EVENT_DIED, eventData);
+        SendEvent(Events::E_PLAYER_DIED, eventData);
     }
 }
 
@@ -97,18 +93,19 @@ void PlayerHealth::Heal(float amount)
         health_ = maxHealth_;
 
     Urho3D::VariantMap eventData;
-    eventData["Amount"] = amount;
-    eventData["PrevHealth"] = prevHealth;
-    eventData["Health"] = health_;
-    SendEvent(EVENT_HEALED, eventData);
+    eventData[Events::P::AMOUNT] = amount;
+    eventData[Events::P::PREVIOUS_HEALTH] = prevHealth;
+    eventData[Events::P::HEALTH] = health_;
+    SendEvent(Events::E_PLAYER_HEALED, eventData);
 }
 
 void PlayerHealth::Respawn()
 {
     health_ = maxHealth_;
+
     Urho3D::VariantMap eventData;
-    eventData["Health"] = health_;
-    SendEvent(EVENT_RESPAWNED, eventData);
+    eventData[Events::P::HEALTH] = health_;
+    SendEvent(Events::E_PLAYER_RESPAWNED, eventData);
 }
 
 } // namespace Radon::Game::Components

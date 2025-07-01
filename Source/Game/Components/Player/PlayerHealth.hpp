@@ -32,11 +32,6 @@ public:
     void Heal(float amount);
     void Respawn();
 
-    static Urho3D::StringHash const EVENT_DAMAGED;
-    static Urho3D::StringHash const EVENT_HEALED;
-    static Urho3D::StringHash const EVENT_DIED;
-    static Urho3D::StringHash const EVENT_RESPAWNED;
-
 private:
     float health_{100.0f};
     float maxHealth_{100.0f};
