@@ -17,14 +17,15 @@ public:
     void Initialize();
     void Shutdown();
 
-    bool GetForwardMove() const { return forwardMove_; }
-    bool GetBackMove() const { return backMove_; }
-    bool GetLeftMove() const { return leftMove_; }
-    bool GetRightMove() const { return rightMove_; }
-    bool GetUpMove() const { return upMove_; }
-    bool GetDownMove() const { return downMove_; }
-    float GetMouseDeltaX() const { return mouseDeltaX_; }
-    float GetMouseDeltaY() const { return mouseDeltaY_; }
+    [[nodiscard]] bool GetForwardMove() const { return forwardMove_; }
+    [[nodiscard]] bool GetBackMove() const { return backMove_; }
+    [[nodiscard]] bool GetLeftMove() const { return leftMove_; }
+    [[nodiscard]] bool GetRightMove() const { return rightMove_; }
+    [[nodiscard]] bool GetUpMove() const { return upMove_; }
+    [[nodiscard]] bool GetDownMove() const { return downMove_; }
+    [[nodiscard]] float GetMouseDeltaX() const { return mouseDeltaX_; }
+    [[nodiscard]] float GetMouseDeltaY() const { return mouseDeltaY_; }
+    [[nodiscard]] bool GetInteract() { return false; } // TODO: Real interaction
 
     void SetForwardKey(Urho3D::Key key) { forwardKey_ = key; }
     void SetBackKey(Urho3D::Key key) { backKey_ = key; }

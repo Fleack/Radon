@@ -12,6 +12,7 @@ InputHandler::InputHandler(Context* context)
     : Object(context)
 {
     RADON_LOGDEBUG("InputHandler: constructor called");
+    Initialize();
 }
 
 InputHandler::~InputHandler()
