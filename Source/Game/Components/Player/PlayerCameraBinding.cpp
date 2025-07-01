@@ -72,8 +72,9 @@ void PlayerCameraBinding::Update(float timeStep)
         return;
 
     auto prevRot = cameraNode_->GetRotation();
-    cameraNode_->SetRotation(Urho3D::Quaternion(inputHandler_->GetMouseYaw(), Urho3D::Vector3::UP));
-    cameraNode_->SetRotation(Urho3D::Quaternion(inputHandler_->GetMousePitch(), Urho3D::Vector3::RIGHT));
+    auto yawQuat = Urho3D::Quaternion(inputHandler_->GetMouseYaw(), Urho3D::Vector3::UP);
+    auto pitchQuat = Urho3D::Quaternion(inputHandler_->GetMousePitch(), Urho3D::Vector3::RIGHT);
+    cameraNode_->SetRotation(yawQuat * pitchQuat);
     if (cameraNode_->GetRotation() != prevRot)
         SendEvent(EVENT_CAMERA_MOVED);
 
