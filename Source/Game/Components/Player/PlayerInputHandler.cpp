@@ -2,6 +2,7 @@
 
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Input/InputHandler.hpp"
+#include "Game/Components/Events/GlobalVars.hpp"
 #include "Game/Components/Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
@@ -64,17 +65,15 @@ void PlayerInputHandler::Update(float timeStep)
     jump_ = inputHandler_->GetUpMove();
     run_ = inputHandler_->GetDownMove();
 
-    SetGlobalVar("PlayerMoveForward", moveForward_);
-    SetGlobalVar("PlayerMoveBack", moveBack_);
-    SetGlobalVar("PlayerMoveLeft", moveLeft_);
-    SetGlobalVar("PlayerMoveRight", moveRight_);
-    SetGlobalVar("PlayerJump", jump_);
-    SetGlobalVar("PlayerRun", run_);
+    SetGlobalVar(GlobalVars::PLAYER_MOVE_FORWARD, moveForward_);
+    SetGlobalVar(GlobalVars::PLAYER_MOVE_BACK, moveBack_);
+    SetGlobalVar(GlobalVars::PLAYER_MOVE_LEFT, moveLeft_);
+    SetGlobalVar(GlobalVars::PLAYER_MOVE_RIGHT, moveRight_);
+    SetGlobalVar(GlobalVars::PLAYER_JUMP, jump_);
+    SetGlobalVar(GlobalVars::PLAYER_RUN, run_);
 
     bool prevInteract = interact_;
     interact_ = inputHandler_->GetInteract();
-    SetGlobalVar("PlayerInteract", interact_);
-
     if (interact_ && !prevInteract)
     {
         SendEvent(Events::E_PLAYER_INTERACTED);
@@ -96,8 +95,8 @@ void PlayerInputHandler::Update(float timeStep)
     if (mouseYaw_ > 360.0f || mouseYaw_ < -360.0f)
         mouseYaw_ = std::fmod(mouseYaw_, 360.0f);
 
-    SetGlobalVar("PlayerMouseYaw", mouseYaw_);
-    SetGlobalVar("PlayerMousePitch", mousePitch_);
+    SetGlobalVar(GlobalVars::PLAYER_MOUSE_YAW, mouseYaw_);
+    SetGlobalVar(GlobalVars::PLAYER_MOUSE_PITCH, mousePitch_);
 }
 
 } // namespace Radon::Game::Components

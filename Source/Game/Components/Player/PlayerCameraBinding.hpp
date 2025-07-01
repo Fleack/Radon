@@ -34,6 +34,12 @@ public:
     void SetHeadBobSpeed(float speed) { headBobSpeed_ = speed; }
     [[nodiscard]] float GetHeadBobSpeed() const { return headBobSpeed_; }
 
+    void SetHeadBobHorizontalFactor(float factor) { headBobHorizontalFactor_ = factor; }
+    [[nodiscard]] float GetHeadBobHorizontalFactor() const { return headBobHorizontalFactor_; }
+
+    void SetHeadBobVerticalFactor(float factor) { headBobVerticalFactor_ = factor; }
+    [[nodiscard]] float GetHeadBobVerticalFactor() const { return headBobVerticalFactor_; }
+
     void SetCameraNode(Urho3D::Node* node);
     void SetCamera(Urho3D::Camera* camera);
 
@@ -41,18 +47,25 @@ public:
     Urho3D::Vector3 GetCamRight() const;
 
 private:
+    void SubscribeToEvents();
+
     void ApplyHeadBob(float timeStep);
-    void HandlePlayerMovementState(bool isMoving, bool isRunning);
 
 private:
     Urho3D::Node* cameraNode_{nullptr};
     Urho3D::Camera* camera_{nullptr};
 
+    bool playerMoving_{false};
+    bool playerRunning_{false};
+
     float cameraHeight_{1.8f};
+    float cameraSmoothing_{20.0f};
+
     float headBobStrength_{0.035f};
     float headBobSpeed_{1.5f};
     float headBobTime_{0.0f};
-    float cameraSmoothing_{20.0f};
+    float headBobHorizontalFactor_{1.0f};
+    float headBobVerticalFactor_{1.0f};
 
     Urho3D::Vector3 originalCameraPosition_{Urho3D::Vector3::ZERO};
 

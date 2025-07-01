@@ -1,6 +1,5 @@
 #include "PlayerComponent.hpp"
 
-#include "Game/Components/Events/PlayerEvents.hpp"
 #include "Game/Components/Player/PlayerCameraBinding.hpp"
 #include "Game/Components/Player/PlayerHealth.hpp"
 #include "Game/Components/Player/PlayerInputHandler.hpp"
@@ -22,7 +21,7 @@ PlayerComponent::~PlayerComponent() = default;
 
 void PlayerComponent::RegisterObject(Urho3D::Context* context)
 {
-    context->AddFactoryReflection<PlayerComponent>();
+    context->AddFactoryReflection<PlayerComponent>("Player");
 }
 
 void PlayerComponent::Start()

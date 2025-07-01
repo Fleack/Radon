@@ -1,6 +1,7 @@
 #include "PlayerMovement.hpp"
 
 #include "Engine/Core/Logger.hpp"
+#include "Game/Components/Events/GlobalVars.hpp"
 #include "Game/Components/Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
@@ -20,7 +21,7 @@ PlayerMovement::~PlayerMovement() = default;
 
 void PlayerMovement::RegisterObject(Urho3D::Context* context)
 {
-    context->AddFactoryReflection<PlayerMovement>();
+    context->AddFactoryReflection<PlayerMovement>("Player");
 
     URHO3D_ATTRIBUTE("WalkSpeed", float, walkSpeed_, 3.0f, Urho3D::AM_DEFAULT);
     URHO3D_ATTRIBUTE("RunSpeed", float, runSpeed_, 6.0f, Urho3D::AM_DEFAULT);
@@ -56,12 +57,12 @@ void PlayerMovement::FixedUpdate(float timeStep)
     if (!initialized_ || !characterController_)
         return;
 
-    bool moveForward = GetGlobalVar("PlayerMoveForward").GetBool();
-    bool moveBack = GetGlobalVar("PlayerMoveBack").GetBool();
-    bool moveLeft = GetGlobalVar("PlayerMoveLeft").GetBool();
-    bool moveRight = GetGlobalVar("PlayerMoveRight").GetBool();
-    bool run = GetGlobalVar("PlayerRun").GetBool();
-    bool jump = GetGlobalVar("PlayerJump").GetBool();
+    bool moveForward = GetGlobalVar(GlobalVars::PLAYER_MOVE_FORWARD).GetBool();
+    bool moveBack = GetGlobalVar(GlobalVars::PLAYER_MOVE_BACK).GetBool();
+    bool moveLeft = GetGlobalVar(GlobalVars::PLAYER_MOVE_LEFT).GetBool();
+    bool moveRight = GetGlobalVar(GlobalVars::PLAYER_MOVE_RIGHT).GetBool();
+    bool run = GetGlobalVar(GlobalVars::PLAYER_RUN).GetBool();
+    bool jump = GetGlobalVar(GlobalVars::PLAYER_JUMP).GetBool();
     bool wasMoving = isMoving_;
     bool wasRunning = isRunning_;
 

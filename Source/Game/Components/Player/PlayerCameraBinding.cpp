@@ -1,6 +1,7 @@
 #include "PlayerCameraBinding.hpp"
 
 #include "Engine/Core/Logger.hpp"
+#include "Game/Components/Events/GlobalVars.hpp"
 #include "Game/Components/Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
@@ -20,7 +21,7 @@ PlayerCameraBinding::~PlayerCameraBinding() = default;
 
 void PlayerCameraBinding::RegisterObject(Urho3D::Context* context)
 {
-    context->AddFactoryReflection<PlayerCameraBinding>();
+    context->AddFactoryReflection<PlayerCameraBinding>("Player");
 
     URHO3D_ATTRIBUTE("CameraHeight", float, cameraHeight_, 1.8f, Urho3D::AM_DEFAULT);
     URHO3D_ATTRIBUTE("Head Bob Strength", float, headBobStrength_, 0.05f, Urho3D::AM_DEFAULT);
@@ -43,22 +44,24 @@ void PlayerCameraBinding::Start()
     cameraNode_->SetPosition(Urho3D::Vector3(0.0f, cameraHeight_, 0.0f));
     originalCameraPosition_ = cameraNode_->GetPosition();
 
+    SubscribeToEvents();
+
+    initialized_ = true;
+}
+
+void PlayerCameraBinding::SubscribeToEvents()
+{
     SubscribeToEvent(Events::E_PLAYER_STARTED_MOVING, [this](Urho3D::StringHash, Urho3D::VariantMap&) {
-        bool isRunning = GetGlobalVar("PlayerRun").GetBool();
-        HandlePlayerMovementState(true, isRunning);
+        playerMoving_ = true;
     });
 
     SubscribeToEvent(Events::E_PLAYER_STOPPED_MOVING, [this](Urho3D::StringHash, Urho3D::VariantMap&) {
-        HandlePlayerMovementState(false, false);
+        playerMoving_ = false;
     });
 
     SubscribeToEvent(Events::E_PLAYER_RUN_STATE_CHANGED, [this](Urho3D::StringHash, Urho3D::VariantMap& eventData) {
-        bool isRunning = eventData[Events::P::IS_RUNNING].GetBool();
-        bool isMoving = GetGlobalVar("PlayerMoving").GetBool();
-        HandlePlayerMovementState(isMoving, isRunning);
+        playerRunning_ = eventData[Events::P::IS_RUNNING].GetBool();
     });
-
-    initialized_ = true;
 }
 
 void PlayerCameraBinding::DelayedStart()
@@ -71,8 +74,8 @@ void PlayerCameraBinding::Update(float timeStep)
     if (!initialized_ || !cameraNode_ || !camera_)
         return;
 
-    Urho3D::Variant const& mouseYaw = GetGlobalVar("PlayerMouseYaw");
-    Urho3D::Variant const& mousePitch = GetGlobalVar("PlayerMousePitch");
+    Urho3D::Variant const& mouseYaw = GetGlobalVar(GlobalVars::PLAYER_MOUSE_YAW);
+    Urho3D::Variant const& mousePitch = GetGlobalVar(GlobalVars::PLAYER_MOUSE_PITCH);
 
     if (!mouseYaw.IsEmpty() && !mousePitch.IsEmpty())
     {
@@ -100,12 +103,9 @@ void PlayerCameraBinding::Update(float timeStep)
 void PlayerCameraBinding::ApplyHeadBob(float timeStep)
 {
     static float bobLerp = 0.0f;
-    bool isMoving = GetGlobalVar("PlayerMoving").GetBool();
-    bool isRunning = GetGlobalVar("PlayerRun").GetBool();
-
-    if (isMoving)
+    if (playerMoving_)
     {
-        float speed = isRunning ? headBobSpeed_ * 1.5f : headBobSpeed_;
+        float speed = playerRunning_ ? headBobSpeed_ * 1.5f : headBobSpeed_;
         headBobTime_ += timeStep * speed;
         bobLerp = Urho3D::Min(bobLerp + timeStep * 2.0f, 1.0f);
     }
@@ -116,26 +116,19 @@ void PlayerCameraBinding::ApplyHeadBob(float timeStep)
     }
 
     Urho3D::Vector3 bobOffset = Urho3D::Vector3::ZERO;
-
     if (bobLerp > 0.0f)
     {
-        float intensity = isRunning ? headBobStrength_ : headBobStrength_ * 0.7f;
-        bobOffset.y_ = Urho3D::Sin(headBobTime_ * 360.0f) * intensity * bobLerp;
-        bobOffset.x_ = Urho3D::Cos(headBobTime_ * 180.0f) * intensity * 0.3f * bobLerp; // Уменьшаем боковой покачивания
+        float intensity = playerRunning_ ? headBobStrength_ : headBobStrength_ * 0.7f;
+        bobOffset.y_ = Urho3D::Sin(headBobTime_ * 360.0f) * intensity * bobLerp * headBobVerticalFactor_;
+        bobOffset.x_ = Urho3D::Sin(headBobTime_ * 180.0f) * intensity * bobLerp * headBobHorizontalFactor_;
     }
 
     auto prevPos = cameraNode_->GetPosition();
     cameraNode_->SetPosition(originalCameraPosition_ + bobOffset);
     if (cameraNode_->GetPosition() != prevPos)
     {
-        using namespace Radon::Game::Events;
-        SendEvent(E_PLAYER_HEADBOB);
+        SendEvent(Events::E_PLAYER_HEADBOB);
     }
-}
-
-void PlayerCameraBinding::HandlePlayerMovementState(bool isMoving, bool isRunning)
-{
-    SetGlobalVar("PlayerMoving", isMoving);
 }
 
 void PlayerCameraBinding::SetCameraNode(Urho3D::Node* node)
