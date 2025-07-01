@@ -27,6 +27,9 @@ void RadonApplication::Setup()
     engineParameters_[Urho3D::EP_LOG_LEVEL] = Urho3D::LOG_DEBUG;
     engineParameters_[Urho3D::EP_LOG_QUIET] = false;
     engineParameters_[Urho3D::EP_LOG_NAME] = "Radon.log";
+    engine_->SetTimeStepSmoothing(3);
+    engine_->SetPauseMinimized(false);
+    engine_->SetMaxInactiveFps(144);
 }
 
 void RadonApplication::Start()
