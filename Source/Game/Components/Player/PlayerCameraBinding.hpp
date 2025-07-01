@@ -49,9 +49,10 @@ private:
     Urho3D::Camera* camera_{nullptr};
 
     float cameraHeight_{1.8f};
-    float headBobStrength_{0.05f};
-    float headBobSpeed_{10.0f};
+    float headBobStrength_{0.035f};
+    float headBobSpeed_{1.5f};
     float headBobTime_{0.0f};
+    float cameraSmoothing_{20.0f};
 
     Urho3D::Vector3 originalCameraPosition_{Urho3D::Vector3::ZERO};
 

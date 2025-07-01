@@ -44,10 +44,13 @@ private:
 
     float walkSpeed_{3.0f};
     float runSpeed_{6.0f};
-    float currentSpeed_{0.0f};
     float jumpHeight_{6.0f};
+    float movementSmoothingFactor_{10.0f};
+
+    float currentSpeed_{0.0f};
 
     Urho3D::Vector3 moveDirection_{Urho3D::Vector3::ZERO};
+    Urho3D::Vector3 targetMoveDirection_{Urho3D::Vector3::ZERO};
     Urho3D::Vector3 camForward_{Urho3D::Vector3::FORWARD};
     Urho3D::Vector3 camRight_{Urho3D::Vector3::RIGHT};
 

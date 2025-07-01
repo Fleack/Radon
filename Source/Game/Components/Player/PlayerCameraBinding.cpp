@@ -79,7 +79,9 @@ void PlayerCameraBinding::Update(float timeStep)
         auto prevRot = cameraNode_->GetRotation();
         auto yawQuat = Urho3D::Quaternion(mouseYaw.GetFloat(), Urho3D::Vector3::UP);
         auto pitchQuat = Urho3D::Quaternion(mousePitch.GetFloat(), Urho3D::Vector3::RIGHT);
-        cameraNode_->SetRotation(yawQuat * pitchQuat);
+        Urho3D::Quaternion targetRotation = yawQuat * pitchQuat;
+        Urho3D::Quaternion smoothedRotation = cameraNode_->GetRotation().Slerp(targetRotation, Urho3D::Min(1.0f, timeStep * 20.0f));
+        cameraNode_->SetRotation(smoothedRotation);
 
         if (cameraNode_->GetRotation() != prevRot)
         {
@@ -97,7 +99,6 @@ void PlayerCameraBinding::Update(float timeStep)
 
 void PlayerCameraBinding::ApplyHeadBob(float timeStep)
 {
-    return;
     static float bobLerp = 0.0f;
     bool isMoving = GetGlobalVar("PlayerMoving").GetBool();
     bool isRunning = GetGlobalVar("PlayerRun").GetBool();
@@ -106,7 +107,7 @@ void PlayerCameraBinding::ApplyHeadBob(float timeStep)
     {
         float speed = isRunning ? headBobSpeed_ * 1.5f : headBobSpeed_;
         headBobTime_ += timeStep * speed;
-        bobLerp = 1.0f;
+        bobLerp = Urho3D::Min(bobLerp + timeStep * 2.0f, 1.0f);
     }
     else
     {
@@ -118,9 +119,9 @@ void PlayerCameraBinding::ApplyHeadBob(float timeStep)
 
     if (bobLerp > 0.0f)
     {
-        float intensity = isRunning ? headBobStrength_ * 1.5f : headBobStrength_;
+        float intensity = isRunning ? headBobStrength_ : headBobStrength_ * 0.7f;
         bobOffset.y_ = Urho3D::Sin(headBobTime_ * 360.0f) * intensity * bobLerp;
-        bobOffset.x_ = Urho3D::Cos(headBobTime_ * 180.0f) * intensity * 0.5f * bobLerp;
+        bobOffset.x_ = Urho3D::Cos(headBobTime_ * 180.0f) * intensity * 0.3f * bobLerp; // Уменьшаем боковой покачивания
     }
 
     auto prevPos = cameraNode_->GetPosition();

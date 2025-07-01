@@ -21,6 +21,11 @@ PlayerMovement::~PlayerMovement() = default;
 void PlayerMovement::RegisterObject(Urho3D::Context* context)
 {
     context->AddFactoryReflection<PlayerMovement>();
+
+    URHO3D_ATTRIBUTE("WalkSpeed", float, walkSpeed_, 3.0f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("RunSpeed", float, runSpeed_, 6.0f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("JumpHeight", float, jumpHeight_, 6.0f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("MovementSmoothing", float, movementSmoothingFactor_, 10.0f, Urho3D::AM_DEFAULT);
 }
 
 void PlayerMovement::Start()
@@ -82,7 +87,14 @@ void PlayerMovement::FixedUpdate(float timeStep)
 
     isRunning_ = run && isMoving_;
     currentSpeed_ = isRunning_ ? runSpeed_ : walkSpeed_;
-    moveDirection_ = direction * currentSpeed_;
+
+    targetMoveDirection_ = direction * currentSpeed_;
+    float smoothing = Urho3D::Min(1.0f, timeStep * movementSmoothingFactor_);
+    moveDirection_ = moveDirection_.Lerp(targetMoveDirection_, smoothing);
+
+    if (!isMoving_ && moveDirection_.Length() < 0.1f)
+        moveDirection_ = Urho3D::Vector3::ZERO;
+
     characterController_->SetWalkIncrement(moveDirection_ * timeStep);
 
     if (isMoving_ && !wasMoving)

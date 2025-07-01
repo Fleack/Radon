@@ -50,6 +50,7 @@ private:
     float mouseYaw_{0.0f};
     float mousePitch_{0.0f};
     float mouseSensitivity_{0.1f};
+    float mouseSmoothing_{0.5f};
 
     bool initialized_{false};
 };

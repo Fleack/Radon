@@ -23,6 +23,7 @@ void PlayerInputHandler::RegisterObject(Urho3D::Context* context)
     context->AddFactoryReflection<PlayerInputHandler>("Player");
 
     URHO3D_ATTRIBUTE("MouseSensitivity", float, mouseSensitivity_, 0.1f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("MouseSmoothing", float, mouseSmoothing_, 0.5f, Urho3D::AM_DEFAULT);
 }
 
 void PlayerInputHandler::Start()
@@ -79,10 +80,21 @@ void PlayerInputHandler::Update(float timeStep)
         SendEvent(Events::E_PLAYER_INTERACTED);
     }
 
-    mouseYaw_ += inputHandler_->GetMouseDeltaX() * mouseSensitivity_;
-    mousePitch_ += inputHandler_->GetMouseDeltaY() * mouseSensitivity_;
+    float rawDeltaX = inputHandler_->GetMouseDeltaX() * mouseSensitivity_;
+    float rawDeltaY = inputHandler_->GetMouseDeltaY() * mouseSensitivity_;
+
+    static float smoothedDeltaX = 0.0f;
+    static float smoothedDeltaY = 0.0f;
+
+    smoothedDeltaX = smoothedDeltaX * mouseSmoothing_ + rawDeltaX * (1.0f - mouseSmoothing_);
+    smoothedDeltaY = smoothedDeltaY * mouseSmoothing_ + rawDeltaY * (1.0f - mouseSmoothing_);
+
+    mouseYaw_ += smoothedDeltaX;
+    mousePitch_ += smoothedDeltaY;
 
     mousePitch_ = Urho3D::Clamp(mousePitch_, -80.0f, 80.0f);
+    if (mouseYaw_ > 360.0f || mouseYaw_ < -360.0f)
+        mouseYaw_ = std::fmod(mouseYaw_, 360.0f);
 
     SetGlobalVar("PlayerMouseYaw", mouseYaw_);
     SetGlobalVar("PlayerMousePitch", mousePitch_);
