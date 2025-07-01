@@ -48,6 +48,11 @@ void PlayerHealth::SetMaxHealth(float maxHealth)
         health_ = maxHealth_;
 }
 
+void PlayerHealth::DelayedStart()
+{
+    Start();
+}
+
 void PlayerHealth::SetHealth(float health)
 {
     health_ = Urho3D::Clamp(health, 0.0f, maxHealth_);

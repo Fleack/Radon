@@ -48,6 +48,11 @@ void PlayerComponent::Start()
     initialized_ = true;
 }
 
+void PlayerComponent::DelayedStart()
+{
+    Start();
+}
+
 void PlayerComponent::Update(float timeStep)
 {
 }

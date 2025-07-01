@@ -9,6 +9,7 @@ namespace Radon::Game::Components
 {
 
 class PlayerInputHandler;
+class PlayerCameraBinding;
 
 class PlayerMovement final : public Urho3D::LogicComponent
 {
@@ -21,6 +22,7 @@ public:
     static void RegisterObject(Urho3D::Context* context);
 
     void Start() override;
+    void DelayedStart() override;
     void Update(float timeStep) override;
 
     void SetWalkSpeed(float speed) { walkSpeed_ = speed; }
@@ -40,6 +42,7 @@ public:
 
     void SetInputHandler(PlayerInputHandler* handler);
     void SetCharacterController(Urho3D::KinematicCharacterController* controller);
+    void SetCameraBinding(PlayerCameraBinding* cameraBinding);
 
     static Urho3D::StringHash const EVENT_JUMPED;
     static Urho3D::StringHash const EVENT_STARTED_MOVING;
@@ -49,6 +52,7 @@ public:
 private:
     PlayerInputHandler* inputHandler_{nullptr};
     Urho3D::KinematicCharacterController* characterController_{nullptr};
+    PlayerCameraBinding* cameraBinding_{nullptr};
 
     float walkSpeed_{3.0f};
     float runSpeed_{6.0f};

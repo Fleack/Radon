@@ -41,6 +41,11 @@ void PlayerInputHandler::Start()
     initialized_ = true;
 }
 
+void PlayerInputHandler::DelayedStart()
+{
+    Start();
+}
+
 void PlayerInputHandler::SetInputHandler(Radon::Engine::Input::InputHandler* handler)
 {
     inputHandler_ = handler;

@@ -16,6 +16,7 @@ public:
     static void RegisterObject(Urho3D::Context* context);
 
     void Start() override;
+    void DelayedStart() override;
 
     [[nodiscard]] float GetHealth() const { return health_; }
     [[nodiscard]] float GetMaxHealth() const { return maxHealth_; }

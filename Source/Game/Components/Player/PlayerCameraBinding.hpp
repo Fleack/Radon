@@ -25,6 +25,7 @@ public:
     static void RegisterObject(Urho3D::Context* context);
 
     void Start() override;
+    void DelayedStart() override;
     void Update(float timeStep) override;
 
     void SetCameraHeight(float height) { cameraHeight_ = height; }
@@ -40,6 +41,9 @@ public:
     void SetMovement(PlayerMovement* movement);
     void SetCameraNode(Urho3D::Node* node);
     void SetCamera(Urho3D::Camera* camera);
+
+    Urho3D::Vector3 GetCamForward() const;
+    Urho3D::Vector3 GetCamRight() const;
 
     static Urho3D::StringHash const EVENT_CAMERA_MOVED;
     static Urho3D::StringHash const EVENT_HEADBOB;

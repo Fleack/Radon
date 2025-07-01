@@ -21,6 +21,7 @@ public:
     static void RegisterObject(Urho3D::Context* context);
 
     void Start() override;
+    void DelayedStart() override;
     void Update(float timeStep) override;
 
     [[nodiscard]] PlayerInputHandler* GetInputHandler() const { return inputHandler_; }

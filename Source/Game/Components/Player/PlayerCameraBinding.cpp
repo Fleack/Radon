@@ -61,12 +61,18 @@ void PlayerCameraBinding::Start()
     initialized_ = true;
 }
 
+void PlayerCameraBinding::DelayedStart()
+{
+    Start();
+}
+
 void PlayerCameraBinding::Update(float timeStep)
 {
     if (!initialized_ || !inputHandler_ || !movement_ || !cameraNode_ || !camera_)
         return;
 
     auto prevRot = cameraNode_->GetRotation();
+    cameraNode_->SetRotation(Urho3D::Quaternion(inputHandler_->GetMouseYaw(), Urho3D::Vector3::UP));
     cameraNode_->SetRotation(Urho3D::Quaternion(inputHandler_->GetMousePitch(), Urho3D::Vector3::RIGHT));
     if (cameraNode_->GetRotation() != prevRot)
         SendEvent(EVENT_CAMERA_MOVED);
@@ -123,6 +129,36 @@ void PlayerCameraBinding::SetCameraNode(Urho3D::Node* node)
 void PlayerCameraBinding::SetCamera(Urho3D::Camera* camera)
 {
     camera_ = camera;
+}
+
+Urho3D::Vector3 PlayerCameraBinding::GetCamForward() const
+{
+    if (!cameraNode_)
+    {
+        RADON_LOGERROR("PlayerCameraBinding: Camera node is null, returning default forward vector");
+        return Urho3D::Vector3::FORWARD;
+    }
+
+    Urho3D::Vector3 camForward = cameraNode_->GetDirection();
+    camForward.y_ = 0.0f;
+    camForward.Normalize();
+
+    return camForward;
+}
+
+Urho3D::Vector3 PlayerCameraBinding::GetCamRight() const
+{
+    if (!cameraNode_)
+    {
+        RADON_LOGERROR("PlayerCameraBinding: Camera node is null, returning default right vector");
+        return Urho3D::Vector3::RIGHT;
+    }
+
+    Urho3D::Vector3 camRight = cameraNode_->GetRight();
+    camRight.y_ = 0.0f;
+    camRight.Normalize();
+
+    return camRight;
 }
 
 } // namespace Radon::Game::Components

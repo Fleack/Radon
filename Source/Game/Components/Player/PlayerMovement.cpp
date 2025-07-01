@@ -1,6 +1,7 @@
 #include "PlayerMovement.hpp"
 
 #include "Engine/Core/Logger.hpp"
+#include "Game/Components/Player/PlayerCameraBinding.hpp"
 #include "Game/Components/Player/PlayerInputHandler.hpp"
 
 #include <Urho3D/Core/Context.h>
@@ -37,14 +38,27 @@ void PlayerMovement::Start()
         inputHandler_ = node_->GetComponent<PlayerInputHandler>();
     if (!characterController_)
         characterController_ = node_->GetOrCreateComponent<Urho3D::KinematicCharacterController>();
+    if (!cameraBinding_)
+        cameraBinding_ = node_->GetComponent<PlayerCameraBinding>();
 
     if (!inputHandler_)
     {
-        RADON_LOGERROR("PlayerMovement: Failed to get PlayerInputHandler component");
+        RADON_LOGERROR("PlayerMovement: Failed to get PlayerInputHandler component"); // TODO fix cyclic dependency
+        return;
+    }
+
+    if (!cameraBinding_)
+    {
+        RADON_LOGERROR("PlayerMovement: Failed to get PlayerCameraBinding component");
         return;
     }
 
     initialized_ = true;
+}
+
+void PlayerMovement::DelayedStart()
+{
+    Start();
 }
 
 void PlayerMovement::Update(float timeStep)
@@ -53,15 +67,17 @@ void PlayerMovement::Update(float timeStep)
         return;
 
     Urho3D::Vector3 direction = Urho3D::Vector3::ZERO;
+    Urho3D::Vector3 camForward = cameraBinding_->GetCamForward();
+    Urho3D::Vector3 camRight = cameraBinding_->GetCamRight();
 
     if (inputHandler_->GetMoveForward())
-        direction += node_->GetWorldDirection();
+        direction += camForward;
     if (inputHandler_->GetMoveBack())
-        direction -= node_->GetWorldDirection();
+        direction -= camForward;
     if (inputHandler_->GetMoveRight())
-        direction += node_->GetWorldRight();
+        direction += camRight;
     if (inputHandler_->GetMoveLeft())
-        direction -= node_->GetWorldRight();
+        direction -= camRight;
 
     bool wasMoving = isMoving_;
     bool wasRunning = isRunning_;
@@ -95,8 +111,6 @@ void PlayerMovement::Update(float timeStep)
         SendEvent(EVENT_JUMPED);
     }
     jumpPressedLastFrame_ = jumpPressed;
-
-    node_->SetWorldRotation(Urho3D::Quaternion(inputHandler_->GetMouseYaw(), Urho3D::Vector3::UP)); // TODO Maybe laggy
 }
 
 void PlayerMovement::SetJumpHeight(float height)
@@ -125,6 +139,11 @@ void PlayerMovement::SetInputHandler(PlayerInputHandler* handler)
 void PlayerMovement::SetCharacterController(Urho3D::KinematicCharacterController* controller)
 {
     characterController_ = controller;
+}
+
+void PlayerMovement::SetCameraBinding(PlayerCameraBinding* cameraBinding)
+{
+    cameraBinding_ = cameraBinding;
 }
 
 } // namespace Radon::Game::Components
