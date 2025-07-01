@@ -21,8 +21,8 @@ public:
     [[nodiscard]] bool GetBackMove() const { return backMove_; }
     [[nodiscard]] bool GetLeftMove() const { return leftMove_; }
     [[nodiscard]] bool GetRightMove() const { return rightMove_; }
-    [[nodiscard]] bool GetUpMove() const { return upMove_; }
-    [[nodiscard]] bool GetDownMove() const { return downMove_; }
+    [[nodiscard]] bool GetJumpKey() const { return jump_; }
+    [[nodiscard]] bool GetRunKey() const { return run_; }
     [[nodiscard]] float GetMouseDeltaX() const { return mouseDeltaX_; }
     [[nodiscard]] float GetMouseDeltaY() const { return mouseDeltaY_; }
     [[nodiscard]] bool GetInteract() { return false; } // TODO: Real interaction
@@ -31,8 +31,8 @@ public:
     void SetBackKey(Urho3D::Key key) { backKey_ = key; }
     void SetLeftKey(Urho3D::Key key) { leftKey_ = key; }
     void SetRightKey(Urho3D::Key key) { rightKey_ = key; }
-    void SetUpKey(Urho3D::Key key) { upKey_ = key; }
-    void SetDownKey(Urho3D::Key key) { downKey_ = key; }
+    void SetJumpKey(Urho3D::Key key) { jumpKey_ = key; }
+    void SetRunKey(Urho3D::Key key) { runKey_ = key; }
 
 private:
     void OnUpdate(Urho3D::StringHash eventType, Urho3D::VariantMap& eventData);
@@ -41,8 +41,8 @@ private:
     bool backMove_{false};
     bool leftMove_{false};
     bool rightMove_{false};
-    bool upMove_{false};
-    bool downMove_{false};
+    bool jump_{false};
+    bool run_{false};
     float mouseDeltaX_{0.0f};
     float mouseDeltaY_{0.0f};
 
@@ -50,8 +50,8 @@ private:
     Urho3D::Key backKey_{Urho3D::KEY_S};
     Urho3D::Key leftKey_{Urho3D::KEY_A};
     Urho3D::Key rightKey_{Urho3D::KEY_D};
-    Urho3D::Key upKey_{Urho3D::KEY_SPACE};
-    Urho3D::Key downKey_{Urho3D::KEY_SHIFT};
+    Urho3D::Key jumpKey_{Urho3D::KEY_SPACE};
+    Urho3D::Key runKey_{Urho3D::KEY_SHIFT};
 
     bool initialized_{false};
 };

@@ -30,7 +30,7 @@ void InputHandler::Initialize()
         return;
     }
 
-    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(InputHandler, OnUpdate));
+    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(InputHandler, OnUpdate)); // TODO Change to bit mask
     initialized_ = true;
     RADON_LOGINFO("InputHandler: Initialized");
 }
@@ -54,8 +54,8 @@ void InputHandler::OnUpdate(StringHash, VariantMap&)
     backMove_ = input->GetKeyDown(backKey_);
     leftMove_ = input->GetKeyDown(leftKey_);
     rightMove_ = input->GetKeyDown(rightKey_);
-    upMove_ = input->GetKeyDown(upKey_);
-    downMove_ = input->GetKeyDown(downKey_);
+    jump_ = input->GetKeyDown(jumpKey_);
+    run_ = input->GetKeyDown(runKey_);
 
     mouseDeltaX_ = static_cast<float>(input->GetMouseMoveX());
     mouseDeltaY_ = static_cast<float>(input->GetMouseMoveY());

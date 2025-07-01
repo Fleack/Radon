@@ -62,8 +62,8 @@ void PlayerInputHandler::Update(float timeStep)
     moveLeft_ = inputHandler_->GetLeftMove();
     moveRight_ = inputHandler_->GetRightMove();
 
-    jump_ = inputHandler_->GetUpMove();
-    run_ = inputHandler_->GetDownMove();
+    jump_ = inputHandler_->GetJumpKey();
+    run_ = inputHandler_->GetRunKey();
 
     SetGlobalVar(GlobalVars::PLAYER_MOVE_FORWARD, moveForward_);
     SetGlobalVar(GlobalVars::PLAYER_MOVE_BACK, moveBack_);
