@@ -15,6 +15,7 @@ public:
     void Stop() override;
 
 private:
+    void RegisterComponents();
     void RegisterSubsystems();
 };
 
