@@ -76,6 +76,7 @@ void PlayerCameraBinding::Update(float timeStep)
 
 void PlayerCameraBinding::ApplyHeadBob(float timeStep)
 {
+    return;
     static float bobLerp = 0.0f;
     if (movement_->IsMoving())
     {
