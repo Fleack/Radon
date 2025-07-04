@@ -5,7 +5,7 @@
 namespace Radon::App
 {
 
-class RadonApplication : public Urho3D::Application
+class RadonApplication final : public Urho3D::Application
 {
     URHO3D_OBJECT(RadonApplication, Urho3D::Application)
 public:
@@ -15,6 +15,7 @@ public:
     void Stop() override;
 
 private:
+    void LoadPlugins();
     void RegisterComponents();
     void RegisterSubsystems();
 };

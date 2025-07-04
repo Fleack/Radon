@@ -7,8 +7,9 @@
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/StateMachine/IGameState.hpp"
 #include "Engine/UI/UIManager.hpp"
-#include "Game/Components/Player/PlayerComponent.hpp"
+#include "Engine/UI/DebugHUD.hpp"
 #include "Game/States/MenuState.hpp"
+#include "Player/Components/PlayerCamera.hpp"
 
 #include <Urho3D/Input/Input.h>
 #include <Urho3D/RmlUI/RmlUI.h>
@@ -26,29 +27,37 @@ void GameplayState::Enter()
 {
     RADON_LOGINFO("GameplayState: entering");
 
-    Urho3D::WeakPtr<Urho3D::Scene> scene = GetSubsystem<Scene::SceneManager>()->LoadScene(gameplaySceneName_);
+    scene_ = GetSubsystem<Scene::SceneManager>()->LoadScene(gameplaySceneName_);
 
-    Urho3D::Node* playerNode = scene->GetChild("Player", true);
+    Urho3D::Node* playerNode = scene_->GetChild("Player", true);
     if (!playerNode)
-        playerNode = scene->CreateChild("Player");
+    {
+        RADON_LOGERROR("GameplayState: Player node not found in scene, creating a new one");
+        assert(0);
+        return;
+    }
 
-    playerNode->CreateComponent<Components::PlayerComponent>();
+    playerCamera_ = playerNode->GetComponent<Plugins::PlayerCamera>();
+    if (!playerCamera_)
+    {
+        RADON_LOGERROR("GameplayState: PlayerCamera component not found on Player node");
+        assert(0);
+        return;
+    }
 
-    Urho3D::Node* cameraNode = playerNode->GetChild("Camera", true);
-    if (!cameraNode)
-        cameraNode = playerNode->CreateChild("Camera");
-
-    GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene, *cameraNode, 0);
     GetSubsystem<UI::UIManager>()->ShowDocument("GameplayHUD");
+
+    // Создаем и добавляем DebugHUD
+    auto* debugHudNode = scene_->CreateChild("DebugHUD");
+    debugHUD_ = debugHudNode->CreateComponent<Engine::UI::DebugHUD>();
 
     auto* input = GetSubsystem<Urho3D::Input>();
     input->SetMouseMode(Urho3D::MM_RELATIVE);
     input->SetMouseVisible(false);
 
-    GetSubsystem<Input::CameraManager>()->Initialize(*cameraNode, 0.1f, 5.0f);
-
     SubscribeToEvent(Urho3D::E_KEYDOWN, URHO3D_HANDLER(GameplayState, HandleKeydown));
 
+    isInitialized_ = false;
     RADON_LOGINFO("GameplayState: successfully entered");
 }
 
@@ -56,15 +65,35 @@ void GameplayState::Exit()
 {
     RADON_LOGINFO("GameplayState: exiting");
     UnsubscribeFromAllEvents();
-    GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
+
+    if (isInitialized_)
+    {
+        GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
+        GetSubsystem<Input::CameraManager>()->Shutdown();
+    }
+
     GetSubsystem<UI::UIManager>()->UnloadDocument("GameplayHUD");
-    GetSubsystem<Input::CameraManager>()->Shutdown();
     GetSubsystem<Scene::SceneManager>()->UnloadScene(gameplaySceneName_);
+
+    scene_ = nullptr;
+    playerCamera_ = nullptr;
+    isInitialized_ = false;
+
     RADON_LOGINFO("GameplayState: exited and cleaned up");
 }
 
 void GameplayState::Update(float)
 {
+    if (!isInitialized_ && playerCamera_ && playerCamera_->GetCameraNode()) [[unlikely]]
+    {
+        RADON_LOGINFO("GameplayState: Camera is ready, completing initialization");
+
+        GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene_, *playerCamera_->GetCameraNode(), 0);
+        GetSubsystem<Input::CameraManager>()->Initialize(*playerCamera_->GetCameraNode(), 0.1f, 5.0f);
+        isInitialized_ = true;
+
+        RADON_LOGINFO("GameplayState: Initialization completed successfully");
+    }
 }
 
 void GameplayState::HandleKeydown(Urho3D::StringHash, Urho3D::VariantMap& data)

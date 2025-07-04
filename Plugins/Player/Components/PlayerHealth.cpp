@@ -1,11 +1,12 @@
 #include "PlayerHealth.hpp"
 
-#include "Game/Components/Events/PlayerEvents.hpp"
+#include "ComponentCategory.hpp"
+#include "Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Scene/Node.h>
 
-namespace Radon::Game::Components
+namespace Radon::Game::Plugins
 {
 
 PlayerHealth::PlayerHealth(Urho3D::Context* context)
@@ -14,24 +15,18 @@ PlayerHealth::PlayerHealth(Urho3D::Context* context)
     SetUpdateEventMask(Urho3D::USE_NO_EVENT);
 }
 
-PlayerHealth::~PlayerHealth() = default;
-
 void PlayerHealth::RegisterObject(Urho3D::Context* context)
 {
-    context->AddFactoryReflection<PlayerHealth>("Player");
-
-    URHO3D_ATTRIBUTE("MaxHealth", float, maxHealth_, 100.0f, Urho3D::AM_DEFAULT);
-    URHO3D_ATTRIBUTE("Invulnerable", bool, invulnerable_, false, Urho3D::AM_DEFAULT);
-}
-
-void PlayerHealth::Start()
-{
-    if (initialized_)
+    static bool registered = false;
+    if (registered)
         return;
+    registered = true;
 
-    health_ = maxHealth_;
+    context->AddFactoryReflection<PlayerHealth>(Category_Radon_Player);
 
-    initialized_ = true;
+    URHO3D_ATTRIBUTE("Max Health", float, maxHealth_, 100.0f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("Invulnerable", bool, invulnerable_, false, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("Regeneration Rate", float, regenRate_, 0.0f, Urho3D::AM_DEFAULT);
 }
 
 void PlayerHealth::SetMaxHealth(float maxHealth)
@@ -44,19 +39,9 @@ void PlayerHealth::SetMaxHealth(float maxHealth)
         health_ = maxHealth_;
 }
 
-void PlayerHealth::DelayedStart()
-{
-    Start();
-}
-
 void PlayerHealth::SetHealth(float health)
 {
     health_ = Urho3D::Clamp(health, 0.0f, maxHealth_);
-}
-
-void PlayerHealth::SetInvulnerable(bool invuln)
-{
-    invulnerable_ = invuln;
 }
 
 void PlayerHealth::TakeDamage(float amount, Urho3D::Node* source)
@@ -108,4 +93,4 @@ void PlayerHealth::Respawn()
     SendEvent(Events::E_PLAYER_RESPAWNED, eventData);
 }
 
-} // namespace Radon::Game::Components
+} // namespace Radon::Game::Plugins

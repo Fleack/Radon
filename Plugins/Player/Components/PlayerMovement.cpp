@@ -1,14 +1,14 @@
 #include "PlayerMovement.hpp"
 
-#include "Engine/Core/Logger.hpp"
-#include "Game/Components/Events/GlobalVars.hpp"
-#include "Game/Components/Events/PlayerEvents.hpp"
+#include "ComponentCategory.hpp"
+#include "Events/GlobalVars.hpp"
+#include "Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Physics/PhysicsWorld.h>
 #include <Urho3D/Scene/Node.h>
 
-namespace Radon::Game::Components
+namespace Radon::Game::Plugins
 {
 
 PlayerMovement::PlayerMovement(Urho3D::Context* context)
@@ -21,21 +21,33 @@ PlayerMovement::~PlayerMovement() = default;
 
 void PlayerMovement::RegisterObject(Urho3D::Context* context)
 {
-    context->AddFactoryReflection<PlayerMovement>("Player");
+    static bool registered = false;
+    if (registered)
+        return;
+    registered = true;
 
-    URHO3D_ATTRIBUTE("WalkSpeed", float, walkSpeed_, 3.0f, Urho3D::AM_DEFAULT);
-    URHO3D_ATTRIBUTE("RunSpeed", float, runSpeed_, 6.0f, Urho3D::AM_DEFAULT);
-    URHO3D_ATTRIBUTE("JumpHeight", float, jumpHeight_, 6.0f, Urho3D::AM_DEFAULT);
-    URHO3D_ATTRIBUTE("MovementSmoothing", float, movementSmoothingFactor_, 10.0f, Urho3D::AM_DEFAULT);
+    context->AddFactoryReflection<PlayerMovement>(Category_Radon_Player);
+
+    URHO3D_ATTRIBUTE("Walk Speed", float, walkSpeed_, 3.0f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("Run Speed", float, runSpeed_, 6.0f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("Jump Height", float, jumpHeight_, 6.0f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("Movement Smoothing", float, movementSmoothingFactor_, 10.0f, Urho3D::AM_DEFAULT);
 }
 
-void PlayerMovement::Start()
+void PlayerMovement::DelayedStart()
 {
     if (initialized_)
         return;
 
+    if (!characterControllerNode)
+        characterControllerNode = node_->GetChild("Character Controller");
+    if (!characterControllerNode)
+        characterControllerNode = node_->CreateChild("Character Controller");
+
     if (!characterController_)
-        characterController_ = node_->GetOrCreateComponent<Urho3D::KinematicCharacterController>();
+        characterController_ = characterControllerNode->GetOrCreateComponent<Urho3D::KinematicCharacterController>();
+
+    characterControllerNode->SetPosition(Urho3D::Vector3::ZERO);
 
     SubscribeToEvent(Events::E_PLAYER_CAMERA_DIRECTION_CHANGED, [this](Urho3D::StringHash, Urho3D::VariantMap& eventData) {
         camForward_ = eventData[Events::P::FORWARD].GetVector3();
@@ -45,11 +57,6 @@ void PlayerMovement::Start()
     SetJumpHeight(jumpHeight_);
 
     initialized_ = true;
-}
-
-void PlayerMovement::DelayedStart()
-{
-    Start();
 }
 
 void PlayerMovement::FixedUpdate(float timeStep)
@@ -112,6 +119,16 @@ void PlayerMovement::FixedUpdate(float timeStep)
 
     characterController_->SetWalkIncrement(moveDirection_ * timeStep);
 
+    // Оптимизировано: обновляем позицию узла игрока только при необходимости
+    Urho3D::Vector3 controllerLocalPosition = characterControllerNode->GetPosition();
+    if (!controllerLocalPosition.Equals(Urho3D::Vector3::ZERO))
+    {
+        // Перемещаем основной узел игрока
+        node_->SetPosition(node_->GetPosition() + controllerLocalPosition);
+        characterControllerNode->SetPosition(Urho3D::Vector3::ZERO);
+    }
+
+    // Отправляем только значимые события состояния
     if (isMoving_ && !wasMoving && grounded)
     {
         Urho3D::VariantMap eventData;
@@ -137,32 +154,16 @@ void PlayerMovement::FixedUpdate(float timeStep)
 
         Urho3D::VariantMap eventData;
         eventData[Events::P::JUMP_HEIGHT] = jumpHeight_;
-        SendEvent(Events::E_PLAYER_JUMPED);
+        SendEvent(Events::E_PLAYER_JUMPED, eventData);
     }
 
     if (!groundedLastFrame_ && grounded)
     {
-        Urho3D::VariantMap eventData;
-        SendEvent(Events::E_PLAYER_GROUNDED, eventData);
+        SendEvent(Events::E_PLAYER_GROUNDED);
     }
 
     groundedLastFrame_ = grounded;
     jumpPressedLastFrame_ = jump;
-}
-
-void PlayerMovement::SetJumpHeight(float height)
-{
-    jumpHeight_ = height;
-}
-
-float PlayerMovement::GetJumpHeight() const
-{
-    return jumpHeight_;
-}
-
-bool PlayerMovement::IsGrounded() const
-{
-    return characterController_ ? characterController_->OnGround() : false;
 }
 
 void PlayerMovement::SetCharacterController(Urho3D::KinematicCharacterController* controller)
@@ -170,4 +171,4 @@ void PlayerMovement::SetCharacterController(Urho3D::KinematicCharacterController
     characterController_ = controller;
 }
 
-} // namespace Radon::Game::Components
+} // namespace Radon::Game::Plugins

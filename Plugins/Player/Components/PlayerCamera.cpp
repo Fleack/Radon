@@ -1,55 +1,61 @@
-#include "PlayerCameraBinding.hpp"
+#include "PlayerCamera.hpp"
 
-#include "Engine/Core/Logger.hpp"
-#include "Game/Components/Events/GlobalVars.hpp"
-#include "Game/Components/Events/PlayerEvents.hpp"
+#include "ComponentCategory.hpp"
+#include "Events/GlobalVars.hpp"
+#include "Events/PlayerEvents.hpp"
+#include "Urho3D/IO/Log.h"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Graphics/Camera.h>
 #include <Urho3D/Scene/Node.h>
 
-namespace Radon::Game::Components
+namespace Radon::Game::Plugins
 {
 
-PlayerCameraBinding::PlayerCameraBinding(Urho3D::Context* context)
+PlayerCamera::PlayerCamera(Urho3D::Context* context)
     : LogicComponent(context)
 {
     SetUpdateEventMask(Urho3D::USE_UPDATE);
 }
 
-PlayerCameraBinding::~PlayerCameraBinding() = default;
-
-void PlayerCameraBinding::RegisterObject(Urho3D::Context* context)
+void PlayerCamera::RegisterObject(Urho3D::Context* context)
 {
-    context->AddFactoryReflection<PlayerCameraBinding>("Player");
+    static bool registered = false;
+    if (registered)
+        return;
+    registered = true;
 
-    URHO3D_ATTRIBUTE("CameraHeight", float, cameraHeight_, 1.8f, Urho3D::AM_DEFAULT);
-    URHO3D_ATTRIBUTE("Head Bob Strength", float, headBobStrength_, 0.05f, Urho3D::AM_DEFAULT);
-    URHO3D_ATTRIBUTE("Head Bob Speed", float, headBobSpeed_, 10.0f, Urho3D::AM_DEFAULT);
+    context->AddFactoryReflection<PlayerCamera>(Category_Radon_Player);
+
+    URHO3D_ATTRIBUTE("Camera Height", float, cameraHeight_, 1.8f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("HeadBob Strength", float, headBobStrength_, 0.04f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("HeadBob Speed", float, headBobSpeed_, 1.5f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("HeadBob Horizontal Factor", float, headBobHorizontalFactor_, 1.0f, Urho3D::AM_DEFAULT);
+    URHO3D_ATTRIBUTE("HeadBob Vertical Factor", float, headBobVerticalFactor_, 1.0f, Urho3D::AM_DEFAULT);
 }
 
-void PlayerCameraBinding::Start()
+void PlayerCamera::DelayedStart()
 {
     if (initialized_)
         return;
 
-    if (!cameraNode_)
-        cameraNode_ = node_->GetChild("Camera");
+    // Создаем дочерний узел для камеры
+    cameraNode_ = node_->GetChild("Camera");
     if (!cameraNode_)
         cameraNode_ = node_->CreateChild("Camera");
 
-    if (!camera_)
-        camera_ = cameraNode_->GetOrCreateComponent<Urho3D::Camera>();
+    camera_ = cameraNode_->GetOrCreateComponent<Urho3D::Camera>();
 
+    // Устанавливаем локальную позицию камеры (высота относительно игрока)
     cameraNode_->SetPosition(Urho3D::Vector3(0.0f, cameraHeight_, 0.0f));
-    originalCameraPosition_ = cameraNode_->GetPosition();
+    basePosition_ = cameraNode_->GetPosition();
 
     SubscribeToEvents();
 
     initialized_ = true;
 }
 
-void PlayerCameraBinding::SubscribeToEvents()
+void PlayerCamera::SubscribeToEvents()
 {
     // TODO: Jump with ceiling above player?
     SubscribeToEvent(Events::E_PLAYER_JUMPED, [this](Urho3D::StringHash, Urho3D::VariantMap&) {
@@ -75,12 +81,7 @@ void PlayerCameraBinding::SubscribeToEvents()
     });
 }
 
-void PlayerCameraBinding::DelayedStart()
-{
-    Start();
-}
-
-void PlayerCameraBinding::Update(float timeStep)
+void PlayerCamera::Update(float timeStep)
 {
     if (!initialized_ || !cameraNode_ || !camera_)
         return;
@@ -111,55 +112,54 @@ void PlayerCameraBinding::Update(float timeStep)
     ApplyHeadBob(timeStep);
 }
 
-void PlayerCameraBinding::ApplyHeadBob(float timeStep)
+void PlayerCamera::ApplyHeadBob(float timeStep)
 {
     if (!playerGrounded_)
         return;
 
-    static float bobLerp = 0.0f;
     if (playerMoving_)
     {
         float speed = playerRunning_ ? headBobSpeed_ * 1.5f : headBobSpeed_;
         headBobTime_ += timeStep * speed;
-        bobLerp = Urho3D::Min(bobLerp + timeStep * 2.0f, 1.0f);
+        bobLerp_ = Urho3D::Min(bobLerp_ + timeStep * 2.0f, 1.0f);
     }
     else
     {
-        bobLerp -= timeStep * 3.0f;
-        if (bobLerp < 0.0f) bobLerp = 0.0f;
+        bobLerp_ -= timeStep * 3.0f;
+        if (bobLerp_ < 0.0f) bobLerp_ = 0.0f;
     }
 
     Urho3D::Vector3 bobOffset = Urho3D::Vector3::ZERO;
-    if (bobLerp > 0.0f)
+    if (bobLerp_ > 0.0f)
     {
         float intensity = playerRunning_ ? headBobStrength_ : headBobStrength_ * 0.7f;
-        bobOffset.y_ = Urho3D::Sin(headBobTime_ * 360.0f) * intensity * bobLerp * headBobVerticalFactor_;
-        bobOffset.x_ = Urho3D::Sin(headBobTime_ * 180.0f) * intensity * bobLerp * headBobHorizontalFactor_;
+        bobOffset.y_ = Urho3D::Sin(headBobTime_ * 360.0f) * intensity * bobLerp_ * headBobVerticalFactor_;
+        bobOffset.x_ = Urho3D::Sin(headBobTime_ * 180.0f) * intensity * bobLerp_ * headBobHorizontalFactor_;
     }
 
-    auto prevPos = cameraNode_->GetPosition();
-    cameraNode_->SetPosition(originalCameraPosition_ + bobOffset);
-    if (cameraNode_->GetPosition() != prevPos)
+    // Применяем headbob как локальное смещение от базовой позиции
+    Urho3D::Vector3 newPosition = basePosition_ + bobOffset;
+    if (!cameraNode_->GetPosition().Equals(newPosition))
     {
+        cameraNode_->SetPosition(newPosition);
         SendEvent(Events::E_PLAYER_HEADBOB);
     }
 }
 
-void PlayerCameraBinding::SetCameraNode(Urho3D::Node* node)
+void PlayerCamera::UpdateCameraPosition()
 {
-    cameraNode_ = node;
+    if (!initialized_ || !cameraNode_)
+        return;
+
+    basePosition_ = Urho3D::Vector3(0.0f, cameraHeight_, 0.0f);
+    // Применяем новую базовую позицию (headbob будет применен в следующем кадре)
+    cameraNode_->SetPosition(basePosition_);
 }
 
-void PlayerCameraBinding::SetCamera(Urho3D::Camera* camera)
-{
-    camera_ = camera;
-}
-
-Urho3D::Vector3 PlayerCameraBinding::GetCamForward() const
+Urho3D::Vector3 PlayerCamera::GetCamForward() const
 {
     if (!cameraNode_)
     {
-        RADON_LOGERROR("PlayerCameraBinding: Camera node is null, returning default forward vector");
         return Urho3D::Vector3::FORWARD;
     }
 
@@ -170,11 +170,10 @@ Urho3D::Vector3 PlayerCameraBinding::GetCamForward() const
     return camForward;
 }
 
-Urho3D::Vector3 PlayerCameraBinding::GetCamRight() const
+Urho3D::Vector3 PlayerCamera::GetCamRight() const
 {
     if (!cameraNode_)
     {
-        RADON_LOGERROR("PlayerCameraBinding: Camera node is null, returning default right vector");
         return Urho3D::Vector3::RIGHT;
     }
 
@@ -185,4 +184,4 @@ Urho3D::Vector3 PlayerCameraBinding::GetCamRight() const
     return camRight;
 }
 
-} // namespace Radon::Game::Components
+} // namespace Radon::Game::Plugins

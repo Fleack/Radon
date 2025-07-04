@@ -10,6 +10,7 @@ target_compile_features(RadonApp PRIVATE cxx_std_23)
 target_include_directories(RadonApp
         PRIVATE
         ${CMAKE_SOURCE_DIR}/Source
+        ${CMAKE_SOURCE_DIR}/Plugins
 )
 
 target_link_libraries(RadonApp
@@ -17,6 +18,8 @@ target_link_libraries(RadonApp
         RadonEngine
         RadonGameLib
 )
+
+target_link_plugins(RadonApp "${APP_PLUGIN_LIST}")
 
 include(${CMAKE_SOURCE_DIR}/CMake/CopyData.cmake)
 include(${CMAKE_SOURCE_DIR}/CMake/RemoveLog.cmake)

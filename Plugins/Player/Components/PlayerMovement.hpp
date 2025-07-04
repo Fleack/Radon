@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Urho3D/Physics/KinematicCharacterController.h"
-
 #include <Urho3D/Math/Vector3.h>
+#include <Urho3D/Physics/KinematicCharacterController.h>
 #include <Urho3D/Scene/LogicComponent.h>
 
-namespace Radon::Game::Components
+namespace Radon::Game::Plugins
 {
 
 class PlayerMovement final : public Urho3D::LogicComponent
@@ -18,28 +17,28 @@ public:
 
     static void RegisterObject(Urho3D::Context* context);
 
-    void Start() override;
     void DelayedStart() override;
     void FixedUpdate(float timeStep) override;
 
-    void SetWalkSpeed(float speed) { walkSpeed_ = speed; }
-    [[nodiscard]] float GetWalkSpeed() const { return walkSpeed_; }
-
-    void SetRunSpeed(float speed) { runSpeed_ = speed; }
-    [[nodiscard]] float GetRunSpeed() const { return runSpeed_; }
-
-    void SetJumpHeight(float height);
-    [[nodiscard]] float GetJumpHeight() const;
+    float GetWalkSpeed() const { return walkSpeed_; }
+    void SetWalkSpeed(float v) { walkSpeed_ = v; }
+    float GetRunSpeed() const { return runSpeed_; }
+    void SetRunSpeed(float v) { runSpeed_ = v; }
+    float GetJumpHeight() const { return jumpHeight_; }
+    void SetJumpHeight(float v) { jumpHeight_ = v; }
+    float GetMovementSmoothing() const { return movementSmoothingFactor_; }
+    void SetMovementSmoothing(float v) { movementSmoothingFactor_ = v; }
 
     [[nodiscard]] float GetCurrentSpeed() const { return currentSpeed_; }
 
     [[nodiscard]] bool IsMoving() const { return isMoving_; }
     [[nodiscard]] bool IsRunning() const { return isRunning_; }
-    [[nodiscard]] bool IsGrounded() const;
+    [[nodiscard]] bool IsGrounded() const { return characterController_ ? characterController_->OnGround() : false; };
 
     void SetCharacterController(Urho3D::KinematicCharacterController* controller);
 
 private:
+    Urho3D::Node* characterControllerNode{nullptr};
     Urho3D::KinematicCharacterController* characterController_{nullptr};
 
     float walkSpeed_{3.0f};
@@ -63,4 +62,4 @@ private:
     bool initialized_{false};
 };
 
-} // namespace Radon::Game::Components
+} // namespace Radon::Game::Plugins

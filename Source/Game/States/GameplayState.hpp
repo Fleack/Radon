@@ -2,6 +2,18 @@
 
 #include "Engine/StateMachine/IGameState.hpp"
 
+#include <Urho3D/Scene/Scene.h>
+
+namespace Radon::Game::Plugins
+{
+class PlayerCamera;
+}
+
+namespace Radon::Engine::UI
+{
+class DebugHUD;
+}
+
 namespace Radon::Game::States
 {
 
@@ -19,6 +31,12 @@ private:
 
 private:
     ea::string const gameplaySceneName_{"Gameplay"};
+
+    Urho3D::WeakPtr<Urho3D::Scene> scene_;
+    Urho3D::WeakPtr<Plugins::PlayerCamera> playerCamera_;
+    Urho3D::WeakPtr<Engine::UI::DebugHUD> debugHUD_;
+
+    bool isInitialized_{false};
 };
 
 } // namespace Radon::Game::States

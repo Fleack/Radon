@@ -26,6 +26,12 @@ set(URHO3D_HOME "${CMAKE_SOURCE_DIR}/../rbfx")
 set(URHO3D_BUILD "${CMAKE_BINARY_DIR}/rbfx-build")
 add_subdirectory(${URHO3D_HOME} ${URHO3D_BUILD})
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/Plugins/Core.SamplePlugin)
-
 add_subdirectory(Source)
+
+include_directories(${CMAKE_SOURCE_DIR}/Plugins)
+
+set(APP_PLUGIN_LIST
+        Plugin.Radon.Player
+)
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/Plugins/Player)
