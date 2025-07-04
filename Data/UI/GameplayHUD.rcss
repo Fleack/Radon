@@ -8,8 +8,8 @@ body {
 
 #hud-container {
     position: absolute;
-    top: 1em;
-    left: 1em;
+    bottom: 1em;
+    right: 1em;
     font-size: 1.2em;
     color: #ffffff;
 }
