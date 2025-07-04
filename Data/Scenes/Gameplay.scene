@@ -3,7 +3,7 @@
 	<attributes>
 		<attribute name="Name" type="String" value="Gameplay" />
 		<attribute name="Next Node ID" type="Int" value="15" />
-		<attribute name="Next Component ID" type="Int" value="31" />
+		<attribute name="Next Component ID" type="Int" value="43" />
 	</attributes>
 	<components>
 		<component _id="1" _typeName="Octree" />
@@ -248,6 +248,12 @@
 			<attributes>
 				<attribute name="Name" type="String" value="Player" />
 			</attributes>
+			<components>
+				<component _id="39" _typeName="PlayerCamera" />
+				<component _id="40" _typeName="PlayerHealth" />
+				<component _id="41" _typeName="PlayerInputHandler" />
+				<component _id="42" _typeName="PlayerMovement" />
+			</components>
 		</node>
 		<node _id="11">
 			<attributes>

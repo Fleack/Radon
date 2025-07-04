@@ -6,7 +6,6 @@
 				"Name": "MainMenu"
 			},
 			{
-				"MainPlugin": "Builtin.SceneViewer",
 				"Name": "Gameplay"
 			}
 		]
@@ -14,8 +13,7 @@
 	"PluginManager": {
 		"LoadedPlugins": [
 			"Builtin.SceneViewer",
-			"Sample.103_GamePlugin",
-			"Sample.113_InputLogger"
+			"Plugin.Radon.Player"
 		]
 	}
 }

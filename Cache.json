@@ -69,7 +69,7 @@
 		{
 			"key": "Scenes/Gameplay.scene",
 			"value": {
-				"modificationTime": 1751216100
+				"modificationTime": 1751573854
 			}
 		},
 		{
@@ -117,7 +117,7 @@
 		{
 			"key": "Scenes/MainMenu.scene",
 			"value": {
-				"modificationTime": 1751098784
+				"modificationTime": 1751573804
 			}
 		},
 		{
@@ -133,33 +133,21 @@
 			}
 		},
 		{
-			"key": "HeightMaps/Heightmap.png",
-			"value": {
-				"modificationTime": 1751214561
-			}
-		},
-		{
 			"key": "Configs/KeyBindings.json",
 			"value": {
 				"modificationTime": 1750159912
 			}
 		},
 		{
-			"key": "HeightMaps/heightmap_30.290653002668705_59.904122084753_17.28.raw",
+			"key": "Items/Bandage.json",
 			"value": {
-				"modificationTime": 1751214679
+				"modificationTime": 1750232152
 			}
 		},
 		{
 			"key": "Items/medkit.json",
 			"value": {
 				"modificationTime": 1750232226
-			}
-		},
-		{
-			"key": "Items/Bandage.json",
-			"value": {
-				"modificationTime": 1750232152
 			}
 		},
 		{
