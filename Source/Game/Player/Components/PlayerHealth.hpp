@@ -2,7 +2,7 @@
 
 #include <Urho3D/Scene/LogicComponent.h>
 
-namespace Radon::Game::Plugins
+namespace Radon::Game::Player
 {
 
 class PlayerHealth final : public Urho3D::LogicComponent
@@ -36,4 +36,4 @@ protected:
     bool initialized_{false};
 };
 
-} // namespace Radon::Game::Plugins
+} // namespace Radon::Game::Player 

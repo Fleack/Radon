@@ -2,7 +2,7 @@
 
 #include <Urho3D/Math/StringHash.h>
 
-namespace Radon::Game::Events
+namespace Radon::Game::Player::Events
 {
 
 // Movement events
@@ -47,4 +47,4 @@ inline auto AMOUNT = "Amount";
 inline auto SOURCE = "Source";
 } // namespace P
 
-} // namespace Radon::Game::Events
+} // namespace Radon::Game::Player::Events 

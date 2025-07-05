@@ -3,7 +3,7 @@
 #include <Urho3D/Graphics/Camera.h>
 #include <Urho3D/Scene/LogicComponent.h>
 
-namespace Radon::Game::Plugins
+namespace Radon::Game::Player
 {
 
 /// Player camera component that manages camera setup at fixed height
@@ -36,4 +36,4 @@ private:
     bool cameraRegistered_{false};
 };
 
-} // namespace Radon::Game::Plugins
+} // namespace Radon::Game::Player 

@@ -1,12 +1,12 @@
 #include "PlayerHealth.hpp"
 
-#include "ComponentCategory.hpp"
-#include "Events/PlayerEvents.hpp"
+#include "../ComponentCategory.hpp"
+#include "../Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Scene/Node.h>
 
-namespace Radon::Game::Plugins
+namespace Radon::Game::Player
 {
 
 PlayerHealth::PlayerHealth(Urho3D::Context* context)
@@ -93,4 +93,4 @@ void PlayerHealth::Respawn()
     SendEvent(Events::E_PLAYER_RESPAWNED, eventData);
 }
 
-} // namespace Radon::Game::Plugins
+} // namespace Radon::Game::Player 

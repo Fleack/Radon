@@ -33,5 +33,3 @@ include_directories(${CMAKE_SOURCE_DIR}/Plugins)
 set(APP_PLUGIN_LIST
         Plugin.Radon.Player
 )
-
-add_subdirectory(${CMAKE_SOURCE_DIR}/Plugins/Player)

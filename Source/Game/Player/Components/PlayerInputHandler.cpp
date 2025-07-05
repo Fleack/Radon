@@ -1,8 +1,8 @@
 #include "PlayerInputHandler.hpp"
 
-#include "ComponentCategory.hpp"
-#include "Events/GlobalVars.hpp"
-#include "Events/PlayerEvents.hpp"
+#include "../ComponentCategory.hpp"
+#include "../Events/GlobalVars.hpp"
+#include "../Events/PlayerEvents.hpp"
 
 #include <cmath>
 
@@ -21,7 +21,7 @@ VariantType GetVariantType<Key>()
 }
 } // namespace Urho3D
 
-namespace Radon::Game::Plugins
+namespace Radon::Game::Player
 {
 
 PlayerInputHandler::PlayerInputHandler(Urho3D::Context* context)
@@ -103,4 +103,4 @@ void PlayerInputHandler::Update(float timeStep)
         SendEvent(Events::E_PLAYER_INTERACTED);
 }
 
-} // namespace Radon::Game::Plugins
+} // namespace Radon::Game::Player 

@@ -1,13 +1,13 @@
 #include "PlayerCamera.hpp"
 
-#include "ComponentCategory.hpp"
-#include "Events/PlayerEvents.hpp"
+#include "../ComponentCategory.hpp"
+#include "../Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Graphics/Camera.h>
 #include <Urho3D/Scene/Node.h>
 
-namespace Radon::Game::Plugins
+namespace Radon::Game::Player
 {
 
 PlayerCamera::PlayerCamera(Urho3D::Context* context)
@@ -59,4 +59,4 @@ void PlayerCamera::NotifyCameraReady()
     SendEvent(Urho3D::StringHash("PlayerCameraReady"), eventData);
 }
 
-} // namespace Radon::Game::Plugins
+} // namespace Radon::Game::Player 

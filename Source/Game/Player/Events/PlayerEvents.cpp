@@ -1,6 +1,6 @@
 #include "PlayerEvents.hpp"
 
-namespace Radon::Game::Events
+namespace Radon::Game::Player::Events
 {
 
 // Movement events
@@ -12,7 +12,7 @@ Urho3D::StringHash const E_PLAYER_RUN_STATE_CHANGED("PlayerRunStateChanged");
 
 // Camera events
 Urho3D::StringHash const E_PLAYER_HEADBOB("PlayerHeadbob");
-Urho3D::StringHash const E_PLAYER_CAMERA_DIRECTION_CHANGED("PlayerCameraDirectionChanged"); // TODO: Проверить какие ивенты можно унести из плагина
+Urho3D::StringHash const E_PLAYER_CAMERA_DIRECTION_CHANGED("PlayerCameraDirectionChanged");
 
 // Health events
 Urho3D::StringHash const E_PLAYER_DAMAGED("PlayerDamaged");
@@ -23,4 +23,4 @@ Urho3D::StringHash const E_PLAYER_RESPAWNED("PlayerRespawned");
 // Input events
 Urho3D::StringHash const E_PLAYER_INTERACTED("PlayerInteracted");
 
-} // namespace Radon::Game::Events
+} // namespace Radon::Game::Player::Events 

@@ -4,6 +4,10 @@
 
 #include <Urho3D/Scene/Scene.h>
 
+namespace Radon::Game::Player
+{
+class PlayerCamera;
+}
 namespace Radon::Game::Plugins
 {
 class PlayerCamera;
@@ -38,7 +42,7 @@ private:
     ea::string const gameplaySceneName_{"Gameplay"};
 
     Urho3D::WeakPtr<Urho3D::Scene> scene_;
-    Urho3D::WeakPtr<Plugins::PlayerCamera> playerCamera_; // TODO Больше не нужно?
+    Urho3D::WeakPtr<Player::PlayerCamera> playerCamera_; // TODO Больше не нужно?
     Urho3D::WeakPtr<Engine::UI::DebugHUD> debugHUD_;
     Urho3D::SharedPtr<Engine::Input::CameraManager> cameraManager_;
 

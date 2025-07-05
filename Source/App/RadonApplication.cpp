@@ -9,13 +9,11 @@
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/UI/DebugHUD.hpp"
 #include "Engine/UI/UIManager.hpp"
+#include "Game/Player/PlayerManager.hpp"
 #include "Game/States/MenuState.hpp"
-#include "Player/PlayerPlugin.hpp"
-#include "Urho3D/Plugins/PluginManager.h"
 
 #include <Urho3D/Engine/Engine.h>
 #include <Urho3D/Engine/EngineDefs.h>
-#include <Urho3D/Plugins/PluginApplication.h>
 #include <Urho3D/SystemUI/DebugHud.h>
 
 using namespace Radon::App;
@@ -40,7 +38,6 @@ void RadonApplication::Setup()
 void RadonApplication::Start()
 {
     RADON_LOGINFO("RadonApplication: Start called");
-    LoadPlugins();
     RegisterComponents();
     RegisterSubsystems();
 
@@ -52,29 +49,11 @@ void RadonApplication::Stop()
     RADON_LOGINFO("RadonApplication: Stop called");
 }
 
-void RadonApplication::LoadPlugins()
-{
-    RADON_LOGDEBUG("RadonApplication: LoadPlugins called");
-
-    auto* pluginManager = context_->GetSubsystem<Urho3D::PluginManager>();
-    if (!pluginManager)
-    {
-        RADON_LOGERROR("RadonApplication: PluginManager not found");
-        return;
-    }
-
-    // Plugins loading
-    Urho3D::StringVector const plugins = {
-        Game::Plugins::PlayerPlugin::GetStaticPluginName()};
-    pluginManager->SetPluginsLoaded(plugins);
-
-    RADON_LOGINFO("RadonApplication: Plugins loaded successfully");
-}
-
 void RadonApplication::RegisterComponents()
 {
     RADON_LOGDEBUG("RadonApplication: RegisterComponents called");
     Engine::UI::DebugHUD::RegisterObject(context_);
+    Game::Player::PlayerManager::RegisterComponents(context_);
     RADON_LOGINFO("RadonApplication: Components registered successfully");
 }
 

@@ -8,7 +8,7 @@ namespace Radon::Engine::Input
 class InputHandler;
 }
 
-namespace Radon::Game::Plugins
+namespace Radon::Game::Player
 {
 
 class PlayerInputHandler final : public Urho3D::LogicComponent
@@ -90,4 +90,4 @@ private:
     bool interact_{false};
 };
 
-} // namespace Radon::Game::Plugins
+} // namespace Radon::Game::Player 

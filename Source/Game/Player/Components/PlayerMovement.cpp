@@ -1,14 +1,14 @@
 #include "PlayerMovement.hpp"
 
-#include "ComponentCategory.hpp"
-#include "Events/GlobalVars.hpp"
-#include "Events/PlayerEvents.hpp"
+#include "../ComponentCategory.hpp"
+#include "../Events/GlobalVars.hpp"
+#include "../Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Physics/PhysicsWorld.h>
 #include <Urho3D/Scene/Node.h>
 
-namespace Radon::Game::Plugins
+namespace Radon::Game::Player
 {
 
 PlayerMovement::PlayerMovement(Urho3D::Context* context)
@@ -119,16 +119,16 @@ void PlayerMovement::FixedUpdate(float timeStep)
 
     characterController_->SetWalkIncrement(moveDirection_ * timeStep);
 
-    // Оптимизировано: обновляем позицию узла игрока только при необходимости
+    // Optimized: update player node position only when needed
     Urho3D::Vector3 controllerLocalPosition = characterControllerNode->GetPosition();
     if (!controllerLocalPosition.Equals(Urho3D::Vector3::ZERO))
     {
-        // Перемещаем основной узел игрока
+        // Move main player node
         node_->SetPosition(node_->GetPosition() + controllerLocalPosition);
         characterControllerNode->SetPosition(Urho3D::Vector3::ZERO);
     }
 
-    // Отправляем только значимые события состояния
+    // Send only significant state events
     if (isMoving_ && !wasMoving && grounded)
     {
         Urho3D::VariantMap eventData;
@@ -171,4 +171,4 @@ void PlayerMovement::SetCharacterController(Urho3D::KinematicCharacterController
     characterController_ = controller;
 }
 
-} // namespace Radon::Game::Plugins
+} // namespace Radon::Game::Player 

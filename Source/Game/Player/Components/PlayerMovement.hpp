@@ -4,7 +4,7 @@
 #include <Urho3D/Physics/KinematicCharacterController.h>
 #include <Urho3D/Scene/LogicComponent.h>
 
-namespace Radon::Game::Plugins
+namespace Radon::Game::Player
 {
 
 class PlayerMovement final : public Urho3D::LogicComponent
@@ -62,4 +62,4 @@ private:
     bool initialized_{false};
 };
 
-} // namespace Radon::Game::Plugins
+} // namespace Radon::Game::Player 

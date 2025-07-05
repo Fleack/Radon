@@ -8,8 +8,8 @@
 #include "Engine/StateMachine/IGameState.hpp"
 #include "Engine/UI/DebugHUD.hpp"
 #include "Engine/UI/UIManager.hpp"
+#include "Game/Player/Components/PlayerCamera.hpp"
 #include "Game/States/MenuState.hpp"
-#include "Player/Components/PlayerCamera.hpp"
 
 #include <Urho3D/Input/Input.h>
 #include <Urho3D/RmlUI/RmlUI.h>
@@ -36,7 +36,7 @@ void GameplayState::Enter()
         return;
     }
 
-    playerCamera_ = playerNode->GetComponent<Plugins::PlayerCamera>();
+    playerCamera_ = playerNode->GetOrCreateComponent<Player::PlayerCamera>();
     if (!playerCamera_)
     {
         RADON_LOGERROR("GameplayState: PlayerCamera component not found on Player node");
@@ -92,7 +92,7 @@ void GameplayState::Exit()
 
 void GameplayState::Update(float)
 {
-    if (!isInitialized_ && playerCamera_ && playerCamera_->GetCameraNode() && 
+    if (!isInitialized_ && playerCamera_ && playerCamera_->GetCameraNode() &&
         cameraManager_ && cameraManager_->IsPlayerCameraActive()) [[unlikely]] // TODO Simplify
     {
         RADON_LOGINFO("GameplayState: Camera is ready, completing initialization");
