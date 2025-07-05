@@ -3,8 +3,9 @@
 #include "Engine/Config/ConfigManager.hpp"
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Graphics/ViewportManager.hpp"
-#include "Engine/Input/CameraManager.hpp"
+
 #include "Engine/Input/InputHandler.hpp"
+#include "Engine/Input/PlayerCameraService.hpp"
 #include "Engine/Scene/SceneManager.hpp"
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/UI/DebugHUD.hpp"
@@ -43,6 +44,9 @@ void RadonApplication::Start()
     LoadPlugins();
     RegisterComponents();
     RegisterSubsystems();
+
+    // Initialize PlayerCameraService
+    GetSubsystem<Engine::Input::PlayerCameraService>()->Initialize();
 
     GetSubsystem<Engine::StateMachine::GameStateManager>()->PushState(MakeShared<Game::States::MenuState>(context_));
 }
@@ -86,7 +90,7 @@ void RadonApplication::RegisterSubsystems()
     context_->RegisterSubsystem(MakeShared<StateMachine::GameStateManager>(context_));
     context_->RegisterSubsystem(MakeShared<Scene::SceneManager>(context_));
     context_->RegisterSubsystem(MakeShared<Graphics::ViewportManager>(context_));
-    context_->RegisterSubsystem(MakeShared<Input::CameraManager>(context_));
+    context_->RegisterSubsystem(MakeShared<Input::PlayerCameraService>(context_));
     context_->RegisterSubsystem(MakeShared<Input::InputHandler>(context_));
     context_->RegisterSubsystem(MakeShared<UI::UIManager>(context_));
     RADON_LOGINFO("RadonApplication: All subsystems registered");

@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Graphics/ViewportManager.hpp"
-#include "Engine/Input/CameraManager.hpp"
+#include "Engine/Input/PlayerCameraService.hpp"
 #include "Engine/Scene/SceneManager.hpp"
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/StateMachine/IGameState.hpp"
@@ -33,7 +33,6 @@ void GameplayState::Enter()
     if (!playerNode)
     {
         RADON_LOGERROR("GameplayState: Player node not found in scene, creating a new one");
-        assert(0);
         return;
     }
 
@@ -41,7 +40,14 @@ void GameplayState::Enter()
     if (!playerCamera_)
     {
         RADON_LOGERROR("GameplayState: PlayerCamera component not found on Player node");
-        assert(0);
+        return;
+    }
+
+    // Get PlayerCameraService
+    playerCameraService_ = GetSubsystem<Input::PlayerCameraService>();
+    if (!playerCameraService_)
+    {
+        RADON_LOGERROR("GameplayState: PlayerCameraService not found");
         return;
     }
 
@@ -69,7 +75,11 @@ void GameplayState::Exit()
     if (isInitialized_)
     {
         GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
-        GetSubsystem<Input::CameraManager>()->Shutdown();
+        // PlayerCameraService manages CameraManager automatically
+        if (playerCameraService_ && playerCameraService_->GetCameraManager())
+        {
+            playerCameraService_->GetCameraManager()->Shutdown();
+        }
     }
 
     GetSubsystem<UI::UIManager>()->UnloadDocument("GameplayHUD");
@@ -77,6 +87,7 @@ void GameplayState::Exit()
 
     scene_ = nullptr;
     playerCamera_ = nullptr;
+    playerCameraService_ = nullptr;
     isInitialized_ = false;
 
     RADON_LOGINFO("GameplayState: exited and cleaned up");
@@ -84,12 +95,12 @@ void GameplayState::Exit()
 
 void GameplayState::Update(float)
 {
-    if (!isInitialized_ && playerCamera_ && playerCamera_->GetCameraNode()) [[unlikely]]
+    if (!isInitialized_ && playerCamera_ && playerCamera_->GetCameraNode() && 
+        playerCameraService_ && playerCameraService_->IsPlayerCameraActive()) [[unlikely]]
     {
         RADON_LOGINFO("GameplayState: Camera is ready, completing initialization");
 
         GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene_, *playerCamera_->GetCameraNode(), 0);
-        GetSubsystem<Input::CameraManager>()->Initialize(*playerCamera_->GetCameraNode(), 0.1f);
         isInitialized_ = true;
 
         RADON_LOGINFO("GameplayState: Initialization completed successfully");

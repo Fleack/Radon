@@ -14,6 +14,11 @@ namespace Radon::Engine::UI
 class DebugHUD;
 }
 
+namespace Radon::Engine::Input
+{
+class PlayerCameraService;
+}
+
 namespace Radon::Game::States
 {
 
@@ -33,8 +38,9 @@ private:
     ea::string const gameplaySceneName_{"Gameplay"};
 
     Urho3D::WeakPtr<Urho3D::Scene> scene_;
-    Urho3D::WeakPtr<Plugins::PlayerCamera> playerCamera_;
+    Urho3D::WeakPtr<Plugins::PlayerCamera> playerCamera_; // TODO Больше не нужно?
     Urho3D::WeakPtr<Engine::UI::DebugHUD> debugHUD_;
+    Urho3D::WeakPtr<Engine::Input::PlayerCameraService> playerCameraService_;
 
     bool isInitialized_{false};
 };
