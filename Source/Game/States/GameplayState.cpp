@@ -6,8 +6,8 @@
 #include "Engine/Scene/SceneManager.hpp"
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/StateMachine/IGameState.hpp"
-#include "Engine/UI/UIManager.hpp"
 #include "Engine/UI/DebugHUD.hpp"
+#include "Engine/UI/UIManager.hpp"
 #include "Game/States/MenuState.hpp"
 #include "Player/Components/PlayerCamera.hpp"
 
@@ -47,9 +47,9 @@ void GameplayState::Enter()
 
     GetSubsystem<UI::UIManager>()->ShowDocument("GameplayHUD");
 
-    // Создаем и добавляем DebugHUD
-    auto* debugHudNode = scene_->CreateChild("DebugHUD");
-    debugHUD_ = debugHudNode->CreateComponent<Engine::UI::DebugHUD>();
+    // TODO Add some flag for debugging
+    auto* DebugHUD = scene_->CreateChild("DebugHUD");
+    debugHUD_ = DebugHUD->CreateComponent<Engine::UI::DebugHUD>();
 
     auto* input = GetSubsystem<Urho3D::Input>();
     input->SetMouseMode(Urho3D::MM_RELATIVE);

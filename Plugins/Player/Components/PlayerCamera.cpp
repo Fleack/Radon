@@ -39,14 +39,12 @@ void PlayerCamera::DelayedStart()
     if (initialized_)
         return;
 
-    // Создаем дочерний узел для камеры
     cameraNode_ = node_->GetChild("Camera");
     if (!cameraNode_)
         cameraNode_ = node_->CreateChild("Camera");
 
     camera_ = cameraNode_->GetOrCreateComponent<Urho3D::Camera>();
 
-    // Устанавливаем локальную позицию камеры (высота относительно игрока)
     cameraNode_->SetPosition(Urho3D::Vector3(0.0f, cameraHeight_, 0.0f));
     basePosition_ = cameraNode_->GetPosition();
 
@@ -89,24 +87,22 @@ void PlayerCamera::Update(float timeStep)
     Urho3D::Variant const& mouseYaw = GetGlobalVar(GlobalVars::PLAYER_MOUSE_YAW);
     Urho3D::Variant const& mousePitch = GetGlobalVar(GlobalVars::PLAYER_MOUSE_PITCH);
 
-    if (!mouseYaw.IsEmpty() && !mousePitch.IsEmpty())
-    {
-        auto prevRot = cameraNode_->GetRotation();
-        auto yawQuat = Urho3D::Quaternion(mouseYaw.GetFloat(), Urho3D::Vector3::UP);
-        auto pitchQuat = Urho3D::Quaternion(mousePitch.GetFloat(), Urho3D::Vector3::RIGHT);
-        Urho3D::Quaternion targetRotation = yawQuat * pitchQuat;
-        Urho3D::Quaternion smoothedRotation = cameraNode_->GetRotation().Slerp(targetRotation, Urho3D::Min(1.0f, timeStep * 20.0f));
-        cameraNode_->SetRotation(smoothedRotation);
+    auto prevRot = cameraNode_->GetRotation();
+    auto yawQuat = Urho3D::Quaternion(mouseYaw.GetFloat(), Urho3D::Vector3::UP);
+    auto pitchQuat = Urho3D::Quaternion(mousePitch.GetFloat(), Urho3D::Vector3::RIGHT);
+    Urho3D::Quaternion targetRotation = yawQuat * pitchQuat;
+    Urho3D::Quaternion smoothedRotation = cameraNode_->GetRotation().Slerp(targetRotation, Urho3D::Min(1.0f, timeStep * 20.0f));
+    //cameraNode_->SetRotation(smoothedRotation);
 
-        if (cameraNode_->GetRotation() != prevRot)
-        {
-            Urho3D::VariantMap dirEventData;
-            dirEventData[Events::P::FORWARD] = GetCamForward();
-            dirEventData[Events::P::RIGHT] = GetCamRight();
-            dirEventData[Events::P::PITCH] = mousePitch.GetFloat();
-            dirEventData[Events::P::YAW] = mouseYaw.GetFloat();
-            SendEvent(Events::E_PLAYER_CAMERA_DIRECTION_CHANGED, dirEventData);
-        }
+    if (cameraNode_->GetRotation() != prevRot)
+    {
+        // TODO Replace with global vars
+        Urho3D::VariantMap dirEventData;
+        dirEventData[Events::P::FORWARD] = GetCamForward();
+        dirEventData[Events::P::RIGHT] = GetCamRight();
+        dirEventData[Events::P::PITCH] = mousePitch.GetFloat();
+        dirEventData[Events::P::YAW] = mouseYaw.GetFloat();
+        SendEvent(Events::E_PLAYER_CAMERA_DIRECTION_CHANGED, dirEventData);
     }
 
     ApplyHeadBob(timeStep);
@@ -137,7 +133,6 @@ void PlayerCamera::ApplyHeadBob(float timeStep)
         bobOffset.x_ = Urho3D::Sin(headBobTime_ * 180.0f) * intensity * bobLerp_ * headBobHorizontalFactor_;
     }
 
-    // Применяем headbob как локальное смещение от базовой позиции
     Urho3D::Vector3 newPosition = basePosition_ + bobOffset;
     if (!cameraNode_->GetPosition().Equals(newPosition))
     {
@@ -152,7 +147,6 @@ void PlayerCamera::UpdateCameraPosition()
         return;
 
     basePosition_ = Urho3D::Vector3(0.0f, cameraHeight_, 0.0f);
-    // Применяем новую базовую позицию (headbob будет применен в следующем кадре)
     cameraNode_->SetPosition(basePosition_);
 }
 

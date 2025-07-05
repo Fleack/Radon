@@ -39,10 +39,7 @@ public:
     void SetHeadBobVerticalFactor(float v) { headBobVerticalFactor_ = v; }
 
     [[nodiscard]] Urho3D::Node* GetCameraNode() const { return cameraNode_; }
-    [[nodiscard]] Urho3D::Camera* GetCamera() const { return camera_; }
-
     void SetCameraNode(Urho3D::Node* node) { cameraNode_ = node; }
-    void SetCamera(Urho3D::Camera* camera) { camera_ = camera; }
 
     Urho3D::Vector3 GetCamForward() const;
     Urho3D::Vector3 GetCamRight() const;
@@ -70,7 +67,6 @@ private:
     float headBobVerticalFactor_{1.0f};
     float bobLerp_{0.0f};
 
-    // Базовая позиция камеры (без эффектов)
     Urho3D::Vector3 basePosition_{Urho3D::Vector3::ZERO};
 
     bool initialized_{false};

@@ -7,16 +7,16 @@
 #include "Engine/Input/InputHandler.hpp"
 #include "Engine/Scene/SceneManager.hpp"
 #include "Engine/StateMachine/GameStateManager.hpp"
-#include "Engine/UI/UIManager.hpp"
 #include "Engine/UI/DebugHUD.hpp"
+#include "Engine/UI/UIManager.hpp"
 #include "Game/States/MenuState.hpp"
 #include "Player/PlayerPlugin.hpp"
 #include "Urho3D/Plugins/PluginManager.h"
 
-#include <Urho3D/Core/CoreEvents.h>
 #include <Urho3D/Engine/Engine.h>
 #include <Urho3D/Engine/EngineDefs.h>
 #include <Urho3D/Plugins/PluginApplication.h>
+#include <Urho3D/SystemUI/DebugHud.h>
 
 using namespace Radon::App;
 

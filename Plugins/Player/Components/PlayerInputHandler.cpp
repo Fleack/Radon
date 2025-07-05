@@ -70,20 +70,25 @@ void PlayerInputHandler::Update(float timeStep)
     bool run = input->GetKeyDown(runKey_);
     bool interact = input->GetKeyPress(interactKey_);
 
-    // Mouse
-    float rawDeltaX = static_cast<float>(input->GetMouseMoveX()) * mouseSensitivityX_;
-    float rawDeltaY = static_cast<float>(input->GetMouseMoveY()) * mouseSensitivityY_ * (invertMouseY_ ? -1.0f : 1.0f);
-    static float smoothedDeltaX = 0.0f;
-    static float smoothedDeltaY = 0.0f;
-    smoothedDeltaX = smoothedDeltaX * mouseSmoothing_ + rawDeltaX * (1.0f - mouseSmoothing_);
-    smoothedDeltaY = smoothedDeltaY * mouseSmoothing_ + rawDeltaY * (1.0f - mouseSmoothing_);
-    if (std::abs(smoothedDeltaX) < mouseDeadzone_) smoothedDeltaX = 0.0f;
-    if (std::abs(smoothedDeltaY) < mouseDeadzone_) smoothedDeltaY = 0.0f;
-    mouseYaw_ += smoothedDeltaX;
-    mousePitch_ += smoothedDeltaY;
-    mousePitch_ = Urho3D::Clamp(mousePitch_, -80.0f, 80.0f);
-    if (mouseYaw_ > 360.0f || mouseYaw_ < -360.0f)
-        mouseYaw_ = std::fmod(mouseYaw_, 360.0f);
+    // Mouse - block camera rotation when cursor is enabled for debug
+    bool cursorEnabled = input->GetMouseMode() == Urho3D::MM_FREE; // TODO Camera completely broken
+    if (!cursorEnabled)
+    {
+        float rawDeltaX = static_cast<float>(input->GetMouseMoveX()) * mouseSensitivityX_;
+        float rawDeltaY = static_cast<float>(input->GetMouseMoveY()) * mouseSensitivityY_ * (invertMouseY_ ? -1.0f : 1.0f);
+        
+        static float smoothedDeltaX = 0.0f;
+        static float smoothedDeltaY = 0.0f;
+        smoothedDeltaX = smoothedDeltaX * mouseSmoothing_ + rawDeltaX * (1.0f - mouseSmoothing_);
+        smoothedDeltaY = smoothedDeltaY * mouseSmoothing_ + rawDeltaY * (1.0f - mouseSmoothing_);
+        if (std::abs(smoothedDeltaX) < mouseDeadzone_) smoothedDeltaX = 0.0f;
+        if (std::abs(smoothedDeltaY) < mouseDeadzone_) smoothedDeltaY = 0.0f;
+        mouseYaw_ += smoothedDeltaX;
+        mousePitch_ += smoothedDeltaY;
+        mousePitch_ = Urho3D::Clamp(mousePitch_, -80.0f, 80.0f);
+        if (mouseYaw_ > 360.0f || mouseYaw_ < -360.0f)
+            mouseYaw_ = std::fmod(mouseYaw_, 360.0f);
+    }
 
     // Events and global vars
     SetGlobalVar(GlobalVars::PLAYER_MOVE_FORWARD, moveForward);
