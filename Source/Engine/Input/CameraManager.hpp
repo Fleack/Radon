@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CameraController/ICameraController.hpp"
+#include "CameraController/CameraController.hpp"
 
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/Scene/Node.h>
@@ -8,15 +8,7 @@
 namespace Radon::Engine::Input
 {
 
-enum class CameraMode : uint8_t
-{
-    FREE_CAMERA = 0,
-    FPS_CAMERA = 1,
-
-    // Always last
-    COUNT
-};
-
+/// Simplified camera manager that handles FPS and debug camera modes
 class CameraManager final : public Urho3D::Object
 {
     URHO3D_OBJECT(CameraManager, Object);
@@ -25,49 +17,26 @@ public:
     explicit CameraManager(Urho3D::Context* context);
     ~CameraManager() override;
 
-    void Initialize(Urho3D::Node& cameraNode, float lookSensitivity = 0.1f);
+    void Initialize(Urho3D::Node& cameraNode, Urho3D::Node* playerNode = nullptr);
     void Shutdown();
 
-    void SetCameraMode(CameraMode mode);
-    [[nodiscard]] CameraMode GetCurrentCameraMode() const { return currentMode_; }
+    void SetMode(CameraMode mode);
+    [[nodiscard]] CameraMode GetMode() const;
 
-    [[nodiscard]] Urho3D::WeakPtr<ICameraController> GetCurrentCamera() const { return currentCamera_; }
-    [[nodiscard]] Urho3D::WeakPtr<ICameraController> GetFreeCamera() const { return GetCameraByMode(CameraMode::FREE_CAMERA); }
-    [[nodiscard]] Urho3D::WeakPtr<ICameraController> GetFPSCamera() const { return GetCameraByMode(CameraMode::FPS_CAMERA); }
-
-    void SetLookSensitivity(float sensitivity) const;
+    void SetLookSensitivity(float sensitivity);
     [[nodiscard]] float GetLookSensitivity() const;
 
-    /// Check if player camera is active
-    [[nodiscard]] bool IsPlayerCameraActive() const { return playerCameraActive_; }
+    void SetMoveSpeed(float speed);
+    [[nodiscard]] float GetMoveSpeed() const;
 
-    void EnablePlayerCameraIntegration();
-    void DisablePlayerCameraIntegration();
+    void SetPlayerNode(Urho3D::Node* playerNode);
 
-private:
-    Urho3D::WeakPtr<ICameraController> GetCameraByMode(CameraMode mode) const { return controllers_[std::to_underlying(mode)]; }
-
-    template <class Fn>
-    void ApplyToAll(Fn fn) const
-    {
-        for (auto const& controller : controllers_)
-            if (controller) fn(*controller);
-    }
-
-    void OnPlayerCameraReady(Urho3D::StringHash eventType, Urho3D::VariantMap& eventData);
+    /// Toggle between FPS and DEBUG modes
+    void ToggleMode();
 
 private:
-    static constexpr std::size_t CameraModeCount = std::to_underlying(CameraMode::COUNT);
-
-    CameraMode currentMode_{CameraMode::FREE_CAMERA};
-    Urho3D::WeakPtr<ICameraController> currentCamera_{nullptr};
-    std::array<Urho3D::SharedPtr<ICameraController>, CameraModeCount> controllers_{};
-
-    Urho3D::WeakPtr<Urho3D::Node> cameraNode_;
-    Urho3D::WeakPtr<Urho3D::Node> playerNode_;
-    
-    bool playerCameraActive_{false};
-    bool listeningForPlayerCamera_{false};
+    Urho3D::SharedPtr<CameraController> cameraController_;
+    bool initialized_{false};
 };
 
 } // namespace Radon::Engine::Input

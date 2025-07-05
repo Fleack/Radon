@@ -43,9 +43,11 @@ void GameplayState::Enter()
         return;
     }
 
-    // Create CameraManager and enable player camera integration
+    // Initialize CameraManager with player camera
     cameraManager_ = MakeShared<Input::CameraManager>(context_);
-    cameraManager_->EnablePlayerCameraIntegration();
+    
+    // Wait for PlayerCamera to be ready before initializing CameraManager
+    // This happens in Update() when camera is ready
 
     GetSubsystem<UI::UIManager>()->ShowDocument("GameplayHUD");
 
@@ -74,7 +76,6 @@ void GameplayState::Exit()
         // Shutdown CameraManager
         if (cameraManager_)
         {
-            cameraManager_->DisablePlayerCameraIntegration();
             cameraManager_->Shutdown();
         }
     }
@@ -92,10 +93,12 @@ void GameplayState::Exit()
 
 void GameplayState::Update(float)
 {
-    if (!isInitialized_ && playerCamera_ && playerCamera_->GetCameraNode() &&
-        cameraManager_ && cameraManager_->IsPlayerCameraActive()) [[unlikely]] // TODO Simplify
+    if (!isInitialized_ && playerCamera_ && playerCamera_->GetCameraNode() && cameraManager_) [[unlikely]]
     {
         RADON_LOGINFO("GameplayState: Camera is ready, completing initialization");
+
+        // Initialize CameraManager with camera node and player node
+        cameraManager_->Initialize(*playerCamera_->GetCameraNode(), playerCamera_->GetNode());
 
         GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene_, *playerCamera_->GetCameraNode(), 0);
         isInitialized_ = true;
@@ -112,5 +115,12 @@ void GameplayState::HandleKeydown(Urho3D::StringHash, Urho3D::VariantMap& data)
     {
         RADON_LOGINFO("GameplayState: ESC pressed, returning to menu");
         GetSubsystem<StateMachine::GameStateManager>()->ReplaceState(MakeShared<MenuState>(context_));
+    }
+    else if (key == KEY_F1) // Toggle debug camera
+    {
+        if (cameraManager_)
+        {
+            cameraManager_->ToggleMode();
+        }
     }
 }

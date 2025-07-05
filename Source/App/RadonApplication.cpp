@@ -4,7 +4,6 @@
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Graphics/CameraEffectsService.hpp"
 #include "Engine/Graphics/ViewportManager.hpp"
-#include "Engine/Input/InputHandler.hpp"
 #include "Engine/Scene/SceneManager.hpp"
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/UI/DebugHUD.hpp"
@@ -65,7 +64,6 @@ void RadonApplication::RegisterSubsystems()
 
     context_->RegisterSubsystem(MakeShared<Scene::SceneManager>(context_));
     context_->RegisterSubsystem(MakeShared<UI::UIManager>(context_));
-    context_->RegisterSubsystem(MakeShared<Input::InputHandler>(context_));
     context_->RegisterSubsystem(MakeShared<StateMachine::GameStateManager>(context_));
     context_->RegisterSubsystem(MakeShared<Graphics::CameraEffectsService>(context_));
     context_->RegisterSubsystem(MakeShared<Graphics::ViewportManager>(context_));

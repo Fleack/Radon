@@ -1,8 +1,6 @@
 #include "CameraManager.hpp"
 
 #include "Engine/Core/Logger.hpp"
-#include "Engine/Input/CameraController/FPSCameraController.hpp"
-#include "Engine/Input/CameraController/FreeCameraController.hpp"
 
 using namespace Urho3D;
 using namespace Radon::Engine::Input;
@@ -19,115 +17,87 @@ CameraManager::~CameraManager()
     Shutdown();
 }
 
-void CameraManager::Initialize(Node& cameraNode, float lookSensitivity)
+void CameraManager::Initialize(Node& cameraNode, Node* playerNode)
 {
     RADON_LOGDEBUG("CameraManager: Initialize called");
-
-    cameraNode_ = &cameraNode;
-
-    controllers_[std::to_underlying(CameraMode::FREE_CAMERA)] =
-        MakeShared<FreeCameraController>(context_);
-    controllers_[std::to_underlying(CameraMode::FPS_CAMERA)] =
-        MakeShared<FPSCameraController>(context_);
-
-    ApplyToAll([lookSensitivity](auto& camera) {
-        camera.SetLookSensitivity(lookSensitivity);
-    });
-
-    SetCameraMode(CameraMode::FPS_CAMERA); // TODO Free camera broken
-
-    RADON_LOGINFO("CameraManager: Initialized with sensitivity={:.2f}", lookSensitivity);
-}
-
-void CameraManager::EnablePlayerCameraIntegration()
-{
-    if (listeningForPlayerCamera_)
+    
+    if (initialized_)
+    {
+        RADON_LOGWARN("CameraManager: already initialized");
         return;
+    }
 
-    RADON_LOGDEBUG("CameraManager: EnablePlayerCameraIntegration called");
-
-    SubscribeToEvent(StringHash("PlayerCameraReady"), URHO3D_HANDLER(CameraManager, OnPlayerCameraReady));
-
-    listeningForPlayerCamera_ = true;
-    RADON_LOGINFO("CameraManager: Now listening for PlayerCameraReady events");
-}
-
-void CameraManager::DisablePlayerCameraIntegration()
-{
-    if (!listeningForPlayerCamera_)
-        return;
-
-    RADON_LOGDEBUG("CameraManager: DisablePlayerCameraIntegration called");
-
-    UnsubscribeFromEvent(StringHash("PlayerCameraReady"));
-    listeningForPlayerCamera_ = false;
-
-    RADON_LOGINFO("CameraManager: Stopped listening for PlayerCameraReady events");
+    cameraController_ = MakeShared<CameraController>(context_);
+    cameraController_->Initialize(cameraNode, playerNode);
+    
+    initialized_ = true;
+    RADON_LOGINFO("CameraManager: Initialized with CameraController");
 }
 
 void CameraManager::Shutdown()
 {
     RADON_LOGDEBUG("CameraManager: Shutdown called");
-
-    DisablePlayerCameraIntegration();
-
-    if (!controllers_[0])
+    
+    if (!initialized_)
         return;
 
-    ApplyToAll([](auto& camera) {
-        camera.Shutdown();
-    });
-
-    currentCamera_ = nullptr;
-    playerCameraActive_ = false;
+    if (cameraController_)
+    {
+        cameraController_->Shutdown();
+        cameraController_.Reset();
+    }
+    
+    initialized_ = false;
     RADON_LOGINFO("CameraManager: Shutdown complete");
 }
 
-void CameraManager::SetCameraMode(CameraMode mode)
+void CameraManager::SetMode(CameraMode mode)
 {
-    if (mode == currentMode_ && currentCamera_)
-        return;
-
-    if (currentCamera_)
-        currentCamera_->Shutdown();
-
-    currentMode_ = mode;
-    currentCamera_ = GetCameraByMode(mode);
-
-    if (!cameraNode_.Expired() && currentCamera_)
-    {
-        currentCamera_->Initialize(*cameraNode_);
-    }
-    RADON_LOGINFO("CameraManager: Switched to {} mode", mode == CameraMode::FREE_CAMERA ? "FREE_CAMERA" : "FPS_CAMERA");
+    if (cameraController_)
+        cameraController_->SetMode(mode);
 }
 
-void CameraManager::SetLookSensitivity(float sensitivity) const
+CameraMode CameraManager::GetMode() const
 {
-    ApplyToAll([&](auto& camera) { camera.SetLookSensitivity(sensitivity); });
+    return cameraController_ ? cameraController_->GetMode() : CameraMode::FPS;
+}
+
+void CameraManager::SetLookSensitivity(float sensitivity)
+{
+    if (cameraController_)
+        cameraController_->SetLookSensitivity(sensitivity);
 }
 
 float CameraManager::GetLookSensitivity() const
 {
-    return currentCamera_ ? currentCamera_->GetLookSensitivity() : 0.1f;
+    return cameraController_ ? cameraController_->GetLookSensitivity() : 0.1f;
 }
 
-void CameraManager::OnPlayerCameraReady(StringHash, VariantMap& eventData)
+void CameraManager::SetMoveSpeed(float speed)
 {
-    RADON_LOGDEBUG("CameraManager: Player camera ready event received");
+    if (cameraController_)
+        cameraController_->SetMoveSpeed(speed);
+}
 
-    auto* cameraNode = dynamic_cast<Node*>(eventData["CameraNode"].GetPtr());
-    auto* playerNode = dynamic_cast<Node*>(eventData["PlayerNode"].GetPtr());
+float CameraManager::GetMoveSpeed() const
+{
+    return cameraController_ ? cameraController_->GetMoveSpeed() : 10.0f;
+}
 
-    if (!cameraNode || !playerNode)
-    {
-        RADON_LOGERROR("CameraManager: Invalid camera or player node in event");
+void CameraManager::SetPlayerNode(Node* playerNode)
+{
+    if (cameraController_)
+        cameraController_->SetPlayerNode(playerNode);
+}
+
+void CameraManager::ToggleMode()
+{
+    if (!cameraController_)
         return;
-    }
-
-    playerNode_ = playerNode;
-
-    Initialize(*cameraNode);
-
-    playerCameraActive_ = true;
-    RADON_LOGINFO("CameraManager: Player camera activated");
+        
+    CameraMode currentMode = cameraController_->GetMode();
+    CameraMode newMode = (currentMode == CameraMode::FPS) ? CameraMode::DEBUG : CameraMode::FPS;
+    
+    cameraController_->SetMode(newMode);
+    RADON_LOGINFO("CameraManager: Toggled to {} mode", newMode == CameraMode::FPS ? "FPS" : "DEBUG");
 }

@@ -1,7 +1,6 @@
 #include "PlayerCamera.hpp"
 
 #include "../ComponentCategory.hpp"
-#include "../Events/PlayerEvents.hpp"
 
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Graphics/Camera.h>
@@ -40,23 +39,7 @@ void PlayerCamera::DelayedStart()
     camera_ = cameraNode_->GetOrCreateComponent<Urho3D::Camera>();
     cameraNode_->SetPosition(Urho3D::Vector3(0.0f, CAMERA_HEIGHT, 0.0f));
 
-    NotifyCameraReady();
-
     initialized_ = true;
-}
-
-void PlayerCamera::NotifyCameraReady()
-{
-    if (cameraRegistered_)
-        return;
-    cameraRegistered_ = true;
-
-    Urho3D::VariantMap eventData;
-    eventData["CameraNode"] = cameraNode_;
-    eventData["Camera"] = camera_;
-    eventData["PlayerNode"] = node_;
-    
-    SendEvent(Urho3D::StringHash("PlayerCameraReady"), eventData);
 }
 
 } // namespace Radon::Game::Player 

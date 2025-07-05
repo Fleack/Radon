@@ -6,8 +6,7 @@
 namespace Radon::Game::Player
 {
 
-/// Player camera component that manages camera setup at fixed height
-/// Provides camera interface to other systems without complex positioning logic
+// TODO rework, not actually PlayerCamera
 class PlayerCamera : public Urho3D::LogicComponent
 {
     URHO3D_OBJECT(PlayerCamera, LogicComponent);
@@ -24,16 +23,12 @@ public:
     [[nodiscard]] Urho3D::Camera* GetCamera() const { return camera_; }
 
 private:
-    void NotifyCameraReady();
-
-private:
     static constexpr float CAMERA_HEIGHT = 1.8f;
 
     Urho3D::Node* cameraNode_{nullptr};
     Urho3D::Camera* camera_{nullptr};
 
     bool initialized_{false};
-    bool cameraRegistered_{false};
 };
 
 } // namespace Radon::Game::Player 
