@@ -112,9 +112,10 @@ bool ViewportManager::IsViewportEnabled(uint8_t viewportIndex) const
 void ViewportManager::SetViewportRect(IntRect const& rect, uint8_t viewportIndex)
 {
     RADON_LOGDEBUG("ViewportManager: SetViewportRect called for index {}", viewportIndex);
-    if (auto viewport = viewports_[viewportIndex])
+    auto it = viewports_.find(viewportIndex);
+    if (it != viewports_.end() && it->second)
     {
-        viewport->SetRect(rect);
+        it->second->SetRect(rect);
         RADON_LOGINFO("ViewportManager: Viewport %u rect set to [{},{},{},{}]", viewportIndex, rect.left_, rect.top_, rect.right_, rect.bottom_);
         UpdateViewport(viewportIndex);
     }
@@ -132,11 +133,12 @@ uint8_t ViewportManager::GetViewportCount() const
 void ViewportManager::UpdateViewport(uint8_t viewportIndex)
 {
     RADON_LOGDEBUG("ViewportManager: UpdateViewport called for index {}", viewportIndex);
-    if (auto viewport = viewports_[viewportIndex])
+    auto it = viewports_.find(viewportIndex);
+    if (it != viewports_.end() && it->second)
     {
         if (enabledViewports_.contains(viewportIndex))
         {
-            renderer_->SetViewport(viewportIndex, viewport);
+            renderer_->SetViewport(viewportIndex, it->second);
             RADON_LOGINFO("ViewportManager: Viewport {} updated and enabled", viewportIndex);
         }
         else
@@ -151,4 +153,4 @@ void ViewportManager::UpdateViewport(uint8_t viewportIndex)
     }
 }
 
-} // namespace Radon
+} // namespace Radon::Engine::Graphics

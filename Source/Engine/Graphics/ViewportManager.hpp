@@ -1,5 +1,7 @@
 #pragma once
 
+#include <EASTL/hash_map.h>
+#include <EASTL/hash_set.h>
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/Graphics/Viewport.h>
 #include <Urho3D/Scene/Scene.h>
