@@ -38,6 +38,12 @@ public:
     void SetLookSensitivity(float sensitivity) const;
     [[nodiscard]] float GetLookSensitivity() const;
 
+    /// Check if player camera is active
+    [[nodiscard]] bool IsPlayerCameraActive() const { return playerCameraActive_; }
+
+    void EnablePlayerCameraIntegration();
+    void DisablePlayerCameraIntegration();
+
 private:
     Urho3D::WeakPtr<ICameraController> GetCameraByMode(CameraMode mode) const { return controllers_[std::to_underlying(mode)]; }
 
@@ -48,6 +54,8 @@ private:
             if (controller) fn(*controller);
     }
 
+    void OnPlayerCameraReady(Urho3D::StringHash eventType, Urho3D::VariantMap& eventData);
+
 private:
     static constexpr std::size_t CameraModeCount = std::to_underlying(CameraMode::COUNT);
 
@@ -56,6 +64,10 @@ private:
     std::array<Urho3D::SharedPtr<ICameraController>, CameraModeCount> controllers_{};
 
     Urho3D::WeakPtr<Urho3D::Node> cameraNode_;
+    Urho3D::WeakPtr<Urho3D::Node> playerNode_;
+    
+    bool playerCameraActive_{false};
+    bool listeningForPlayerCamera_{false};
 };
 
 } // namespace Radon::Engine::Input

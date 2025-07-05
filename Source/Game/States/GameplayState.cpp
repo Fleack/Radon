@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Graphics/ViewportManager.hpp"
-#include "Engine/Input/PlayerCameraService.hpp"
+#include "Engine/Input/CameraManager.hpp"
 #include "Engine/Scene/SceneManager.hpp"
 #include "Engine/StateMachine/GameStateManager.hpp"
 #include "Engine/StateMachine/IGameState.hpp"
@@ -43,13 +43,9 @@ void GameplayState::Enter()
         return;
     }
 
-    // Get PlayerCameraService
-    playerCameraService_ = GetSubsystem<Input::PlayerCameraService>();
-    if (!playerCameraService_)
-    {
-        RADON_LOGERROR("GameplayState: PlayerCameraService not found");
-        return;
-    }
+    // Create CameraManager and enable player camera integration
+    cameraManager_ = MakeShared<Input::CameraManager>(context_);
+    cameraManager_->EnablePlayerCameraIntegration();
 
     GetSubsystem<UI::UIManager>()->ShowDocument("GameplayHUD");
 
@@ -75,10 +71,11 @@ void GameplayState::Exit()
     if (isInitialized_)
     {
         GetSubsystem<Graphics::ViewportManager>()->ClearViewport(0);
-        // PlayerCameraService manages CameraManager automatically
-        if (playerCameraService_ && playerCameraService_->GetCameraManager())
+        // Shutdown CameraManager
+        if (cameraManager_)
         {
-            playerCameraService_->GetCameraManager()->Shutdown();
+            cameraManager_->DisablePlayerCameraIntegration();
+            cameraManager_->Shutdown();
         }
     }
 
@@ -87,7 +84,7 @@ void GameplayState::Exit()
 
     scene_ = nullptr;
     playerCamera_ = nullptr;
-    playerCameraService_ = nullptr;
+    cameraManager_ = nullptr;
     isInitialized_ = false;
 
     RADON_LOGINFO("GameplayState: exited and cleaned up");
@@ -96,7 +93,7 @@ void GameplayState::Exit()
 void GameplayState::Update(float)
 {
     if (!isInitialized_ && playerCamera_ && playerCamera_->GetCameraNode() && 
-        playerCameraService_ && playerCameraService_->IsPlayerCameraActive()) [[unlikely]]
+        cameraManager_ && cameraManager_->IsPlayerCameraActive()) [[unlikely]] // TODO Simplify
     {
         RADON_LOGINFO("GameplayState: Camera is ready, completing initialization");
 

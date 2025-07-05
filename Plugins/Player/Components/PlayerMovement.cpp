@@ -49,7 +49,7 @@ void PlayerMovement::DelayedStart()
 
     characterControllerNode->SetPosition(Urho3D::Vector3::ZERO);
 
-    SubscribeToEvent(Events::E_PLAYER_CAMERA_DIRECTION_CHANGED, [this](Urho3D::StringHash, Urho3D::VariantMap& eventData) {
+    SubscribeToEvent(Urho3D::StringHash("CameraBaseTransformChanged"), [this](Urho3D::StringHash, Urho3D::VariantMap& eventData) {
         camForward_ = eventData[Events::P::FORWARD].GetVector3();
         camRight_ = eventData[Events::P::RIGHT].GetVector3();
     });

@@ -16,7 +16,7 @@ class DebugHUD;
 
 namespace Radon::Engine::Input
 {
-class PlayerCameraService;
+class CameraManager;
 }
 
 namespace Radon::Game::States
@@ -40,7 +40,7 @@ private:
     Urho3D::WeakPtr<Urho3D::Scene> scene_;
     Urho3D::WeakPtr<Plugins::PlayerCamera> playerCamera_; // TODO Больше не нужно?
     Urho3D::WeakPtr<Engine::UI::DebugHUD> debugHUD_;
-    Urho3D::WeakPtr<Engine::Input::PlayerCameraService> playerCameraService_;
+    Urho3D::SharedPtr<Engine::Input::CameraManager> cameraManager_;
 
     bool isInitialized_{false};
 };
