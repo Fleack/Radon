@@ -25,7 +25,7 @@ public:
     [[nodiscard]] bool GetRunKey() const { return run_; }
     [[nodiscard]] float GetMouseDeltaX() const { return mouseDeltaX_; }
     [[nodiscard]] float GetMouseDeltaY() const { return mouseDeltaY_; }
-    [[nodiscard]] bool GetInteract() { return false; } // TODO: Real interaction
+    [[nodiscard]] bool GetInteract() { return false; }
 
     void SetForwardKey(Urho3D::Key key) { forwardKey_ = key; }
     void SetBackKey(Urho3D::Key key) { backKey_ = key; }

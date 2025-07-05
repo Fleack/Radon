@@ -35,11 +35,10 @@ void BaseCameraController::Initialize(Node& cameraNode)
     pitch_ = initialRot.PitchAngle();
 
     RADON_LOGINFO(
-        "BaseCameraController: Initialized with yaw={:.2f}, pitch={:.2f}, sensitivity={:.2f}, speed={:.2f}",
+        "BaseCameraController: Initialized with yaw={:.2f}, pitch={:.2f}, sensitivity={:.2f}",
         yaw_,
         pitch_,
-        lookSensitivity_,
-        moveSpeed_);
+        lookSensitivity_);
 
     initialized_ = true;
 }
@@ -64,6 +63,9 @@ void BaseCameraController::UpdateOrientation(float mouseXMove, float mouseYMove)
     }
 
     yaw_ += mouseXMove * lookSensitivity_;
+    if (yaw_ > 360.0f || yaw_ < -360.0f)
+        yaw_ = std::fmod(yaw_, 360.0f);
+
     pitch_ = Clamp(pitch_ + mouseYMove * lookSensitivity_, pitchMin_, pitchMax_);
 
     cameraNode_->SetRotation(Quaternion(pitch_, yaw_, 0.0f));

@@ -30,7 +30,7 @@ void InputHandler::Initialize()
         return;
     }
 
-    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(InputHandler, OnUpdate)); // TODO Change to bit mask
+    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(InputHandler, OnUpdate));
     initialized_ = true;
     RADON_LOGINFO("InputHandler: Initialized");
 }

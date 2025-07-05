@@ -19,7 +19,7 @@ CameraManager::~CameraManager()
     Shutdown();
 }
 
-void CameraManager::Initialize(Node& cameraNode, float lookSensitivity, float moveSpeed)
+void CameraManager::Initialize(Node& cameraNode, float lookSensitivity)
 {
     RADON_LOGDEBUG("CameraManager: Initialize called");
 
@@ -30,14 +30,13 @@ void CameraManager::Initialize(Node& cameraNode, float lookSensitivity, float mo
     controllers_[std::to_underlying(CameraMode::FPS_CAMERA)] =
         MakeShared<FPSCameraController>(context_);
 
-    ApplyToAll([lookSensitivity, moveSpeed](auto& camera) {
+    ApplyToAll([lookSensitivity](auto& camera) {
         camera.SetLookSensitivity(lookSensitivity);
-        camera.SetMoveSpeed(moveSpeed);
     });
 
     SetCameraMode(CameraMode::FPS_CAMERA);
 
-    RADON_LOGINFO("CameraManager: Initialized with sensitivity={:.2f}, speed={:.2f}", lookSensitivity, moveSpeed);
+    RADON_LOGINFO("CameraManager: Initialized with sensitivity={:.2f}", lookSensitivity);
 }
 
 void CameraManager::Shutdown()
@@ -80,14 +79,4 @@ void CameraManager::SetLookSensitivity(float sensitivity) const
 float CameraManager::GetLookSensitivity() const
 {
     return currentCamera_ ? currentCamera_->GetLookSensitivity() : 0.1f;
-}
-
-void CameraManager::SetMoveSpeed(float speed) const
-{
-    ApplyToAll([&](auto& camera) { camera.SetMoveSpeed(speed); });
-}
-
-float CameraManager::GetMoveSpeed() const
-{
-    return currentCamera_ ? currentCamera_->GetMoveSpeed() : 5.0f;
 }

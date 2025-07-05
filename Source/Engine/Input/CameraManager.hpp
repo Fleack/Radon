@@ -25,7 +25,7 @@ public:
     explicit CameraManager(Urho3D::Context* context);
     ~CameraManager() override;
 
-    void Initialize(Urho3D::Node& cameraNode, float lookSensitivity = 0.1f, float moveSpeed = 5.0f);
+    void Initialize(Urho3D::Node& cameraNode, float lookSensitivity = 0.1f);
     void Shutdown();
 
     void SetCameraMode(CameraMode mode);
@@ -37,9 +37,6 @@ public:
 
     void SetLookSensitivity(float sensitivity) const;
     [[nodiscard]] float GetLookSensitivity() const;
-
-    void SetMoveSpeed(float speed) const;
-    [[nodiscard]] float GetMoveSpeed() const;
 
 private:
     Urho3D::WeakPtr<ICameraController> GetCameraByMode(CameraMode mode) const { return controllers_[std::to_underlying(mode)]; }

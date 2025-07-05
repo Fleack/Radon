@@ -20,9 +20,6 @@ public:
 
     virtual void SetLookSensitivity(float sensitivity) = 0;
     [[nodiscard]] virtual float GetLookSensitivity() const = 0;
-
-    virtual void SetMoveSpeed(float speed) = 0;
-    [[nodiscard]] virtual float GetMoveSpeed() const = 0;
 };
 
 } // namespace Radon::Engine::Input

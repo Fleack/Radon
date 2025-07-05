@@ -12,7 +12,7 @@ Urho3D::StringHash const E_PLAYER_RUN_STATE_CHANGED("PlayerRunStateChanged");
 
 // Camera events
 Urho3D::StringHash const E_PLAYER_HEADBOB("PlayerHeadbob");
-Urho3D::StringHash const E_PLAYER_CAMERA_DIRECTION_CHANGED("PlayerCameraDirectionChanged");
+Urho3D::StringHash const E_PLAYER_CAMERA_DIRECTION_CHANGED("PlayerCameraDirectionChanged"); // TODO: Проверить какие ивенты можно унести из плагина
 
 // Health events
 Urho3D::StringHash const E_PLAYER_DAMAGED("PlayerDamaged");

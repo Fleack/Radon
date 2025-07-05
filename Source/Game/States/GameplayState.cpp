@@ -89,7 +89,7 @@ void GameplayState::Update(float)
         RADON_LOGINFO("GameplayState: Camera is ready, completing initialization");
 
         GetSubsystem<Graphics::ViewportManager>()->SetupViewport(*scene_, *playerCamera_->GetCameraNode(), 0);
-        GetSubsystem<Input::CameraManager>()->Initialize(*playerCamera_->GetCameraNode(), 0.1f, 5.0f);
+        GetSubsystem<Input::CameraManager>()->Initialize(*playerCamera_->GetCameraNode(), 0.1f);
         isInitialized_ = true;
 
         RADON_LOGINFO("GameplayState: Initialization completed successfully");

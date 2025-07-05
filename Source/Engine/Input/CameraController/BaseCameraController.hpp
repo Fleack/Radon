@@ -22,9 +22,6 @@ public:
     void SetLookSensitivity(float sensitivity) override { lookSensitivity_ = sensitivity; }
     [[nodiscard]] float GetLookSensitivity() const override { return lookSensitivity_; }
 
-    void SetMoveSpeed(float speed) override { moveSpeed_ = speed; }
-    [[nodiscard]] float GetMoveSpeed() const override { return moveSpeed_; }
-
     void SetPitchLimits(float min, float max)
     {
         pitchMin_ = min;
@@ -43,7 +40,6 @@ protected:
     float pitch_{0.0f};
 
     float lookSensitivity_{0.1f};
-    float moveSpeed_{5.0f};
 
     bool initialized_{false};
 };
