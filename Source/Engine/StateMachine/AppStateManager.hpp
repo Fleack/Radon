@@ -7,12 +7,12 @@
 namespace Radon::Engine::StateMachine
 {
 
-class GameStateManager final : public Urho3D::Object
+class AppStateManager final : public Urho3D::Object
 {
-    URHO3D_OBJECT(GameStateManager, Object)
+    URHO3D_OBJECT(AppStateManager, Object)
 public:
-    explicit GameStateManager(Urho3D::Context* context);
-    ~GameStateManager() override;
+    explicit AppStateManager(Urho3D::Context* context);
+    ~AppStateManager() override;
 
     void PushState(Urho3D::SharedPtr<IGameState> state);
     void ReplaceState(Urho3D::SharedPtr<IGameState> state);

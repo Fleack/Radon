@@ -5,7 +5,7 @@
 #include "Engine/Graphics/CameraEffectsService.hpp"
 #include "Engine/Graphics/ViewportManager.hpp"
 #include "Engine/Scene/SceneManager.hpp"
-#include "Engine/StateMachine/GameStateManager.hpp"
+#include "Engine/StateMachine/AppStateManager.hpp"
 #include "Engine/UI/DebugHUD.hpp"
 #include "Engine/UI/UIManager.hpp"
 #include "Game/Player/PlayerManager.hpp"
@@ -40,7 +40,7 @@ void RadonApplication::Start()
     RegisterComponents();
     RegisterSubsystems();
 
-    GetSubsystem<Engine::StateMachine::GameStateManager>()->PushState(MakeShared<Game::States::MenuState>(context_));
+    GetSubsystem<Engine::StateMachine::AppStateManager>()->PushState(MakeShared<Game::States::MenuState>(context_));
 }
 
 void RadonApplication::Stop()
@@ -64,7 +64,7 @@ void RadonApplication::RegisterSubsystems()
 
     context_->RegisterSubsystem(MakeShared<Scene::SceneManager>(context_));
     context_->RegisterSubsystem(MakeShared<UI::UIManager>(context_));
-    context_->RegisterSubsystem(MakeShared<StateMachine::GameStateManager>(context_));
+    context_->RegisterSubsystem(MakeShared<StateMachine::AppStateManager>(context_));
     context_->RegisterSubsystem(MakeShared<Graphics::CameraEffectsService>(context_));
     context_->RegisterSubsystem(MakeShared<Graphics::ViewportManager>(context_));
 

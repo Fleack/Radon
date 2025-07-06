@@ -3,7 +3,7 @@
 #include "Engine/Core/Logger.hpp"
 #include "Engine/Graphics/ViewportManager.hpp"
 #include "Engine/Scene/SceneManager.hpp"
-#include "Engine/StateMachine/GameStateManager.hpp"
+#include "Engine/StateMachine/AppStateManager.hpp"
 #include "Engine/UI/UIManager.hpp"
 #include "Game/States/GameplayState.hpp"
 
@@ -80,7 +80,7 @@ void MenuState::Update(float)
 void MenuState::HandlePlay()
 {
     RADON_LOGINFO("MenuState: Play button pressed");
-    GetSubsystem<StateMachine::GameStateManager>()->ReplaceState(MakeShared<GameplayState>(context_));
+    GetSubsystem<StateMachine::AppStateManager>()->ReplaceState(MakeShared<GameplayState>(context_));
 }
 
 void MenuState::HandleExit()

@@ -4,7 +4,7 @@
 #include "Engine/Graphics/ViewportManager.hpp"
 #include "Engine/Input/CameraManager.hpp"
 #include "Engine/Scene/SceneManager.hpp"
-#include "Engine/StateMachine/GameStateManager.hpp"
+#include "Engine/StateMachine/AppStateManager.hpp"
 #include "Engine/StateMachine/IGameState.hpp"
 #include "Engine/UI/DebugHUD.hpp"
 #include "Engine/UI/UIManager.hpp"
@@ -114,7 +114,7 @@ void GameplayState::HandleKeydown(Urho3D::StringHash, Urho3D::VariantMap& data)
     if (key == KEY_ESCAPE)
     {
         RADON_LOGINFO("GameplayState: ESC pressed, returning to menu");
-        GetSubsystem<StateMachine::GameStateManager>()->ReplaceState(MakeShared<MenuState>(context_));
+        GetSubsystem<StateMachine::AppStateManager>()->ReplaceState(MakeShared<MenuState>(context_));
     }
     else if (key == KEY_F1) // Toggle debug camera
     {
