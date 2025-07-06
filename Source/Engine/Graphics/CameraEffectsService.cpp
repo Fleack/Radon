@@ -1,9 +1,8 @@
 #include "CameraEffectsService.hpp"
 
 #include "Engine/Core/Logger.hpp"
-#include "Engine/Graphics/CameraEvents.hpp"
-#include "Engine/Graphics/Effects/HeadBobEffect.hpp"
 #include "Engine/Graphics/Effects/CameraShakeEffect.hpp"
+#include "Engine/Graphics/Effects/HeadBobEffect.hpp"
 
 #include <Urho3D/Core/CoreEvents.h>
 
@@ -28,20 +27,20 @@ void CameraEffectsService::Initialize()
         return;
 
     RADON_LOGDEBUG("CameraEffectsService: Initialize called");
-    
-    // Создаём менеджер эффектов
+
+    // Create effects manager
     effectsManager_ = MakeShared<CameraEffectsManager>(context_);
-    
+
     // Temporarily disable effects creation for debugging
     // Add standard camera effects
     // HeadBob effect (moved from PlayerCamera)
     // auto headBobEffect = MakeShared<HeadBobEffect>(context_);
     // effectsManager_->AddEffect(headBobEffect);
-    
+
     // Add camera shake effect
     // auto shakeEffect = MakeShared<CameraShakeEffect>(context_);
     // effectsManager_->AddEffect(shakeEffect);
-    
+
     effectsManager_->Initialize();
 
     initialized_ = true;
@@ -54,9 +53,9 @@ void CameraEffectsService::Shutdown()
         return;
 
     RADON_LOGDEBUG("CameraEffectsService: Shutdown called");
-    
-    StopObservingPlayerCamera();
-    
+
+    ClearObservedCamera();
+
     if (effectsManager_)
     {
         effectsManager_->Shutdown();
@@ -67,35 +66,41 @@ void CameraEffectsService::Shutdown()
     RADON_LOGINFO("CameraEffectsService: Shutdown complete");
 }
 
-void CameraEffectsService::StartObservingPlayerCamera()
+void CameraEffectsService::SetObservedCamera(Node* cameraNode, Camera* camera)
 {
-    if (observingPlayerCamera_)
+    if (!cameraNode || !camera)
+    {
+        RADON_LOGWARN("CameraEffectsService: Invalid camera parameters");
         return;
+    }
 
-    // Subscribe to new PlayerCamera events
-    SubscribeToEvent(StringHash("PlayerCameraEvent"), 
-                    URHO3D_HANDLER(CameraEffectsService, HandlePlayerCameraEvent));
-    
-    // Subscribe to update events to apply effects each frame
-    SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(CameraEffectsService, OnUpdate));
+    observedCameraNode_ = cameraNode;
+    observedCamera_ = camera;
+    cachedBasePosition_ = cameraNode->GetPosition();
 
-    observingPlayerCamera_ = true;
-    RADON_LOGINFO("CameraEffectsService: Started observing PlayerCamera");
+    if (!observingCamera_)
+    {
+        // Subscribe to update events to apply effects each frame
+        SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(CameraEffectsService, OnUpdate));
+        observingCamera_ = true;
+    }
+
+    RADON_LOGINFO("CameraEffectsService: Camera observation started");
 }
 
-void CameraEffectsService::StopObservingPlayerCamera()
+void CameraEffectsService::ClearObservedCamera()
 {
-    if (!observingPlayerCamera_)
-        return;
-
-    UnsubscribeFromEvent(StringHash("PlayerCameraEvent"));
-    UnsubscribeFromEvent(E_UPDATE);
+    if (observingCamera_)
+    {
+        UnsubscribeFromEvent(E_UPDATE);
+        observingCamera_ = false;
+    }
 
     observedCameraNode_ = nullptr;
     observedCamera_ = nullptr;
-    observingPlayerCamera_ = false;
-    
-    RADON_LOGINFO("CameraEffectsService: Stopped observing PlayerCamera");
+    cachedBasePosition_ = Vector3::ZERO;
+
+    RADON_LOGINFO("CameraEffectsService: Camera observation stopped");
 }
 
 void CameraEffectsService::SetIntegrationEnabled(bool enabled)
@@ -104,51 +109,13 @@ void CameraEffectsService::SetIntegrationEnabled(bool enabled)
         return;
 
     integrationEnabled_ = enabled;
-    
-    if (integrationEnabled_)
+
+    if (!integrationEnabled_)
     {
-        StartObservingPlayerCamera();
+        ClearObservedCamera();
     }
-    else
-    {
-        StopObservingPlayerCamera();
-    }
-    
+
     RADON_LOGINFO("CameraEffectsService: Integration {}", enabled ? "enabled" : "disabled");
-}
-
-void CameraEffectsService::HandlePlayerCameraEvent(StringHash, VariantMap& eventData)
-{
-    if (!integrationEnabled_ || !initialized_)
-        return;
-
-    ea::string eventType = eventData["EventType"].GetString();
-    
-    if (eventType == "CameraInitialized")
-    {
-        // Safely get camera references and base position
-        auto* cameraNode = static_cast<Node*>(eventData["CameraNode"].GetPtr());
-        auto* camera = static_cast<Camera*>(eventData["Camera"].GetPtr());
-        
-        if (cameraNode && camera)
-        {
-            observedCameraNode_ = cameraNode;
-            observedCamera_ = camera;
-            cachedBasePosition_ = eventData["BasePosition"].GetVector3();
-            
-            RADON_LOGINFO("CameraEffectsService: Camera initialized and cached");
-        }
-        else
-        {
-            RADON_LOGWARN("CameraEffectsService: Invalid camera objects in initialization event");
-        }
-    }
-    else if (eventType == "BasePositionChanged")
-    {
-        // Update cached base position
-        cachedBasePosition_ = eventData["BasePosition"].GetVector3();
-        RADON_LOGINFO("CameraEffectsService: Base position updated");
-    }
 }
 
 void CameraEffectsService::OnUpdate(StringHash, VariantMap& eventData)
@@ -160,17 +127,17 @@ void CameraEffectsService::OnUpdate(StringHash, VariantMap& eventData)
     if (observedCameraNode_.Expired() || observedCamera_.Expired())
     {
         RADON_LOGWARN("CameraEffectsService: Camera references expired, stopping observation");
-        StopObservingPlayerCamera();
+        ClearObservedCamera();
         return;
     }
 
     float timeStep = eventData[Update::P_TIMESTEP].GetFloat();
-    
+
     // Apply all camera effects using cached base position
     ApplyEffectsToCamera(observedCameraNode_.Get(), observedCamera_.Get(), cachedBasePosition_, timeStep);
 }
 
-void CameraEffectsService::ApplyEffectsToCamera(Node* cameraNode, Camera* camera, const Vector3& basePosition, float timeStep)
+void CameraEffectsService::ApplyEffectsToCamera(Node* cameraNode, Camera* camera, Vector3 const& basePosition, float timeStep)
 {
     if (!effectsManager_ || !cameraNode || !camera)
     {
@@ -180,25 +147,25 @@ void CameraEffectsService::ApplyEffectsToCamera(Node* cameraNode, Camera* camera
 
     // Get effects result from effects manager
     CameraEffectResult effectResult = effectsManager_->Update(timeStep);
-    
+
     // Apply position offset to base position
     if (!effectResult.positionOffset.Equals(Vector3::ZERO))
     {
         Vector3 newPosition = basePosition + effectResult.positionOffset;
         cameraNode->SetPosition(newPosition);
     }
-    
+
     // Apply rotation offset
     if (!effectResult.rotationOffset.Equals(Quaternion::IDENTITY))
     {
         Quaternion currentRot = cameraNode->GetRotation();
         cameraNode->SetRotation(currentRot * effectResult.rotationOffset);
     }
-    
+
     // Apply FOV multiplier
     if (effectResult.fovMultiplier != 1.0f)
     {
         float currentFov = camera->GetFov();
         camera->SetFov(currentFov * effectResult.fovMultiplier);
     }
-} 
+}

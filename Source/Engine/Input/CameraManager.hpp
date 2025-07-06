@@ -5,6 +5,11 @@
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/Scene/Node.h>
 
+namespace Urho3D
+{
+class Camera;
+}
+
 namespace Radon::Engine::Input
 {
 
@@ -17,7 +22,8 @@ public:
     explicit CameraManager(Urho3D::Context* context);
     ~CameraManager() override;
 
-    void Initialize(Urho3D::Node& cameraNode, Urho3D::Node* playerNode = nullptr);
+    /// Initialize with player node - creates camera automatically
+    void Initialize(Urho3D::Node& playerNode);
     void Shutdown();
 
     void SetMode(CameraMode mode);
@@ -33,6 +39,12 @@ public:
 
     /// Toggle between FPS and DEBUG modes
     void ToggleMode();
+
+    /// Get camera node (created during initialization)
+    [[nodiscard]] Urho3D::Node* GetCameraNode() const;
+    
+    /// Get camera component (created during initialization)
+    [[nodiscard]] Urho3D::Camera* GetCamera() const;
 
 private:
     Urho3D::SharedPtr<CameraController> cameraController_;

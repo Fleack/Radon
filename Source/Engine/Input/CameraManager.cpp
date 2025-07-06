@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Logger.hpp"
 
+#include <Urho3D/Graphics/Camera.h>
+
 using namespace Urho3D;
 using namespace Radon::Engine::Input;
 
@@ -11,13 +13,14 @@ CameraManager::CameraManager(Context* context)
     RADON_LOGDEBUG("CameraManager: constructor called");
 }
 
+// TODO Просто передает вызовы в CameraController, избавиться
 CameraManager::~CameraManager()
 {
     RADON_LOGDEBUG("CameraManager: destructor called");
     Shutdown();
 }
 
-void CameraManager::Initialize(Node& cameraNode, Node* playerNode)
+void CameraManager::Initialize(Node& playerNode)
 {
     RADON_LOGDEBUG("CameraManager: Initialize called");
     
@@ -28,7 +31,7 @@ void CameraManager::Initialize(Node& cameraNode, Node* playerNode)
     }
 
     cameraController_ = MakeShared<CameraController>(context_);
-    cameraController_->Initialize(cameraNode, playerNode);
+    cameraController_->Initialize(playerNode);
     
     initialized_ = true;
     RADON_LOGINFO("CameraManager: Initialized with CameraController");
@@ -100,4 +103,14 @@ void CameraManager::ToggleMode()
     
     cameraController_->SetMode(newMode);
     RADON_LOGINFO("CameraManager: Toggled to {} mode", newMode == CameraMode::FPS ? "FPS" : "DEBUG");
+}
+
+Node* CameraManager::GetCameraNode() const
+{
+    return cameraController_ ? cameraController_->GetCameraNode() : nullptr;
+}
+
+Camera* CameraManager::GetCamera() const
+{
+    return cameraController_ ? cameraController_->GetCamera() : nullptr;
 }

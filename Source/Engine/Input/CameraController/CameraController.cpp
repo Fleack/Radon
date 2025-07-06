@@ -1,7 +1,9 @@
 #include "CameraController.hpp"
+
 #include "Engine/Core/Logger.hpp"
 
 #include <Urho3D/Core/CoreEvents.h>
+#include <Urho3D/Graphics/Camera.h>
 #include <Urho3D/Input/Input.h>
 #include <Urho3D/Math/MathDefs.h>
 
@@ -20,7 +22,7 @@ CameraController::~CameraController()
     Shutdown();
 }
 
-void CameraController::Initialize(Node& cameraNode, Node* playerNode)
+void CameraController::Initialize(Node& playerNode)
 {
     RADON_LOGDEBUG("CameraController: Initialize called");
 
@@ -30,18 +32,44 @@ void CameraController::Initialize(Node& cameraNode, Node* playerNode)
         return;
     }
 
-    cameraNode_ = &cameraNode;
-    playerNode_ = playerNode;
+    playerNode_ = &playerNode;
 
-    // Initialize camera rotation from current node rotation
-    Quaternion const initialRot = cameraNode_->GetRotation();
-    yaw_ = initialRot.YawAngle();
-    pitch_ = initialRot.PitchAngle();
+    CreateCamera();
+
+    if (cameraNode_)
+    {
+        Quaternion const initialRot = cameraNode_->GetRotation();
+        yaw_ = initialRot.YawAngle();
+        pitch_ = initialRot.PitchAngle();
+    }
 
     SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(CameraController, OnUpdate));
 
     initialized_ = true;
     RADON_LOGINFO("CameraController: Initialized with mode={}, yaw={:.2f}, pitch={:.2f}", currentMode_ == CameraMode::FPS ? "FPS" : "DEBUG", yaw_, pitch_);
+}
+
+void CameraController::CreateCamera()
+{
+    RADON_LOGDEBUG("CameraController: CreateCamera called");
+
+    if (playerNode_.Expired())
+    {
+        RADON_LOGERROR("CameraController: Player node is null, cannot create camera");
+        return;
+    }
+
+    cameraNode_ = playerNode_->GetChild("Camera");
+    if (!cameraNode_)
+    {
+        cameraNode_ = playerNode_->CreateChild("Camera");
+        RADON_LOGDEBUG("CameraController: Created new camera node");
+    }
+
+    camera_ = cameraNode_->GetOrCreateComponent<Camera>();
+    cameraNode_->SetPosition(Vector3(0.0f, PLAYER_CAMERA_HEIGHT, 0.0f));
+
+    RADON_LOGINFO("CameraController: Camera created successfully");
 }
 
 void CameraController::Shutdown()
@@ -52,6 +80,11 @@ void CameraController::Shutdown()
         return;
 
     UnsubscribeFromAllEvents();
+
+    cameraNode_ = nullptr;
+    playerNode_ = nullptr;
+    camera_ = nullptr;
+
     initialized_ = false;
     RADON_LOGINFO("CameraController: Shutdown complete");
 }
@@ -74,21 +107,18 @@ void CameraController::OnUpdate(StringHash, VariantMap& eventData)
     }
 
     float const deltaTime = eventData[Update::P_TIMESTEP].GetFloat();
-    auto* input = GetSubsystem<Urho3D::Input>();
 
+    auto const* input = GetSubsystem<Urho3D::Input>();
     if (!input)
         return;
 
-    // Handle mouse look
-    auto mouseX = static_cast<float>(input->GetMouseMoveX());
-    auto mouseY = static_cast<float>(input->GetMouseMoveY());
-
+    auto const mouseX = static_cast<float>(input->GetMouseMoveX());
+    auto const mouseY = static_cast<float>(input->GetMouseMoveY());
     if (mouseX != 0.0f || mouseY != 0.0f)
     {
         UpdateOrientation(mouseX, mouseY);
     }
 
-    // Handle mode-specific updates
     switch (currentMode_)
     {
     case CameraMode::FPS:
@@ -102,25 +132,22 @@ void CameraController::OnUpdate(StringHash, VariantMap& eventData)
 
 void CameraController::UpdateFPSCamera(float)
 {
-    // In FPS mode, camera follows player if player node exists
     if (!playerNode_.Expired())
     {
         Vector3 playerPos = playerNode_->GetPosition();
-        Vector3 cameraPos = playerPos + debugCameraOffset_;
+        Vector3 cameraPos = playerPos + Vector3(0.0f, PLAYER_CAMERA_HEIGHT, 0.0f);
         cameraNode_->SetPosition(cameraPos);
     }
 
-    // Apply rotation
+    // TODO Вращаться должен весь игрок по yaw
     cameraNode_->SetRotation(Quaternion(pitch_, yaw_, 0.0f));
 }
 
 void CameraController::UpdateDebugCamera(float deltaTime)
 {
-    auto* input = GetSubsystem<Urho3D::Input>();
+    auto const* input = GetSubsystem<Urho3D::Input>();
 
-    // Free camera movement
     Vector3 moveDir = Vector3::ZERO;
-
     if (input->GetKeyDown(KEY_W)) moveDir += Vector3::FORWARD;
     if (input->GetKeyDown(KEY_S)) moveDir += Vector3::BACK;
     if (input->GetKeyDown(KEY_A)) moveDir += Vector3::LEFT;
@@ -134,7 +161,6 @@ void CameraController::UpdateDebugCamera(float deltaTime)
         cameraNode_->Translate(moveDir * moveSpeed_ * deltaTime, TS_LOCAL);
     }
 
-    // Apply rotation
     cameraNode_->SetRotation(Quaternion(pitch_, yaw_, 0.0f));
 }
 

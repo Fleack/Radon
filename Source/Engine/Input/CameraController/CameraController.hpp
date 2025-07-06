@@ -4,6 +4,11 @@
 #include <Urho3D/Math/Vector3.h>
 #include <Urho3D/Scene/Node.h>
 
+namespace Urho3D
+{
+class Camera;
+}
+
 namespace Radon::Engine::Input
 {
 
@@ -13,7 +18,6 @@ enum class CameraMode : uint8_t
     DEBUG // Free-flying camera
 };
 
-/// Simplified camera controller for FPS and debug modes
 class CameraController final : public Urho3D::Object
 {
     URHO3D_OBJECT(CameraController, Object);
@@ -22,7 +26,7 @@ public:
     explicit CameraController(Urho3D::Context* context);
     ~CameraController() override;
 
-    void Initialize(Urho3D::Node& cameraNode, Urho3D::Node* playerNode = nullptr);
+    void Initialize(Urho3D::Node& playerNode);
     void Shutdown();
 
     void SetMode(CameraMode mode);
@@ -36,15 +40,23 @@ public:
 
     void SetPlayerNode(Urho3D::Node* playerNode) { playerNode_ = playerNode; }
 
-private:
-    void OnUpdate(Urho3D::StringHash eventType, Urho3D::VariantMap& eventData);
-    void UpdateFPSCamera(float deltaTime);
-    void UpdateDebugCamera(float deltaTime);
-    void UpdateOrientation(float mouseX, float mouseY);
+    [[nodiscard]] Urho3D::Node* GetCameraNode() const { return cameraNode_; }
+    [[nodiscard]] Urho3D::Camera* GetCamera() const { return camera_; }
 
 private:
+    void CreateCamera();
+
+    void OnUpdate(Urho3D::StringHash eventType, Urho3D::VariantMap& eventData);
+    void UpdateOrientation(float mouseX, float mouseY);
+    void UpdateFPSCamera(float deltaTime);
+    void UpdateDebugCamera(float deltaTime);
+
+private:
+    static constexpr float PLAYER_CAMERA_HEIGHT = 1.8f;
+
     Urho3D::WeakPtr<Urho3D::Node> cameraNode_;
     Urho3D::WeakPtr<Urho3D::Node> playerNode_;
+    Urho3D::Camera* camera_{nullptr};
 
     CameraMode currentMode_{CameraMode::FPS};
 
@@ -52,9 +64,6 @@ private:
     float pitch_{0.0f};
     float lookSensitivity_{0.1f};
     float moveSpeed_{10.0f};
-
-    // For debug mode
-    Urho3D::Vector3 debugCameraOffset_{0.0f, 1.8f, 0.0f}; // Height offset from player
 
     bool initialized_{false};
 };
