@@ -132,15 +132,17 @@ void CameraController::OnUpdate(StringHash, VariantMap& eventData)
 
 void CameraController::UpdateFPSCamera(float)
 {
-    if (!playerNode_.Expired())
+    if (playerNode_.Expired())
     {
-        Vector3 playerPos = playerNode_->GetPosition();
-        Vector3 cameraPos = playerPos + Vector3(0.0f, PLAYER_CAMERA_HEIGHT, 0.0f);
-        cameraNode_->SetPosition(cameraPos);
+        RADON_LOGWARN("CameraController: player node expired, cannot update FPS camera");
+        return;
     }
 
-    // TODO Вращаться должен весь игрок по yaw
-    cameraNode_->SetRotation(Quaternion(pitch_, yaw_, 0.0f));
+    Vector3 playerPos = playerNode_->GetPosition();
+    Vector3 cameraPos = playerPos + Vector3(0.0f, PLAYER_CAMERA_HEIGHT, 0.0f);
+    cameraNode_->SetPosition(cameraPos);
+    playerNode_->SetRotation(Quaternion(0.0f, yaw_, 0.0f));
+    cameraNode_->SetRotation(Quaternion(pitch_, 0.0f, 0.0f));
 }
 
 void CameraController::UpdateDebugCamera(float deltaTime)
