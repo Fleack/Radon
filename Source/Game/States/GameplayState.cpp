@@ -8,6 +8,9 @@
 #include "Engine/StateMachine/IGameState.hpp"
 #include "Engine/UI/DebugHUD.hpp"
 #include "Engine/UI/UIManager.hpp"
+#include "Game/Player/Components/PlayerHealth.hpp"
+#include "Game/Player/Components/PlayerInputHandler.hpp"
+#include "Game/Player/Components/PlayerMovement.hpp"
 #include "Game/States/MenuState.hpp"
 
 #include <Urho3D/Input/Input.h>
@@ -31,8 +34,27 @@ void GameplayState::Enter()
     Urho3D::Node* playerNode = scene_->GetChild("Player", true);
     if (!playerNode)
     {
-        RADON_LOGERROR("GameplayState: Player node not found in scene, creating a new one");
+        RADON_LOGERROR("GameplayState: Player node not found in scene");
         return;
+    }
+
+    // Initialize player components
+    if (!playerNode->GetComponent<Player::PlayerMovement>())
+    {
+        playerNode->CreateComponent<Player::PlayerMovement>();
+        RADON_LOGINFO("GameplayState: Created PlayerMovement component");
+    }
+
+    if (!playerNode->GetComponent<Player::PlayerInputHandler>())
+    {
+        playerNode->CreateComponent<Player::PlayerInputHandler>();
+        RADON_LOGINFO("GameplayState: Created PlayerInputHandler component");
+    }
+
+    if (!playerNode->GetComponent<Player::PlayerHealth>())
+    {
+        playerNode->CreateComponent<Player::PlayerHealth>();
+        RADON_LOGINFO("GameplayState: Created PlayerHealth component");
     }
 
     // Initialize CameraManager with player node - camera will be created automatically
@@ -46,7 +68,7 @@ void GameplayState::Enter()
 
     // TODO Add some flag for debugging
     auto* DebugHUD = scene_->CreateChild("DebugHUD");
-    debugHUD_ = DebugHUD->CreateComponent<Engine::UI::DebugHUD>();
+    debugHUD_ = DebugHUD->CreateComponent<UI::DebugHUD>();
 
     auto* input = GetSubsystem<Urho3D::Input>();
     input->SetMouseMode(Urho3D::MM_RELATIVE);
